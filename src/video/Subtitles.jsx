@@ -22,23 +22,23 @@ export function Subtitles({ text, isVertical }) {
     <div
       style={{
         position: "absolute",
-        bottom: isVertical ? "160px" : "32px",
+        bottom: isVertical ? "120px" : "32px",
         left: "50%",
         transform: `translateX(-50%) scale(${enterScale})`,
         opacity: enterOpacity,
         width: isVertical ? "92%" : "86%",
-        maxWidth: isVertical ? "980px" : "1400px",
-        padding: isVertical ? "18px 24px" : "16px 32px",
-        background: "rgba(10, 10, 15, 0.94)",
-        border: "1.5px solid rgba(255, 107, 0, 0.38)",
-        borderRadius: "16px",
+        maxWidth: isVertical ? "1000px" : "1400px",
+        padding: isVertical ? "20px 30px" : "16px 32px",
+        background: "rgba(10, 10, 15, 0.95)",
+        border: "2px solid rgba(255, 107, 0, 0.45)",
+        borderRadius: "18px",
         backdropFilter: "blur(24px)",
         textAlign: "center",
-        boxShadow: "0 12px 45px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 107, 0, 0.16)",
+        boxShadow: "0 12px 45px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 107, 0, 0.22)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: isVertical ? "14px" : "18px",
+        gap: isVertical ? "16px" : "18px",
         zIndex: 50,
         fontFamily: interFont.fontFamily
       }}
@@ -49,17 +49,17 @@ export function Subtitles({ text, isVertical }) {
           display: "flex",
           alignItems: "center",
           gap: "4px",
-          height: "24px",
+          height: "28px",
           flexShrink: 0
         }}
       >
         {[0, 1, 2, 3].map((barIdx) => {
           const barHeight = Math.max(
-            6,
+            8,
             Math.round(
-              16 +
-                Math.sin(frame * 0.35 + barIdx * 1.3) * 8 +
-                Math.cos(frame * 0.2 + barIdx * 0.7) * 4
+              18 +
+                Math.sin(frame * 0.35 + barIdx * 1.3) * 10 +
+                Math.cos(frame * 0.2 + barIdx * 0.7) * 5
             )
           );
 
@@ -67,11 +67,11 @@ export function Subtitles({ text, isVertical }) {
             <div
               key={barIdx}
               style={{
-                width: "4px",
+                width: "5px",
                 height: `${barHeight}px`,
                 background: "linear-gradient(180deg, #ffaa00 0%, #ff5500 100%)",
                 borderRadius: "3px",
-                boxShadow: "0 0 8px rgba(255, 107, 0, 0.6)"
+                boxShadow: "0 0 8px rgba(255, 107, 0, 0.7)"
               }}
             />
           );
@@ -82,11 +82,11 @@ export function Subtitles({ text, isVertical }) {
         style={{
           margin: 0,
           color: "#ffffff",
-          fontSize: isVertical ? "26px" : "24px",
-          fontWeight: 700,
-          lineHeight: 1.38,
-          letterSpacing: "-0.2px",
-          textShadow: "0 2px 10px rgba(0, 0, 0, 0.7)"
+          fontSize: isVertical ? "32px" : "26px",
+          fontWeight: 800,
+          lineHeight: 1.35,
+          letterSpacing: "-0.3px",
+          textShadow: "0 2px 10px rgba(0, 0, 0, 0.85)"
         }}
       >
         {text}

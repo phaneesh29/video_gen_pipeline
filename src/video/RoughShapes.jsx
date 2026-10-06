@@ -186,12 +186,12 @@ export function RoughBoxNode({
           {isHub && (
             <div
               style={{
-                fontSize: "11px",
+                fontSize: "13px",
                 fontWeight: 800,
                 color: "#38bdf8",
-                letterSpacing: "1px",
+                letterSpacing: "1.2px",
                 fontFamily: monoFont.fontFamily,
-                marginBottom: "3px",
+                marginBottom: "4px",
                 textTransform: "uppercase"
               }}
             >
@@ -200,7 +200,7 @@ export function RoughBoxNode({
           )}
           <div
             style={{
-              fontSize: isHub ? "22px" : "20px",
+              fontSize: isHub ? "28px" : "25px",
               fontWeight: 800,
               color: scheme.text,
               lineHeight: 1.25,
@@ -213,9 +213,9 @@ export function RoughBoxNode({
           {subLabel && (
             <div
               style={{
-                fontSize: "15px",
+                fontSize: "18px",
                 color: scheme.sub,
-                marginTop: "3px",
+                marginTop: "4px",
                 fontFamily: caveatFont.fontFamily,
                 fontWeight: 700,
                 letterSpacing: "0.3px"
@@ -253,18 +253,18 @@ export function RoughArrow({
     seed: arrowSeed,
     roughness: 1.3,
     stroke: color,
-    strokeWidth: 2.8
+    strokeWidth: 3.5
   });
 
   const angle = Math.atan2(y2 - y1, x2 - x1);
-  const headLen = 18;
+  const headLen = 22;
   const hx1 = x2 - headLen * Math.cos(angle - Math.PI / 6);
   const hy1 = y2 - headLen * Math.sin(angle - Math.PI / 6);
   const hx2 = x2 - headLen * Math.cos(angle + Math.PI / 6);
   const hy2 = y2 - headLen * Math.sin(angle + Math.PI / 6);
 
-  const headShape1 = generator.line(x2, y2, hx1, hy1, { seed: arrowSeed + 1, roughness: 1.2, stroke: color, strokeWidth: 3 });
-  const headShape2 = generator.line(x2, y2, hx2, hy2, { seed: arrowSeed + 2, roughness: 1.2, stroke: color, strokeWidth: 3 });
+  const headShape1 = generator.line(x2, y2, hx1, hy1, { seed: arrowSeed + 1, roughness: 1.2, stroke: color, strokeWidth: 3.5 });
+  const headShape2 = generator.line(x2, y2, hx2, hy2, { seed: arrowSeed + 2, roughness: 1.2, stroke: color, strokeWidth: 3.5 });
 
   const allPaths = [
     ...generator.toPaths(lineShape),
@@ -293,15 +293,15 @@ export function RoughArrow({
       <AnimatedRoughPath
         pathData={allPaths}
         strokeColor={color}
-        strokeWidth={3}
+        strokeWidth={3.5}
         startFrame={startFrame}
         duration={duration}
       />
 
       {/* Floating animated pencil tip */}
       {showPen && (
-        <foreignObject x={penX - 8} y={penY - 24} width={36} height={36}>
-          <div style={{ fontSize: "20px", transform: "rotate(-40deg)" }}>
+        <foreignObject x={penX - 10} y={penY - 30} width={44} height={44}>
+          <div style={{ fontSize: "26px", transform: "rotate(-40deg)" }}>
             ✏️
           </div>
         </foreignObject>
@@ -310,10 +310,10 @@ export function RoughArrow({
       {/* Handwritten sticky label on arrow */}
       {label && (
         <foreignObject
-          x={mx - 110}
-          y={my - 18}
-          width={220}
-          height={40}
+          x={mx - 150}
+          y={my - 24}
+          width={300}
+          height={50}
           style={{ pointerEvents: "none" }}
         >
           <div
@@ -327,22 +327,20 @@ export function RoughArrow({
             <div
               style={{
                 background: "#181822",
-                border: `1.5px dashed ${color}`,
-                borderRadius: "8px",
-                padding: "2px 10px",
-                fontSize: "14px",
-                fontWeight: 700,
+                border: `2px dashed ${color}`,
+                borderRadius: "10px",
+                padding: "4px 14px",
+                fontSize: "19px",
+                fontWeight: 800,
                 color: "#ffffff",
                 fontFamily: caveatFont.fontFamily,
                 whiteSpace: "nowrap",
-                boxShadow: "0 2px 10px rgba(0, 0, 0, 0.7)"
+                boxShadow: "0 4px 14px rgba(0, 0, 0, 0.85)"
               }}
             >
               {label}
             </div>
           </div>
-        </foreignObject>
-      )}
     </g>
   );
 }

@@ -6,8 +6,8 @@ import { sketchFont, caveatFont, monoFont } from "./fonts.js";
 export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidth = false }) {
   const frame = useCurrentFrame();
 
-  const width = isVertical ? 980 : fullWidth ? 1360 : 900;
-  const height = isVertical ? 980 : fullWidth ? 540 : 400;
+  const width = isVertical ? 1000 : fullWidth ? 1440 : 940;
+  const height = isVertical ? 1160 : fullWidth ? 620 : 440;
   const cx = width / 2;
   const cy = height / 2;
 
@@ -36,18 +36,18 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
   // Adaptive chalkboard layout positioning
   if (isVertical) {
     if (hubNode && publisher) {
-      positions.set(publisher.id, { x: cx, y: 130 });
-      positions.set(hubNode.id, { x: cx, y: 480 });
+      positions.set(publisher.id, { x: cx, y: 170 });
+      positions.set(hubNode.id, { x: cx, y: 580 });
       const pCount = peripherals.length;
       peripherals.forEach((sub, i) => {
         let sx = cx;
-        const sy = 850;
+        const sy = 990;
         if (pCount === 1) sx = cx;
-        else if (pCount === 2) sx = i === 0 ? cx - 240 : cx + 240;
-        else if (pCount === 3) sx = i === 0 ? cx - 280 : i === 1 ? cx : cx + 280;
+        else if (pCount === 2) sx = i === 0 ? cx - 260 : cx + 260;
+        else if (pCount === 3) sx = i === 0 ? cx - 320 : i === 1 ? cx : cx + 320;
         else {
-          const spacing = (width - 200) / Math.max(1, pCount - 1);
-          sx = 100 + i * spacing;
+          const spacing = (width - 240) / Math.max(1, pCount - 1);
+          sx = 120 + i * spacing;
         }
         positions.set(sub.id, { x: sx, y: sy });
       });
@@ -56,14 +56,14 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
         nodes.forEach((node, i) => {
           let y = cy;
           if (total === 1) y = cy;
-          else if (total === 2) y = i === 0 ? 200 : 760;
-          else if (total === 3) y = i === 0 ? 170 : i === 1 ? 480 : 800;
-          else if (total === 4) y = 140 + i * 220;
+          else if (total === 2) y = i === 0 ? 260 : 880;
+          else if (total === 3) y = i === 0 ? 200 : i === 1 ? 580 : 960;
+          else if (total === 4) y = 160 + i * 270;
           positions.set(node.id, { x: cx, y });
         });
       } else {
-        const rx = 340;
-        const ry = 300;
+        const rx = 360;
+        const ry = 340;
         nodes.forEach((node, i) => {
           const angle = (i * 2 * Math.PI) / total - Math.PI / 2;
           const x = cx + rx * Math.cos(angle);
@@ -74,32 +74,32 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
     }
   } else {
     if (hubNode && publisher) {
-      positions.set(publisher.id, { x: fullWidth ? 200 : 150, y: cy });
+      positions.set(publisher.id, { x: fullWidth ? 220 : 160, y: cy });
       positions.set(hubNode.id, { x: cx, y: cy });
-      const rightX = width - (fullWidth ? 200 : 150);
+      const rightX = width - (fullWidth ? 220 : 160);
       const pCount = peripherals.length;
       peripherals.forEach((sub, i) => {
         let sy = cy;
         if (pCount === 1) sy = cy;
-        else if (pCount === 2) sy = i === 0 ? cy - 110 : cy + 110;
-        else if (pCount === 3) sy = i === 0 ? cy - 130 : i === 1 ? cy : cy + 130;
+        else if (pCount === 2) sy = i === 0 ? cy - 120 : cy + 120;
+        else if (pCount === 3) sy = i === 0 ? cy - 140 : i === 1 ? cy : cy + 140;
         else {
-          const spread = height - 130;
-          sy = 65 + (i * spread) / (pCount - 1);
+          const spread = height - 140;
+          sy = 70 + (i * spread) / (pCount - 1);
         }
         positions.set(sub.id, { x: rightX, y: sy });
       });
     } else {
       if (total <= 4) {
-        const spacing = total > 1 ? (width - 320) / (total - 1) : 0;
+        const spacing = total > 1 ? (width - 340) / (total - 1) : 0;
         nodes.forEach((node, i) => {
-          const x = total === 1 ? cx : 160 + i * spacing;
+          const x = total === 1 ? cx : 170 + i * spacing;
           const y = cy;
           positions.set(node.id, { x, y });
         });
       } else {
-        const rx = fullWidth ? 440 : 290;
-        const ry = fullWidth ? 190 : 130;
+        const rx = fullWidth ? 460 : 300;
+        const ry = fullWidth ? 200 : 140;
         nodes.forEach((node, i) => {
           const angle = (i * 2 * Math.PI) / total - Math.PI / 2;
           const x = cx + rx * Math.cos(angle);
@@ -127,13 +127,13 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
   return (
     <div
       style={{
-        flex: fullWidth ? "1 1 100%" : isVertical ? "0 0 54%" : "0 0 58%",
+        flex: fullWidth ? "1 1 100%" : isVertical ? "0 0 58%" : "0 0 58%",
         width: fullWidth ? "100%" : "auto",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        padding: isVertical ? "16px 16px 230px 16px" : "18px 36px 120px 36px",
+        padding: isVertical ? "20px 20px 170px 20px" : "18px 36px 120px 36px",
         background: "transparent",
         position: "relative",
         zIndex: 2,
@@ -159,10 +159,10 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
       >
         {/* Sketch Whiteboard Title Badge */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ fontSize: "16px" }}>✎</span>
+          <span style={{ fontSize: isVertical ? "22px" : "18px" }}>✎</span>
           <div
             style={{
-              fontSize: "17px",
+              fontSize: isVertical ? "22px" : "18px",
               fontWeight: 700,
               color: "#fbbf24",
               letterSpacing: "0.5px",
@@ -207,7 +207,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                 const ny = dx / len;
                 const offsetDist = hasOpposite ? 30 : 0;
 
-                const pad = isVertical ? 56 : 50;
+                const pad = isVertical ? 72 : 54;
                 const startX = p1.x + (dx / len) * pad + nx * offsetDist;
                 const startY = p1.y + (dy / len) * pad + ny * offsetDist;
                 const endX = p2.x - (dx / len) * pad + nx * offsetDist;
@@ -246,8 +246,8 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                     subLabel={node.subLabel}
                     x={pos.x}
                     y={pos.y}
-                    width={isHub ? (isVertical ? 250 : 230) : isVertical ? 220 : 190}
-                    height={isHub ? 96 : 84}
+                    width={isHub ? (isVertical ? 360 : 280) : isVertical ? 320 : 250}
+                    height={isHub ? (isVertical ? 130 : 108) : isVertical ? 118 : 96}
                     status={node.status}
                     startFrame={startFrame}
                     isHub={isHub}
@@ -260,26 +260,26 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
 
         {/* 2. Array / Elements Sketch View */}
         {hasElements && (
-          <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", justifyContent: "center", padding: "20px 10px" }}>
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center", padding: "24px 10px" }}>
             {elements.map((el, idx) => {
               const isHigh = !!el.highlight;
               const bounce = Math.sin(frame * 0.25) * 4;
               return (
                 <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                  <div style={{ fontSize: "13px", color: "#94a3b8", fontFamily: monoFont.fontFamily, marginBottom: "4px" }}>
+                  <div style={{ fontSize: isVertical ? "16px" : "14px", color: "#94a3b8", fontFamily: monoFont.fontFamily, marginBottom: "5px" }}>
                     [{idx}]
                   </div>
                   <div
                     style={{
-                      width: "66px",
-                      height: "66px",
-                      border: isHigh ? "2.5px solid #ff7700" : "2px dashed rgba(255, 255, 255, 0.4)",
-                      borderRadius: "10px",
-                      background: isHigh ? "rgba(255, 119, 0, 0.2)" : "#181824",
+                      width: isVertical ? "86px" : "72px",
+                      height: isVertical ? "86px" : "72px",
+                      border: isHigh ? "3px solid #ff7700" : "2px dashed rgba(255, 255, 255, 0.4)",
+                      borderRadius: "12px",
+                      background: isHigh ? "rgba(255, 119, 0, 0.25)" : "#181824",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "26px",
+                      fontSize: isVertical ? "34px" : "28px",
                       fontWeight: 700,
                       color: isHigh ? "#ffedd5" : "#ffffff",
                       fontFamily: sketchFont.fontFamily,
@@ -289,9 +289,9 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                     {el.value}
                   </div>
                   {el.pointerLabel && (
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "6px", transform: `translateY(${bounce}px)` }}>
-                      <span style={{ color: "#ff7700", fontSize: "14px" }}>▲</span>
-                      <span style={{ fontSize: "13px", fontWeight: 700, color: "#ffaa55", fontFamily: caveatFont.fontFamily }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "8px", transform: `translateY(${bounce}px)` }}>
+                      <span style={{ color: "#ff7700", fontSize: isVertical ? "16px" : "14px" }}>▲</span>
+                      <span style={{ fontSize: isVertical ? "17px" : "14px", fontWeight: 700, color: "#ffaa55", fontFamily: caveatFont.fontFamily }}>
                         {el.pointerLabel}
                       </span>
                     </div>
@@ -304,7 +304,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
 
         {/* 3. Entries / Key-Value / Table Sketch View */}
         {hasEntries && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", justifyContent: "center", padding: "14px 10px", width: "100%" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "14px", justifyContent: "center", padding: "18px 12px", width: "100%" }}>
             {entries.map((entry, idx) => {
               const isHigh = !!entry.highlight;
               return (
@@ -313,13 +313,13 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "10px",
-                    padding: "8px 16px",
+                    gap: "12px",
+                    padding: isVertical ? "12px 24px" : "10px 18px",
                     background: isHigh ? "rgba(255, 119, 0, 0.25)" : "#181824",
-                    border: isHigh ? "2px solid #ff7700" : "1.5px dashed rgba(255, 255, 255, 0.3)",
-                    borderRadius: "10px",
+                    border: isHigh ? "2.5px solid #ff7700" : "1.5px dashed rgba(255, 255, 255, 0.3)",
+                    borderRadius: "12px",
                     fontFamily: sketchFont.fontFamily,
-                    fontSize: "18px",
+                    fontSize: isVertical ? "24px" : "20px",
                     color: "#ffffff"
                   }}
                 >

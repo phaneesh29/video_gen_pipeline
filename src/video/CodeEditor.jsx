@@ -125,12 +125,12 @@ export function CodeEditor({ codeLines, activeLine, codeTitle, codeLanguage, isV
 
               <div
                 style={{
-                  fontSize: isVertical ? "14px" : "16px",
+                  fontSize: isVertical ? "16px" : "17px",
                   color: isActive ? "#ffffff" : "#c9d1d9",
                   fontWeight: isActive ? 700 : 500,
                   whiteSpace: "pre",
                   textShadow: isActive ? "0 0 10px rgba(255, 107, 0, 0.45)" : "none",
-                  lineHeight: 1.45
+                  lineHeight: 1.5
                 }}
               >
                 {formatSyntaxLine(line)}

@@ -68,9 +68,9 @@ export function Header({
               gap: "8px",
               background: "linear-gradient(135deg, rgba(255, 119, 0, 0.9) 0%, rgba(255, 60, 0, 0.9) 100%)",
               color: "#ffffff",
-              fontSize: isVertical ? "12px" : "13px",
+              fontSize: isVertical ? "14px" : "13px",
               fontWeight: 800,
-              padding: "6px 14px",
+              padding: "7px 16px",
               borderRadius: "8px",
               textTransform: "uppercase",
               letterSpacing: "1px",
@@ -81,8 +81,8 @@ export function Header({
           >
             <span
               style={{
-                width: "7px",
-                height: "7px",
+                width: "8px",
+                height: "8px",
                 borderRadius: "50%",
                 background: "#ffffff",
                 boxShadow: "0 0 6px #ffffff"
@@ -98,8 +98,8 @@ export function Header({
                 background: "rgba(255, 107, 0, 0.12)",
                 border: "1px solid rgba(255, 107, 0, 0.35)",
                 borderRadius: "6px",
-                padding: "4px 10px",
-                fontSize: isVertical ? "11px" : "12px",
+                padding: "5px 12px",
+                fontSize: isVertical ? "13px" : "12px",
                 fontWeight: 800,
                 color: "#ff9d42",
                 letterSpacing: "0.8px",
@@ -113,12 +113,12 @@ export function Header({
           <h1
             style={{
               margin: 0,
-              fontSize: isVertical ? "25px" : "28px",
+              fontSize: isVertical ? "29px" : "30px",
               fontWeight: 800,
               letterSpacing: "-0.5px",
               color: "#ffffff",
               textShadow: "0 2px 12px rgba(0, 0, 0, 0.6)",
-              lineHeight: 1.2
+              lineHeight: 1.25
             }}
           >
             {title}
@@ -126,28 +126,28 @@ export function Header({
         </div>
 
         {/* Dynamic spec metric badges */}
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
           {badgeList.map((b, idx) => (
             <div
               key={idx}
               style={{
                 background: "#0f0f15",
-                border: "1px solid rgba(255, 107, 0, 0.3)",
+                border: "1px solid rgba(255, 107, 0, 0.35)",
                 boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5), 0 0 12px rgba(255, 107, 0, 0.12)",
-                padding: isVertical ? "5px 12px" : "6px 16px",
+                padding: isVertical ? "7px 16px" : "6px 16px",
                 borderRadius: "8px",
-                fontSize: isVertical ? "12px" : "13px",
+                fontSize: isVertical ? "14px" : "13px",
                 fontWeight: 700,
                 color: "#ff9d42",
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "6px"
+                gap: "7px"
               }}
             >
-              <span style={{ color: "#8b949e", textTransform: "uppercase", fontSize: "11px", letterSpacing: "0.5px" }}>
+              <span style={{ color: "#8b949e", textTransform: "uppercase", fontSize: isVertical ? "12px" : "11px", letterSpacing: "0.5px" }}>
                 {b.label}:
               </span>
-              <span style={{ color: "#ffffff", fontWeight: 800 }}>{b.value}</span>
+              <span style={{ color: "#ffffff", fontWeight: 800, fontSize: isVertical ? "15px" : "13px" }}>{b.value}</span>
             </div>
           ))}
         </div>

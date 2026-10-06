@@ -1,17 +1,18 @@
 import React from "react";
 
-export function CodeEditor({ codeLines, activeLine, codeTitle, codeLanguage }) {
+export function CodeEditor({ codeLines, activeLine, codeTitle, codeLanguage, isVertical = false }) {
   const displayTitle = codeTitle || "spec.yaml";
   const displayLang = codeLanguage || "ARCHITECTURE";
 
   return (
     <div
       style={{
-        flex: "0 0 42%",
+        flex: isVertical ? "0 0 46%" : "0 0 42%",
         display: "flex",
         flexDirection: "column",
         background: "#08080b",
-        borderLeft: "1px solid rgba(255, 107, 0, 0.15)",
+        borderLeft: isVertical ? "none" : "1px solid rgba(255, 107, 0, 0.15)",
+        borderTop: isVertical ? "1px solid rgba(255, 107, 0, 0.15)" : "none",
         overflow: "hidden",
         fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace"
       }}
@@ -39,7 +40,7 @@ export function CodeEditor({ codeLines, activeLine, codeTitle, codeLanguage }) {
         </div>
       </div>
 
-      <div style={{ padding: "28px 0", display: "flex", flexDirection: "column", gap: "2px" }}>
+      <div style={{ padding: "20px 0", display: "flex", flexDirection: "column", gap: "2px", overflowY: "auto" }}>
         {codeLines.map((line, index) => {
           const lineNumber = index + 1;
           const isActive = lineNumber === activeLine;
@@ -50,7 +51,7 @@ export function CodeEditor({ codeLines, activeLine, codeTitle, codeLanguage }) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                padding: "6px 24px",
+                padding: "5px 24px",
                 background: isActive
                   ? "linear-gradient(90deg, rgba(255, 107, 0, 0.22) 0%, rgba(255, 107, 0, 0.04) 100%)"
                   : "transparent",
@@ -61,11 +62,11 @@ export function CodeEditor({ codeLines, activeLine, codeTitle, codeLanguage }) {
             >
               <div
                 style={{
-                  width: "42px",
-                  fontSize: "17px",
+                  width: "36px",
+                  fontSize: "15px",
                   color: isActive ? "#ff9d42" : "#4a4a58",
                   textAlign: "right",
-                  marginRight: "24px",
+                  marginRight: "20px",
                   userSelect: "none",
                   fontWeight: isActive ? 800 : 500
                 }}
@@ -75,12 +76,12 @@ export function CodeEditor({ codeLines, activeLine, codeTitle, codeLanguage }) {
 
               <div
                 style={{
-                  fontSize: "18px",
+                  fontSize: isVertical ? "15px" : "18px",
                   color: isActive ? "#ffffff" : "#abb2bf",
                   fontWeight: isActive ? 700 : 500,
                   whiteSpace: "pre",
                   textShadow: isActive ? "0 0 12px rgba(255, 107, 0, 0.5)" : "none",
-                  lineHeight: 1.5
+                  lineHeight: 1.4
                 }}
               >
                 {line}

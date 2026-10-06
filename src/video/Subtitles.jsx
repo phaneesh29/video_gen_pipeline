@@ -1,18 +1,18 @@
 import React from "react";
 
-export function Subtitles({ text }) {
+export function Subtitles({ text, isVertical }) {
   if (!text) return null;
 
   return (
     <div
       style={{
         position: "absolute",
-        bottom: "28px",
+        bottom: isVertical ? "160px" : "28px",
         left: "50%",
         transform: "translateX(-50%)",
-        width: "88%",
-        maxWidth: "1500px",
-        padding: "18px 36px",
+        width: isVertical ? "90%" : "88%",
+        maxWidth: isVertical ? "960px" : "1500px",
+        padding: isVertical ? "20px 28px" : "18px 36px",
         background: "rgba(8, 8, 12, 0.95)",
         border: "1.5px solid rgba(255, 107, 0, 0.35)",
         borderRadius: "14px",
@@ -22,7 +22,8 @@ export function Subtitles({ text }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: "16px"
+        gap: "14px",
+        zIndex: 50
       }}
     >
       <div
@@ -39,7 +40,7 @@ export function Subtitles({ text }) {
         style={{
           margin: 0,
           color: "#ffffff",
-          fontSize: "26px",
+          fontSize: isVertical ? "27px" : "26px",
           fontWeight: 700,
           lineHeight: 1.4,
           letterSpacing: "-0.3px",

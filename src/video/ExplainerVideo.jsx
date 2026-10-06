@@ -6,7 +6,9 @@ import { VisualCanvas } from "./VisualCanvas.jsx";
 import { Subtitles } from "./Subtitles.jsx";
 
 export function ExplainerVideo({ storyboard }) {
-  const { title, topic, category, badges, codeTitle, codeLanguage, codeLines, scenes } = storyboard;
+  const { title, topic, category, badges, codeTitle, codeLanguage, codeLines, scenes, aspectRatio } = storyboard;
+  const isVertical = aspectRatio === "9:16";
+  const hasCode = Array.isArray(codeLines) && codeLines.length > 0;
 
   return (
     <div
@@ -20,7 +22,7 @@ export function ExplainerVideo({ storyboard }) {
         overflow: "hidden"
       }}
     >
-      <Header title={title} category={category} topic={topic} badges={badges} />
+      <Header title={title} category={category} topic={topic} badges={badges} isVertical={isVertical} />
 
       <div style={{ flex: 1, position: "relative", width: "100%", overflow: "hidden" }}>
         <Series>
@@ -30,6 +32,7 @@ export function ExplainerVideo({ storyboard }) {
                 <div
                   style={{
                     display: "flex",
+                    flexDirection: isVertical ? "column" : "row",
                     width: "100%",
                     height: "100%",
                     position: "relative"
@@ -37,14 +40,19 @@ export function ExplainerVideo({ storyboard }) {
                 >
                   <VisualCanvas
                     structures={scene.visual.structures}
+                    fullWidth={!hasCode}
+                    isVertical={isVertical}
                   />
-                  <CodeEditor
-                    codeLines={codeLines || []}
-                    activeLine={scene.visual.activeLine}
-                    codeTitle={codeTitle}
-                    codeLanguage={codeLanguage}
-                  />
-                  <Subtitles text={scene.narration} />
+                  {hasCode ? (
+                    <CodeEditor
+                      codeLines={codeLines || []}
+                      activeLine={scene.visual.activeLine}
+                      codeTitle={codeTitle}
+                      codeLanguage={codeLanguage}
+                      isVertical={isVertical}
+                    />
+                  ) : null}
+                  <Subtitles text={scene.narration} isVertical={isVertical} />
                 </div>
               </Series.Sequence>
             );

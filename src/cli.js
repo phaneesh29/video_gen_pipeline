@@ -7,7 +7,15 @@ import { buildMasterAudio, muxVideoAndAudio } from "./ffmpegHelper.js";
 import { config } from "./config.js";
 
 async function main() {
-  const rawArg = process.argv.slice(2).join(" ").trim();
+  const args = process.argv.slice(2);
+  const isVerticalArg = args.some((a) =>
+    ["--vertical", "-v", "--9:16", "--shorts", "--reels"].includes(a.toLowerCase())
+  );
+  const cleanArgs = args.filter(
+    (a) => !["--vertical", "-v", "--9:16", "--shorts", "--reels"].includes(a.toLowerCase())
+  );
+  const rawArg = cleanArgs.join(" ").trim();
+
   let problemInput = "";
 
   if (rawArg && fs.existsSync(rawArg)) {
@@ -20,9 +28,13 @@ async function main() {
     problemInput = "Reverse a String";
   }
 
+  const isVerticalInput =
+    isVerticalArg ||
+    /9:16|vertical|shorts|reels/i.test(problemInput);
+
   console.log(`\n========================================`);
   console.log(`🎬 CS & System Design Explainer Pipeline`);
-  console.log(`Input Length: ${problemInput.length} chars`);
+  console.log(`Input Length: ${problemInput.length} chars | Target: ${isVerticalInput ? "9:16 Vertical" : "16:9 Landscape"}`);
   console.log(`========================================\n`);
 
   const tempDir = path.resolve("./temp");
@@ -32,9 +44,17 @@ async function main() {
 
   console.log(`[1/4] Generating Storyboard with Codestral...`);
   const storyboard = await generateStoryboard(problemInput);
+
+  if (isVerticalInput) {
+    storyboard.aspectRatio = "9:16";
+  }
+
+  const hasCode = Array.isArray(storyboard.codeLines) && storyboard.codeLines.length > 0;
+
   console.log(`      ✓ Storyboard created: "${storyboard.title}"`);
   console.log(`      ✓ Category: ${storyboard.category} | Topic: ${storyboard.topic}`);
-  console.log(`      ✓ Code: ${storyboard.codeTitle} (${storyboard.codeLanguage})`);
+  console.log(`      ✓ Format: ${storyboard.aspectRatio} (${storyboard.aspectRatio === "9:16" ? "Vertical Shorts/Reels" : "Landscape 16:9"})`);
+  console.log(`      ✓ Code: ${hasCode ? `${storyboard.codeTitle} (${storyboard.codeLanguage})` : "None (Full-Width Visual Canvas)"}`);
   console.log(`      ✓ Total Scenes: ${storyboard.scenes.length}`);
 
   const cleanSlug = (storyboard.title || "explainer_video")
@@ -43,7 +63,8 @@ async function main() {
     .replace(/^_+|_+$/g, "")
     .slice(0, 45);
 
-  const outputFilePath = path.resolve(config.OUTPUT_DIR, `${cleanSlug}.mp4`);
+  const suffix = storyboard.aspectRatio === "9:16" ? "_vertical" : "";
+  const outputFilePath = path.resolve(config.OUTPUT_DIR, `${cleanSlug}${suffix}.mp4`);
   const tempVideoPath = path.resolve(tempDir, `video_${cleanSlug}.mp4`);
   const masterAudioPath = path.resolve(tempDir, `audio_${cleanSlug}.m4a`);
 
@@ -52,7 +73,7 @@ async function main() {
   console.log(`      ✓ All scene audios synthesized`);
   console.log(`      ✓ Runtime: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s (${enrichedStoryboard.totalDurationInFrames} frames at 30fps)`);
 
-  console.log(`\n[3/4] Rendering 16:9 Video Canvas with Remotion...`);
+  console.log(`\n[3/4] Rendering ${storyboard.aspectRatio} Video Canvas with Remotion...`);
   await renderExplainerVideo(enrichedStoryboard, tempVideoPath);
 
   console.log(`\n[4/4] Stitching Audio & Muxing with FFmpeg...`);
@@ -68,6 +89,7 @@ async function main() {
   console.log(`🎉 Video Render Complete!`);
   console.log(`📁 File: ${outputFilePath}`);
   console.log(`⏱️ Duration: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s`);
+  console.log(`📐 Aspect: ${storyboard.aspectRatio}`);
   console.log(`========================================\n`);
 }
 

@@ -1,6 +1,6 @@
-WebRTC Selective Forwarding Unit (SFU) Star Architecture.
-Explain how SFU scales multi-party video conferencing (like Zoom, Google Meet, Discord):
-1. Mesh vs SFU: Why P2P mesh collapses due to N*(N-1) uplink saturation, and how SFU creates a scalable Star Topology.
-2. Central SFU Media Hub: Publisher client sends a single 1080p uplink stream directly to the central SFU server.
-3. Selective RTP Forwarding: Central SFU inspects packet headers and selectively forwards streams to downstream subscribers without expensive decoding or re-encoding.
-4. Simulcast Layer Switching: Broadcaster uploads spatial layers (1080p, 720p, 360p); SFU dynamically routes the best layer to each subscriber based on their network speed.
+WebRTC SFU Star Architecture.
+Format: 9:16 Vertical Shorts (No code needed, focus 100% on full-screen visual star topology diagram).
+1. Why P2P Mesh fails at N*(N-1) connections.
+2. The Central SFU Media Hub star layout.
+3. Single 1080p RTP uplink from the publisher to the SFU server.
+4. Selective downstream RTP forwarding to subscribers based on network bandwidth.

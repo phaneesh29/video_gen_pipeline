@@ -50,7 +50,7 @@ function resolveArchitectureComponent(s) {
   return ArchitectureRenderer;
 }
 
-export function VisualCanvas({ structures }) {
+export function VisualCanvas({ structures, fullWidth = false, isVertical = false }) {
   const visibleStructures = structures.filter((s) => {
     if (
       s.type === "system_flow" ||
@@ -80,12 +80,13 @@ export function VisualCanvas({ structures }) {
   return (
     <div
       style={{
-        flex: "0 0 58%",
+        flex: fullWidth ? "1 1 100%" : isVertical ? "0 0 50%" : "0 0 58%",
+        width: fullWidth ? "100%" : "auto",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        padding: "20px 40px 120px 40px",
+        padding: isVertical ? "30px 24px 220px 24px" : "20px 40px 120px 40px",
         background: "#060608",
         overflow: "hidden"
       }}
@@ -98,7 +99,7 @@ export function VisualCanvas({ structures }) {
           justifyContent: "center",
           gap: "14px",
           width: "100%",
-          maxWidth: "1000px"
+          maxWidth: fullWidth && !isVertical ? "1500px" : "1000px"
         }}
       >
         {visibleStructures.map((s, idx) => {

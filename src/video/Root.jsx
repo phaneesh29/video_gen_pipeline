@@ -13,8 +13,11 @@ export function Root() {
       height={1080}
       calculateMetadata={({ props }) => {
         const total = props?.storyboard?.totalDurationInFrames || 300;
+        const isVertical = props?.storyboard?.aspectRatio === "9:16";
         return {
-          durationInFrames: total
+          durationInFrames: total,
+          width: isVertical ? 1080 : 1920,
+          height: isVertical ? 1920 : 1080
         };
       }}
       defaultProps={{

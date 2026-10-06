@@ -84,8 +84,9 @@ export const storyboardSchema = z.object({
   category: z.string(),
   topic: z.string(),
   badges: z.array(badgeSchema),
-  codeTitle: z.string(),
-  codeLanguage: z.string(),
-  codeLines: z.array(z.string()),
+  aspectRatio: z.enum(["16:9", "9:16"]).default("16:9"),
+  codeTitle: z.string().default(""),
+  codeLanguage: z.string().default(""),
+  codeLines: z.array(z.string()).default([]),
   scenes: z.array(sceneSchema)
 });

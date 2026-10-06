@@ -14,5 +14,23 @@ export async function generateStoryboard(topic) {
     ]
   });
 
-  return response.choices[0].message.parsed;
+  const parsed = response.choices[0].message.parsed;
+
+  if (parsed && Array.isArray(parsed.pythonCode) && Array.isArray(parsed.scenes)) {
+    for (const scene of parsed.scenes) {
+      const snippet = scene.visual?.activeCodeSnippet?.trim().toLowerCase();
+      if (snippet && snippet !== "none" && snippet !== "" && snippet !== "null") {
+        const foundIdx = parsed.pythonCode.findIndex((line) =>
+          line.toLowerCase().includes(snippet)
+        );
+        if (foundIdx !== -1) {
+          scene.visual.activeLine = foundIdx + 1;
+        }
+      } else if (!snippet || snippet === "none" || snippet === "null") {
+        scene.visual.activeLine = 0;
+      }
+    }
+  }
+
+  return parsed;
 }

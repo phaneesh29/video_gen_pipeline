@@ -25,7 +25,7 @@ export async function buildMasterAudio(scenes, fps, outputPath) {
     inputs.push("-i", scene.audioPath);
 
     const targetDuration = scene.durationInFrames / fps;
-    filterParts.push(`[${i}:a]apad,atrim=0:${targetDuration.toFixed(4)}[a${i}]`);
+    filterParts.push(`[${i}:a]apad,atrim=0:${targetDuration.toFixed(4)},asetpts=PTS-STARTPTS[a${i}]`);
     concatInputs.push(`[a${i}]`);
   }
 

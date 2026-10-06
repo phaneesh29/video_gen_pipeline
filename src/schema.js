@@ -48,6 +48,7 @@ export const dataStructureSchema = z.object({
 
 export const sceneVisualSchema = z.object({
   activeLine: z.number(),
+  activeCodeSnippet: z.string(),
   actionDescription: z.string(),
   structures: z.array(dataStructureSchema)
 });

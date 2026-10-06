@@ -19,7 +19,7 @@ export function VisualCanvas({ structures }) {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        padding: "32px 48px",
+        padding: "20px 40px 120px 40px",
         background: "#060608",
         overflow: "hidden"
       }}
@@ -30,7 +30,7 @@ export function VisualCanvas({ structures }) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: "24px",
+          gap: "14px",
           width: "100%",
           maxWidth: "1000px"
         }}

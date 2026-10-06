@@ -7,11 +7,11 @@ export function ArrayRenderer({ name, elements, type }) {
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        gap: "16px",
+        gap: "12px",
         background: "rgba(14, 14, 18, 0.7)",
         border: "1px solid rgba(255, 107, 0, 0.18)",
-        borderRadius: "16px",
-        padding: "24px 30px",
+        borderRadius: "14px",
+        padding: "14px 22px",
         boxShadow: "0 8px 30px rgba(0, 0, 0, 0.6)",
         backdropFilter: "blur(10px)",
         alignItems: "center"
@@ -19,28 +19,28 @@ export function ArrayRenderer({ name, elements, type }) {
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
         <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ff6b00", boxShadow: "0 0 10px #ff6b00" }} />
-        <div style={{ fontSize: "16px", fontWeight: 800, color: "#ff9d42", textTransform: "uppercase", letterSpacing: "1px" }}>
-          {name} <span style={{ color: "#6e7681", fontSize: "14px", fontWeight: 600 }}>({type})</span>
+        <div style={{ fontSize: "15px", fontWeight: 800, color: "#ff9d42", textTransform: "uppercase", letterSpacing: "1px" }}>
+          {name} <span style={{ color: "#6e7681", fontSize: "13px", fontWeight: 600 }}>({type})</span>
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: "14px", alignItems: "flex-start", justifyContent: "center", marginTop: "10px", flexWrap: "wrap", width: "100%" }}>
+      <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", justifyContent: "center", marginTop: "6px", flexWrap: "wrap", width: "100%" }}>
         {elements.map((el, idx) => {
           return (
-            <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "70px" }}>
-              <div style={{ fontSize: "14px", color: "#8b949e", marginBottom: "8px", fontWeight: 700 }}>
+            <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "60px" }}>
+              <div style={{ fontSize: "13px", color: "#8b949e", marginBottom: "6px", fontWeight: 700 }}>
                 {idx}
               </div>
 
               <div
                 style={{
-                  width: "70px",
-                  height: "70px",
+                  width: "60px",
+                  height: "60px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  borderRadius: "12px",
-                  fontSize: "30px",
+                  borderRadius: "10px",
+                  fontSize: "26px",
                   fontWeight: 800,
                   color: "#ffffff",
                   background: el.highlight
@@ -66,17 +66,17 @@ export function ArrayRenderer({ name, elements, type }) {
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    marginTop: "10px"
+                    marginTop: "8px"
                   }}
                 >
-                  <div style={{ fontSize: "16px", color: "#ff8533", textShadow: "0 0 8px #ff6b00" }}>▲</div>
+                  <div style={{ fontSize: "14px", color: "#ff8533", textShadow: "0 0 8px #ff6b00" }}>▲</div>
                   <div
                     style={{
-                      fontSize: "13px",
+                      fontSize: "12px",
                       fontWeight: 800,
                       color: "#ffffff",
                       background: "linear-gradient(135deg, #ff7700, #ff4400)",
-                      padding: "4px 10px",
+                      padding: "3px 8px",
                       borderRadius: "6px",
                       boxShadow: "0 0 16px rgba(255, 107, 0, 0.5)",
                       marginTop: "2px",
@@ -87,7 +87,7 @@ export function ArrayRenderer({ name, elements, type }) {
                   </div>
                 </div>
               ) : (
-                <div style={{ height: "34px" }} />
+                <div style={{ height: "24px" }} />
               )}
             </div>
           );

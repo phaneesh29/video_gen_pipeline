@@ -11,21 +11,26 @@ Your goal is to make the viewer feel like they are watching a masterclass with d
    - Accurately account for edge cases (e.g. n=2 or n=3 having no solution for beautiful permutations).
    - If example inputs and outputs are provided in the problem description, your code and visual trace MUST match that exact example behavior.
 
-## 2. Dynamic Visual Choreography (Never Leave Canvas Empty)
-1. Canvas Populated in EVERY Scene:
-   - The visual canvas MUST NEVER be empty (structures must NEVER be an empty array).
-   - In the intro scene: display the input numbers or initial state.
-   - In step scenes: display the working structures (e.g. evens array, odds array, or the growing permutation).
-   - In the outro scene: display the final valid result.
-2. Active Line Tracking:
-   - For every scene, activeLine MUST accurately highlight the exact Python line executing.
-   - Move activeLine from line to line as execution progresses.
-3. Pointer & Cell Transitions:
+## 2. Real-Time Visual Synchronization (Zero Visual Lag)
+1. Scene 1 Visual Presence:
+   - From frame one of Scene 1, the visual canvas MUST display the initial problem data (e.g. the input array or numbers [1, 2, 3, 4, 5]).
+   - NEVER start with an empty canvas or empty structures.
+2. Synchronize Narration Directly With Visual State:
+   - Every scene's visual canvas MUST show the exact operation described in that scene's voiceover:
+     - If the voiceover mentions evens, show the evens array populated with numbers.
+     - If the voiceover mentions odds, show the odds array populated with numbers.
+     - If the voiceover describes combining or swapping, show the combined or swapped elements immediately.
+   - Never defer visual changes to later scenes.
+3. Active Line Tracking (CRITICAL):
+   - In activeCodeSnippet, provide a clear substring of the exact line of Python code executing in that scene (e.g. "return evens + odds", "odds = ", "evens = ", "if n == 2 or n == 3:", or "none" if no code line is active).
+   - In activeLine, provide the 1-based line number in pythonCode.
+   - Ensure the highlighted line directly corresponds to the narration statement being spoken!
+4. Pointer & Cell Transitions:
    - Illuminate active or newly placed elements with highlight: true so they glow in neon orange.
    - Advance pointerLabel ("left", "right", "i", "even", "odd") dynamically across indices.
-4. Concise Pacing:
+5. Concise Pacing:
    - Keep narration punchy: 1 to 2 crisp sentences (10 to 18 words) per scene.
-   - Deliver between 8 and 11 dynamic scenes so the screen updates frequently.
+   - Deliver between 7 and 9 dynamic scenes.
 
 ## 3. TTS-Native Scripting Rules (Audio Compatibility)
 1. Never Spell Out Words or Letter Sequences:
@@ -44,7 +49,7 @@ Your goal is to make the viewer feel like they are watching a masterclass with d
    - Never use parentheses, brackets, asterisks, or markdown in narration text.
 4. Conversational Flow & Natural Fillers:
    - Connect scenes smoothly using natural filler transitions:
-     "To get started,", "Notice the key pattern,", "First, we gather all evens,", "Next, we place our odds,", "Notice that adjacent difference is at least two,", "And there you have it,".
+     "To get started,", "Notice the key pattern,", "First, we gather all evens,", "Next, we place our odds,", "Now, we combine the evens and odds,", "And there you have it,".
 
 ## 4. Concrete Example Tracing
 - Always walk through the exact example from the problem description (e.g. n = 5 producing [4, 2, 5, 3, 1]).
@@ -70,12 +75,22 @@ ${problemInput}
 """
 
 Requirements:
-1. Extract a clean problem title for "title" and category for "topic".
-2. Write mathematically verified Python code that genuinely solves the problem and matches the example case.
-3. For "Beautiful Permutation" (CSES Permutations):
-   - Notice that adjacent elements cannot differ by 1.
-   - For n=2 and n=3: return "NO SOLUTION".
-   - For n=1: return [1].
-   - For n=5: construct [4, 2, 5, 3, 1] by placing evens in descending order (4, 2) followed by odds in descending order (5, 3, 1). Adjacent differences are 2, 3, 2, 2. No adjacent difference is 1!
-4. Animate the construction across 8 to 11 dynamic scenes: populate the visual canvas in EVERY scene with glowing elements, update activeLine in Python, and speak strictly TTS-compatible narration with natural conversational fillers.`;
+1. Extract a clean problem title for "title" (e.g. "Beautiful Permutation") and category for "topic" (e.g. "Constructive Algorithms").
+2. Write mathematically verified Python code that genuinely solves the problem and matches the example case:
+   Line 1: def beautiful_permutation(n: int) -> list[int] | str:
+   Line 2:     if n == 2 or n == 3:
+   Line 3:         return "NO SOLUTION"
+   Line 4:     evens = [i for i in range(n - 1 if n % 2 == 1 else n, 1, -2)]
+   Line 5:     odds = [i for i in range(n if n % 2 == 1 else n - 1, 0, -2)]
+   Line 6:     return evens + odds
+3. Code Line Synchronization:
+   - In activeCodeSnippet, specify the exact snippet executing in that scene:
+     - For edge case: activeCodeSnippet = "if n == 2 or n == 3:" (Line 2)
+     - For gathering evens: activeCodeSnippet = "evens = " (Line 4)
+     - For gathering odds: activeCodeSnippet = "odds = " (Line 5)
+     - For combining evens and odds: activeCodeSnippet = "return evens + odds" (Line 6)
+     - For intro/outro: activeCodeSnippet = "none"
+4. Visuals:
+   - Scene 1 MUST show the initial numbers [1, 2, 3, 4, 5] immediately on screen.
+   - Populated structures and highlighted cells throughout, with strictly TTS-compatible narration.`;
 }

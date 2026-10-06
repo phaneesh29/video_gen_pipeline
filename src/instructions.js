@@ -28,8 +28,9 @@ Analyze the topic and choose the optimal visual structure type:
   - Use for: WebRTC SFU (Selective Forwarding Unit), Central Media Servers, API Gateways, Star Networks, Centralized Message Brokers.
   - Central node: e.g. id: "sfu_hub", label: "SFU Media Server", subLabel: "Central Packet Router", status: "normal"
   - Peripheral nodes: e.g. id: "publisher", label: "Publisher Client", subLabel: "1080p Single Uplink"
-  - Downstream peers: e.g. id: "sub_1", label: "Subscriber A", id: "sub_2", label: "Subscriber B", id: "sub_3", label: "Subscriber C"
-  - Edges: connect publisher to hub ("RTP Uplink"), and hub to each subscriber ("Downlink 1080p", "Downlink 720p", "Downlink 360p").
+  - Downstream peers: e.g. id: "sub_1", label: "Subscriber A", id: "sub_2", label: "Subscriber B" (1 or 2 peers maximum, never clutter with 3+ clones!)
+  - Edges: connect publisher to hub ("RTP Uplink"), and hub to each subscriber ("Downlink 1080p", "Downlink 720p").
+  - CRITICAL CLARITY RULE: NEVER clutter diagrams with 5 or 6 duplicate nodes (NEVER create Viewer 1, 2, 3 AND CDN 1, 2, 3). Show at most 1 or 2 viewers (e.g. "Viewer A" and "Viewer B", or a single "Viewers" node). Total nodes in any diagram should be 2 to 4 maximum!
 - FULL MESH TOPOLOGY (type: "mesh_network"):
   - Use for: WebRTC Mesh P2P, Gossip protocols, Distributed decentralized networks where every peer connects to every peer.
   - Show all interconnected edges to demonstrate the N*(N-1) uplink saturation problem!

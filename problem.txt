@@ -1,7 +1,9 @@
-How WebSockets Work: Full-Duplex Bidirectional Communication.
-Format: 9:16 Vertical Shorts (Focus on full-screen visual architecture diagram).
-1. The HTTP Request-Response Polling bottleneck (half-duplex latency and heavy header overhead).
-2. The HTTP Upgrade Handshake: Client sends Upgrade request, Server replies with 101 Switching Protocols.
-3. Persistent Full-Duplex TCP Connection established.
-4. Bidirectional framing: instant Client ws.send() upstream and Server push downstream with minimal 2-byte frame overhead.
-5. Heartbeat Ping and Pong keep-alive frames ensuring real-time connection reliability.
+Live Video Streaming Architecture: Ingestion, Multi-CDN Distribution, and Latency Bottlenecks.
+Format: 9:16 Vertical Shorts (Full-screen visual architecture diagram).
+Architecture Style: Clean, minimal diagram with 3 to 4 distinct key components (Broadcaster, Media Server, CDN Edge, and 1 or 2 Viewers). Never generate duplicate clone boxes!
+
+1. Ingestion: Broadcaster pushes raw video feed to the Origin Media Server using RTMP, SRT, or WebRTC.
+2. Transcoding: Media Server transcodes raw streams into Multi-Bitrate ABR ladders (1080p, 720p, 360p) and packages chunks into HLS or DASH.
+3. Edge Distribution: CDN Edge Servers cache video segments at edge points of presence, serving downstream viewers worldwide without overloading origin.
+4. Scale vs Mesh: Why HTTP chunk caching allows broadcast scale to millions of viewers, unlike peer-to-peer WebRTC meshes.
+5. Latency Issues: Chunk duration buffers cause 15 to 30 second latency in standard HLS; Low-Latency HLS drops it to 2 to 4 seconds, trading off caching complexity.

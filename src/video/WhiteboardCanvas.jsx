@@ -17,44 +17,47 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
   const cx = width / 2;
   const cy = isVertical ? 900 : height / 2;
 
-  // Identify roles: sources (clients), hubs (servers/gateways), targets (subscribers/dbs)
+  // Identify roles: sources (clients), hubs (servers/gateways), intermediaries (cdns/caches), targets (viewers/dbs)
   const isSource = (n) => {
     const s = (n.id + " " + n.label).toLowerCase();
-    return s.includes("client") || s.includes("publisher") || s.includes("browser") || s.includes("sender") || s.includes("user") || s.includes("host");
+    return s.includes("client") || s.includes("publisher") || s.includes("browser") || s.includes("sender") || s.includes("user") || s.includes("host") || s.includes("broadcaster") || s.includes("ingest");
   };
   const isHub = (n) => {
     const s = (n.id + " " + n.label).toLowerCase();
-    return s.includes("server") || s.includes("hub") || s.includes("gateway") || s.includes("broker") || s.includes("router") || s.includes("proxy") || s.includes("switch");
+    return s.includes("server") || s.includes("hub") || s.includes("gateway") || s.includes("broker") || s.includes("origin") || s.includes("router");
+  };
+  const isIntermediary = (n) => {
+    const s = (n.id + " " + n.label).toLowerCase();
+    return s.includes("cdn") || s.includes("edge") || s.includes("cache") || s.includes("proxy") || s.includes("relay") || s.includes("worker") || s.includes("transcoder");
   };
   const isTarget = (n) => {
     const s = (n.id + " " + n.label).toLowerCase();
-    return s.includes("sub") || s.includes("db") || s.includes("database") || s.includes("consumer") || s.includes("viewer") || s.includes("sink") || s.includes("storage");
+    return s.includes("viewer") || s.includes("sub") || s.includes("consumer") || s.includes("db") || s.includes("database") || s.includes("sink") || s.includes("storage");
   };
 
   // Group into tiers
   const sources = [];
   const hubs = [];
+  const intermediaries = [];
   const targets = [];
   const others = [];
 
   nodes.forEach((n) => {
     if (isHub(n)) hubs.push(n);
     else if (isSource(n)) sources.push(n);
+    else if (isIntermediary(n)) intermediaries.push(n);
     else if (isTarget(n)) targets.push(n);
     else others.push(n);
   });
 
   let tiers = [];
 
-  if (sources.length > 0 || hubs.length > 0) {
+  if (sources.length > 0 || hubs.length > 0 || intermediaries.length > 0 || targets.length > 0) {
     if (sources.length > 0) tiers.push(sources);
     if (hubs.length > 0) tiers.push(hubs);
+    if (intermediaries.length > 0) tiers.push(intermediaries);
     if (targets.length > 0) tiers.push(targets);
-    if (others.length > 0) {
-      if (tiers.length === 1) tiers.push(others);
-      else if (tiers.length === 2 && targets.length === 0) tiers.push(others);
-      else tiers[tiers.length - 1].push(...others);
-    }
+    if (others.length > 0) tiers.push(others);
   } else {
     // Generic fallback by node count
     if (total === 1) tiers = [[nodes[0]]];
@@ -108,6 +111,7 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
 
       tierNodes.forEach((node, nodeIdx) => {
         let tx = cx;
+        let nodeY = ty;
         let cardW = 380;
         let cardH = 140;
 
@@ -116,21 +120,35 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
           cardW = isHub(node) ? 440 : 380;
           cardH = isHub(node) ? 155 : 140;
         } else if (count === 2) {
-          tx = nodeIdx === 0 ? cx - 260 : cx + 260;
+          tx = nodeIdx === 0 ? cx - 250 : cx + 250;
           cardW = 330;
           cardH = 130;
         } else if (count === 3) {
           tx = nodeIdx === 0 ? cx - 340 : nodeIdx === 1 ? cx : cx + 340;
-          cardW = 260;
+          cardW = 270;
           cardH = 120;
         } else {
-          const spread = width - 260;
-          tx = 130 + (nodeIdx * spread) / (count - 1);
-          cardW = Math.max(220, Math.min(280, (spread / count) - 20));
-          cardH = 115;
+          // Wrap into 2 sub-rows of at most 3 cards so they never collide or squash
+          const perRow = Math.ceil(count / 2);
+          const rowIdx = Math.floor(nodeIdx / perRow);
+          const colIdx = nodeIdx % perRow;
+          const itemsInThisRow = rowIdx === 0 ? perRow : count - perRow;
+          nodeY = ty + (rowIdx === 0 ? -65 : 65);
+
+          if (itemsInThisRow === 1) {
+            tx = cx;
+            cardW = 280;
+          } else if (itemsInThisRow === 2) {
+            tx = colIdx === 0 ? cx - 240 : cx + 240;
+            cardW = 280;
+          } else {
+            tx = colIdx === 0 ? cx - 330 : colIdx === 1 ? cx : cx + 330;
+            cardW = 260;
+          }
+          cardH = 105;
         }
 
-        positions.set(node.id, { x: tx, y: ty });
+        positions.set(node.id, { x: tx, y: nodeY });
         nodeSizes.set(node.id, { width: cardW, height: cardH, isHub: isHub(node) });
       });
     });
@@ -378,9 +396,17 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
               laneOffset = count > 1 ? startOffset + (dirIndex * spread) / (count - 1) : 0;
               labelT = 0.30 + (dirIndex / (count - 1 || 1)) * 0.40;
             } else {
-              // Single unidirectional arrow: centered along axis
+              // Single unidirectional arrow between this pair.
+              // If multiple arrows fan out from the same source node, stagger labels along rays so they never collide horizontally:
+              const fanOutEdges = edges.filter((e) => e.from === edge.from);
+              if (fanOutEdges.length > 1) {
+                const fanIndex = fanOutEdges.indexOf(edge);
+                const fanPattern = [0.36, 0.64, 0.48, 0.72, 0.30];
+                labelT = fanPattern[fanIndex % fanPattern.length];
+              } else {
+                labelT = 0.5;
+              }
               laneOffset = 0;
-              labelT = 0.5;
             }
 
             const pad1 = getBoundaryOffset(size1.width, size1.height, dx, dy);

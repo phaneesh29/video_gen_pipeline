@@ -1,6 +1,6 @@
-How JioCinema and Hotstar stream live cricket telecast to 32 million concurrent viewers.
-Explain the architecture end-to-end:
-1. Live camera feed ingestion and real-time chunked transcoding into Low-Latency HLS.
-2. Origin Shield caching to protect the central video store from thundering herd.
-3. Multi-CDN routing (Akamai, Cloudflare, Fastly) serving video segments directly from edge PoPs close to viewers.
-4. Client adaptive bitrate streaming switching seamlessly between 1080p, 720p, and 480p.
+WebRTC Selective Forwarding Unit (SFU) Star Architecture.
+Explain how SFU scales multi-party video conferencing (like Zoom, Google Meet, Discord):
+1. Mesh vs SFU: Why P2P mesh collapses due to N*(N-1) uplink saturation, and how SFU creates a scalable Star Topology.
+2. Central SFU Media Hub: Publisher client sends a single 1080p uplink stream directly to the central SFU server.
+3. Selective RTP Forwarding: Central SFU inspects packet headers and selectively forwards streams to downstream subscribers without expensive decoding or re-encoding.
+4. Simulcast Layer Switching: Broadcaster uploads spatial layers (1080p, 720p, 360p); SFU dynamically routes the best layer to each subscriber based on their network speed.

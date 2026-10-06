@@ -43,6 +43,9 @@ export const dataStructureSchema = z.object({
     "graph",
     "system_flow",
     "network",
+    "star_network",
+    "mesh_network",
+    "ring",
     "table",
     "variables"
   ]),

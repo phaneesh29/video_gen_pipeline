@@ -3,11 +3,63 @@ import { ArrayRenderer } from "./renderers/ArrayRenderer.jsx";
 import { TreeRenderer } from "./renderers/TreeRenderer.jsx";
 import { HashMapRenderer } from "./renderers/HashMapRenderer.jsx";
 import { ArchitectureRenderer } from "./renderers/ArchitectureRenderer.jsx";
+import { StarNetworkRenderer } from "./renderers/StarNetworkRenderer.jsx";
+import { MeshNetworkRenderer } from "./renderers/MeshNetworkRenderer.jsx";
+import { RingRenderer } from "./renderers/RingRenderer.jsx";
 import { TableRenderer } from "./renderers/TableRenderer.jsx";
+
+function resolveArchitectureComponent(s) {
+  if (s.type === "star_network") return StarNetworkRenderer;
+  if (s.type === "mesh_network") return MeshNetworkRenderer;
+  if (s.type === "ring") return RingRenderer;
+
+  const combinedText = (s.name + " " + (s.nodes || []).map((n) => n.id + " " + n.label).join(" ")).toLowerCase();
+
+  if (
+    combinedText.includes("star") ||
+    combinedText.includes("sfu") ||
+    combinedText.includes("hub") ||
+    combinedText.includes("selective forward")
+  ) {
+    return StarNetworkRenderer;
+  }
+
+  if (combinedText.includes("mesh") || combinedText.includes("p2p")) {
+    return MeshNetworkRenderer;
+  }
+
+  if (combinedText.includes("ring") || combinedText.includes("consistent hash")) {
+    return RingRenderer;
+  }
+
+  const nodes = s.nodes || [];
+  const edges = s.edges || [];
+  if (nodes.length >= 3) {
+    const degreeMap = new Map();
+    nodes.forEach((n) => degreeMap.set(n.id, 0));
+    edges.forEach((e) => {
+      degreeMap.set(e.from, (degreeMap.get(e.from) || 0) + 1);
+      degreeMap.set(e.to, (degreeMap.get(e.to) || 0) + 1);
+    });
+    const maxDegree = Math.max(...Array.from(degreeMap.values()), 0);
+    if (maxDegree >= 3 && maxDegree >= nodes.length - 2) {
+      return StarNetworkRenderer;
+    }
+  }
+
+  return ArchitectureRenderer;
+}
 
 export function VisualCanvas({ structures }) {
   const visibleStructures = structures.filter((s) => {
-    if (s.type === "system_flow" || s.type === "network" || s.type === "graph") {
+    if (
+      s.type === "system_flow" ||
+      s.type === "network" ||
+      s.type === "graph" ||
+      s.type === "star_network" ||
+      s.type === "mesh_network" ||
+      s.type === "ring"
+    ) {
       return s.nodes && s.nodes.length > 0;
     }
     if (s.type === "table") {
@@ -50,8 +102,16 @@ export function VisualCanvas({ structures }) {
         }}
       >
         {visibleStructures.map((s, idx) => {
-          if (s.type === "system_flow" || s.type === "network" || s.type === "graph") {
-            return <ArchitectureRenderer key={idx} name={s.name} nodes={s.nodes} edges={s.edges} />;
+          if (
+            s.type === "system_flow" ||
+            s.type === "network" ||
+            s.type === "graph" ||
+            s.type === "star_network" ||
+            s.type === "mesh_network" ||
+            s.type === "ring"
+          ) {
+            const Component = resolveArchitectureComponent(s);
+            return <Component key={idx} name={s.name} nodes={s.nodes} edges={s.edges} />;
           }
 
           if (s.type === "table") {

@@ -29,6 +29,8 @@ export async function renderExplainerVideo(enrichedStoryboard, outputFilePath) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
+  const totalFrames = composition.durationInFrames;
+
   await renderMedia({
     composition,
     serveUrl: bundleLocation,
@@ -37,8 +39,8 @@ export async function renderExplainerVideo(enrichedStoryboard, outputFilePath) {
     inputProps: {
       storyboard: enrichedStoryboard
     },
-    onProgress: ({ renderedFrames, totalFrames }) => {
-      const pct = Math.round((renderedFrames / totalFrames) * 100);
+    onProgress: ({ renderedFrames, progress }) => {
+      const pct = Math.round(progress * 100);
       process.stdout.write(`\r      Rendering frames: ${renderedFrames} / ${totalFrames} (${pct}%)`);
     }
   });

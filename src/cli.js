@@ -7,12 +7,22 @@ import { buildMasterAudio, muxVideoAndAudio } from "./ffmpegHelper.js";
 import { config } from "./config.js";
 
 async function main() {
-  const topicArg = process.argv.slice(2).join(" ").trim();
-  const topic = topicArg || "Reverse a String";
+  const rawArg = process.argv.slice(2).join(" ").trim();
+  let problemInput = "";
+
+  if (rawArg && fs.existsSync(rawArg)) {
+    problemInput = fs.readFileSync(rawArg, "utf-8").trim();
+  } else if (rawArg) {
+    problemInput = rawArg;
+  } else if (fs.existsSync("problem.txt")) {
+    problemInput = fs.readFileSync("problem.txt", "utf-8").trim();
+  } else {
+    problemInput = "Reverse a String";
+  }
 
   console.log(`\n========================================`);
   console.log(`🎬 DSA Explainer Video Generation Pipeline`);
-  console.log(`Topic: "${topic}"`);
+  console.log(`Input Length: ${problemInput.length} chars`);
   console.log(`========================================\n`);
 
   const tempDir = path.resolve("./temp");
@@ -20,17 +30,22 @@ async function main() {
     fs.mkdirSync(tempDir, { recursive: true });
   }
 
-  const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
-  const outputFilePath = path.resolve(config.OUTPUT_DIR, `${slug}.mp4`);
-  const tempVideoPath = path.resolve(tempDir, `video_${slug}.mp4`);
-  const masterAudioPath = path.resolve(tempDir, `audio_${slug}.m4a`);
-
   console.log(`[1/4] Generating Storyboard with Codestral...`);
-  const storyboard = await generateStoryboard(topic);
+  const storyboard = await generateStoryboard(problemInput);
   console.log(`      ✓ Storyboard created: "${storyboard.title}"`);
   console.log(`      ✓ Algorithm: ${storyboard.algorithm}`);
   console.log(`      ✓ Structures: ${storyboard.structuresUsed.join(", ")}`);
   console.log(`      ✓ Total Scenes: ${storyboard.scenes.length}`);
+
+  const cleanSlug = (storyboard.title || "explainer_video")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 45);
+
+  const outputFilePath = path.resolve(config.OUTPUT_DIR, `${cleanSlug}.mp4`);
+  const tempVideoPath = path.resolve(tempDir, `video_${cleanSlug}.mp4`);
+  const masterAudioPath = path.resolve(tempDir, `audio_${cleanSlug}.m4a`);
 
   console.log(`\n[2/4] Synthesizing Voiceovers with Mistral Voxtral...`);
   const enrichedStoryboard = await processStoryboardAudio(storyboard, tempDir);

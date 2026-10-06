@@ -22,32 +22,33 @@ export function ExplainerVideo({ storyboard }) {
     >
       <Header title={title} topic={topic} complexity={complexity} />
 
-      <Series>
-        {scenes.map((scene, idx) => {
-          return (
-            <Series.Sequence key={idx} durationInFrames={scene.durationInFrames}>
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  width: "100%",
-                  height: "calc(100% - 95px)",
-                  position: "relative"
-                }}
-              >
-                <VisualCanvas
-                  structures={scene.visual.structures}
-                />
-                <CodeEditor
-                  codeLines={pythonCode}
-                  activeLine={scene.visual.activeLine}
-                />
-                <Subtitles text={scene.narration} />
-              </div>
-            </Series.Sequence>
-          );
-        })}
-      </Series>
+      <div style={{ flex: 1, position: "relative", width: "100%", overflow: "hidden" }}>
+        <Series>
+          {scenes.map((scene, idx) => {
+            return (
+              <Series.Sequence key={idx} durationInFrames={scene.durationInFrames}>
+                <div
+                  style={{
+                    display: "flex",
+                    width: "100%",
+                    height: "100%",
+                    position: "relative"
+                  }}
+                >
+                  <VisualCanvas
+                    structures={scene.visual.structures}
+                  />
+                  <CodeEditor
+                    codeLines={pythonCode}
+                    activeLine={scene.visual.activeLine}
+                  />
+                  <Subtitles text={scene.narration} />
+                </div>
+              </Series.Sequence>
+            );
+          })}
+        </Series>
+      </div>
     </div>
   );
 }

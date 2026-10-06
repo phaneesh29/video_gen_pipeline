@@ -1,18 +1,14 @@
-# Dependencies
 node_modules/
 package-lock.json
 
-# Environment variables & API keys
 .env
 .env.local
 .env.*.local
 
-# Build & Bundler outputs
 dist/
 build/
 .remotion/
 
-# Video pipeline temporary files and generated outputs
 output/
 temp/
 tmp/
@@ -20,7 +16,6 @@ tmp/
 *.mp3
 *.wav
 
-# OS & Editor files
 .DS_Store
 Thumbs.db
 .vscode/

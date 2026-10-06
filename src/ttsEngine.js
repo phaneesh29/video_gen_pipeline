@@ -1,9 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { Mistral } from "@mistralai/mistralai";
+import { client } from "./client.js";
 import { config } from "./config.js";
-
-const client = new Mistral({ apiKey: config.MISTRAL_API_KEY });
 
 export const PAUL_EXPRESSIONS = {
   confident: "en_paul_confident",

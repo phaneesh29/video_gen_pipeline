@@ -1,11 +1,9 @@
 import fs from "fs";
 import path from "path";
-import dotenv from "dotenv";
 import { Mistral } from "@mistralai/mistralai";
+import { config } from "./config.js";
 
-dotenv.config();
-
-const client = new Mistral({ apiKey: process.env.MISTRAL_API_KEY });
+const client = new Mistral({ apiKey: config.MISTRAL_API_KEY });
 
 export const PAUL_EXPRESSIONS = {
   confident: "en_paul_confident",
@@ -22,7 +20,7 @@ export async function generateSpeech(text, outputPath, expression = "confident")
   const voiceId = PAUL_EXPRESSIONS[expression] || expression || PAUL_EXPRESSIONS.confident;
 
   const response = await client.audio.speech.complete({
-    model: "voxtral-mini-tts-2603",
+    model: config.VOXTRAL_MODEL,
     voiceId,
     input: text,
     responseFormat: "mp3"

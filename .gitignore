@@ -9,6 +9,9 @@ dist/
 build/
 .remotion/
 
+.agents/
+skills-lock.json
+
 public/
 output/
 temp/

@@ -4,7 +4,7 @@ import { parseFile } from "music-metadata";
 import { generateSpeech } from "./ttsEngine.js";
 import { config } from "./config.js";
 
-export async function processStoryboardAudio(storyboard, outputDir = path.join(config.TEMP_DIR, "audio")) {
+export async function processStoryboardAudio(storyboard, outputDir = path.resolve("./public/audio")) {
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
@@ -25,16 +25,13 @@ export async function processStoryboardAudio(storyboard, outputDir = path.join(c
     const holdBufferFrames = Math.round(config.VIDEO_FPS * 0.5);
     const durationInFrames = Math.ceil(durationInSeconds * config.VIDEO_FPS) + holdBufferFrames;
 
-    const audioBase64 = fs.readFileSync(audioPath).toString("base64");
-    const audioUrl = `data:audio/mp3;base64,${audioBase64}`;
-
     totalSeconds += durationInSeconds;
     totalFrames += durationInFrames;
 
     enrichedScenes.push({
       ...scene,
       audioPath,
-      audioUrl,
+      audioStaticPath: `audio/${fileName}`,
       durationInSeconds,
       durationInFrames
     });

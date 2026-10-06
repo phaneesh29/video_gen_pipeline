@@ -5,9 +5,15 @@ import { renderMedia, selectComposition } from "@remotion/renderer";
 
 export async function renderExplainerVideo(enrichedStoryboard, outputFilePath) {
   const entryPoint = path.resolve("./src/video/index.jsx");
+  const publicDir = path.resolve("./public");
+
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
+  }
 
   const bundleLocation = await bundle({
-    entryPoint
+    entryPoint,
+    publicDir
   });
 
   const composition = await selectComposition({

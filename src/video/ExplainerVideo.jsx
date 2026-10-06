@@ -26,7 +26,9 @@ export function ExplainerVideo({ storyboard }) {
         {scenes.map((scene, idx) => {
           return (
             <Series.Sequence key={idx} durationInFrames={scene.durationInFrames}>
-              {scene.audioUrl ? <Audio src={scene.audioUrl} /> : null}
+              {scene.audioStaticPath ? (
+                <Audio src={staticFile(scene.audioStaticPath)} />
+              ) : null}
 
               <div
                 style={{

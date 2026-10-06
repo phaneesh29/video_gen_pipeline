@@ -25,12 +25,16 @@ export async function processStoryboardAudio(storyboard, outputDir = path.join(c
     const holdBufferFrames = Math.round(config.VIDEO_FPS * 0.5);
     const durationInFrames = Math.ceil(durationInSeconds * config.VIDEO_FPS) + holdBufferFrames;
 
+    const audioBase64 = fs.readFileSync(audioPath).toString("base64");
+    const audioUrl = `data:audio/mp3;base64,${audioBase64}`;
+
     totalSeconds += durationInSeconds;
     totalFrames += durationInFrames;
 
     enrichedScenes.push({
       ...scene,
       audioPath,
+      audioUrl,
       durationInSeconds,
       durationInFrames
     });

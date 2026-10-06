@@ -16,11 +16,11 @@ export async function generateStoryboard(topic) {
 
   const parsed = response.choices[0].message.parsed;
 
-  if (parsed && Array.isArray(parsed.pythonCode) && Array.isArray(parsed.scenes)) {
+  if (parsed && Array.isArray(parsed.codeLines) && Array.isArray(parsed.scenes)) {
     for (const scene of parsed.scenes) {
       const snippet = scene.visual?.activeCodeSnippet?.trim().toLowerCase();
       if (snippet && snippet !== "none" && snippet !== "" && snippet !== "null") {
-        const foundIdx = parsed.pythonCode.findIndex((line) =>
+        const foundIdx = parsed.codeLines.findIndex((line) =>
           line.toLowerCase().includes(snippet)
         );
         if (foundIdx !== -1) {

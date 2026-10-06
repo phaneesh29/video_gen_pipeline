@@ -2,12 +2,26 @@ import React from "react";
 import { ArrayRenderer } from "./renderers/ArrayRenderer.jsx";
 import { TreeRenderer } from "./renderers/TreeRenderer.jsx";
 import { HashMapRenderer } from "./renderers/HashMapRenderer.jsx";
+import { ArchitectureRenderer } from "./renderers/ArchitectureRenderer.jsx";
+import { TableRenderer } from "./renderers/TableRenderer.jsx";
 
 export function VisualCanvas({ structures }) {
   const visibleStructures = structures.filter((s) => {
-    if (s.type === "tree") return s.nodes && s.nodes.length > 0;
-    if (s.type === "hashmap" || s.type === "variables") return s.entries && s.entries.length > 0;
-    if (s.elements && s.elements.length === 0 && s.type !== "stack" && s.type !== "queue") return false;
+    if (s.type === "system_flow" || s.type === "network" || s.type === "graph") {
+      return s.nodes && s.nodes.length > 0;
+    }
+    if (s.type === "table") {
+      return s.entries && s.entries.length > 0;
+    }
+    if (s.type === "tree") {
+      return s.nodes && s.nodes.length > 0;
+    }
+    if (s.type === "hashmap" || s.type === "variables") {
+      return s.entries && s.entries.length > 0;
+    }
+    if (s.elements && s.elements.length === 0 && s.type !== "stack" && s.type !== "queue") {
+      return false;
+    }
     return true;
   });
 
@@ -36,6 +50,14 @@ export function VisualCanvas({ structures }) {
         }}
       >
         {visibleStructures.map((s, idx) => {
+          if (s.type === "system_flow" || s.type === "network" || s.type === "graph") {
+            return <ArchitectureRenderer key={idx} name={s.name} nodes={s.nodes} edges={s.edges} />;
+          }
+
+          if (s.type === "table") {
+            return <TableRenderer key={idx} name={s.name} entries={s.entries} />;
+          }
+
           if (s.type === "tree") {
             return <TreeRenderer key={idx} name={s.name} nodes={s.nodes} edges={s.edges} />;
           }

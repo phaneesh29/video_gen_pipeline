@@ -1,15 +1,6 @@
-A permutation of integers 1, 2, ..., n is called beautiful if there are no adjacent elements whose difference is 1.
-Given n, construct a beautiful permutation if such a permutation exists.
-
-Input:
-The only input line contains an integer n.
-
-Output:
-Print a beautiful permutation of integers 1, 2, ..., n. If there are several solutions, you may print any of them. If there are no solutions, print "NO SOLUTION".
-
-Constraints:
-1 <= n <= 10^6
-
-Example:
-Input: 5
-Output: 4 2 5 3 1
+How JioCinema and Hotstar stream live cricket telecast to 32 million concurrent viewers.
+Explain the architecture end-to-end:
+1. Live camera feed ingestion and real-time chunked transcoding into Low-Latency HLS.
+2. Origin Shield caching to protect the central video store from thundering herd.
+3. Multi-CDN routing (Akamai, Cloudflare, Fastly) serving video segments directly from edge PoPs close to viewers.
+4. Client adaptive bitrate streaming switching seamlessly between 1080p, 720p, and 480p.

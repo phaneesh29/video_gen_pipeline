@@ -1,6 +1,9 @@
 import React from "react";
 
-export function CodeEditor({ codeLines, activeLine }) {
+export function CodeEditor({ codeLines, activeLine, codeTitle, codeLanguage }) {
+  const displayTitle = codeTitle || "spec.yaml";
+  const displayLang = codeLanguage || "ARCHITECTURE";
+
   return (
     <div
       style={{
@@ -28,11 +31,11 @@ export function CodeEditor({ codeLines, activeLine }) {
           <div style={{ width: "13px", height: "13px", borderRadius: "50%", background: "#ffbd2e" }} />
           <div style={{ width: "13px", height: "13px", borderRadius: "50%", background: "#27c93f" }} />
           <span style={{ marginLeft: "14px", fontSize: "14px", color: "#e6edf3", fontWeight: 700, letterSpacing: "0.5px" }}>
-            solution.py
+            {displayTitle}
           </span>
         </div>
         <div style={{ fontSize: "12px", color: "#ff8533", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
-          Python 3
+          {displayLang}
         </div>
       </div>
 

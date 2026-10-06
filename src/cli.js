@@ -21,7 +21,7 @@ async function main() {
   }
 
   console.log(`\n========================================`);
-  console.log(`🎬 DSA Explainer Video Generation Pipeline`);
+  console.log(`🎬 CS & System Design Explainer Pipeline`);
   console.log(`Input Length: ${problemInput.length} chars`);
   console.log(`========================================\n`);
 
@@ -33,8 +33,8 @@ async function main() {
   console.log(`[1/4] Generating Storyboard with Codestral...`);
   const storyboard = await generateStoryboard(problemInput);
   console.log(`      ✓ Storyboard created: "${storyboard.title}"`);
-  console.log(`      ✓ Algorithm: ${storyboard.algorithm}`);
-  console.log(`      ✓ Structures: ${storyboard.structuresUsed.join(", ")}`);
+  console.log(`      ✓ Category: ${storyboard.category} | Topic: ${storyboard.topic}`);
+  console.log(`      ✓ Code: ${storyboard.codeTitle} (${storyboard.codeLanguage})`);
   console.log(`      ✓ Total Scenes: ${storyboard.scenes.length}`);
 
   const cleanSlug = (storyboard.title || "explainer_video")

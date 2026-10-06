@@ -6,7 +6,7 @@ import { VisualCanvas } from "./VisualCanvas.jsx";
 import { Subtitles } from "./Subtitles.jsx";
 
 export function ExplainerVideo({ storyboard }) {
-  const { title, topic, complexity, pythonCode, scenes } = storyboard;
+  const { title, topic, category, badges, codeTitle, codeLanguage, codeLines, scenes } = storyboard;
 
   return (
     <div
@@ -20,7 +20,7 @@ export function ExplainerVideo({ storyboard }) {
         overflow: "hidden"
       }}
     >
-      <Header title={title} topic={topic} complexity={complexity} />
+      <Header title={title} category={category} topic={topic} badges={badges} />
 
       <div style={{ flex: 1, position: "relative", width: "100%", overflow: "hidden" }}>
         <Series>
@@ -39,8 +39,10 @@ export function ExplainerVideo({ storyboard }) {
                     structures={scene.visual.structures}
                   />
                   <CodeEditor
-                    codeLines={pythonCode}
+                    codeLines={codeLines || []}
                     activeLine={scene.visual.activeLine}
+                    codeTitle={codeTitle}
+                    codeLanguage={codeLanguage}
                   />
                   <Subtitles text={scene.narration} />
                 </div>

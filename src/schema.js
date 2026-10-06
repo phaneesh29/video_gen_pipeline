@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export const badgeSchema = z.object({
+  label: z.string(),
+  value: z.string()
+});
+
 export const elementItemSchema = z.object({
   value: z.string(),
   highlight: z.boolean(),
@@ -15,8 +20,7 @@ export const entryItemSchema = z.object({
 export const graphNodeSchema = z.object({
   id: z.string(),
   label: z.string(),
-  leftId: z.string().nullable(),
-  rightId: z.string().nullable(),
+  subLabel: z.string().nullable(),
   status: z.enum(["normal", "active", "visited", "highlighted"])
 });
 
@@ -37,7 +41,9 @@ export const dataStructureSchema = z.object({
     "queue",
     "tree",
     "graph",
-    "matrix",
+    "system_flow",
+    "network",
+    "table",
     "variables"
   ]),
   elements: z.array(elementItemSchema),
@@ -72,13 +78,11 @@ export const sceneSchema = z.object({
 
 export const storyboardSchema = z.object({
   title: z.string(),
+  category: z.string(),
   topic: z.string(),
-  algorithm: z.string(),
-  complexity: z.object({
-    time: z.string(),
-    space: z.string()
-  }),
-  structuresUsed: z.array(z.string()),
-  pythonCode: z.array(z.string()),
+  badges: z.array(badgeSchema),
+  codeTitle: z.string(),
+  codeLanguage: z.string(),
+  codeLines: z.array(z.string()),
   scenes: z.array(sceneSchema)
 });

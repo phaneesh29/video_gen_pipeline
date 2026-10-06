@@ -14,6 +14,11 @@ async function main() {
   console.log(`Topic: "${topic}"`);
   console.log(`========================================\n`);
 
+  const publicAudioDir = path.resolve("./public/audio");
+  if (fs.existsSync(publicAudioDir)) {
+    fs.rmSync(publicAudioDir, { recursive: true, force: true });
+  }
+
   const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
   const outputFilePath = path.resolve(config.OUTPUT_DIR, `${slug}.mp4`);
 
@@ -31,6 +36,10 @@ async function main() {
 
   console.log(`\n[3/3] Rendering 16:9 Video Canvas with Remotion...`);
   await renderExplainerVideo(enrichedStoryboard, outputFilePath);
+
+  if (fs.existsSync(publicAudioDir)) {
+    fs.rmSync(publicAudioDir, { recursive: true, force: true });
+  }
 
   console.log(`\n========================================`);
   console.log(`🎉 Video Render Complete!`);

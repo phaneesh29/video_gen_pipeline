@@ -13,8 +13,7 @@ const envSchema = z.object({
   VIDEO_FPS: z.coerce.number().default(30),
   VIDEO_WIDTH: z.coerce.number().default(1920),
   VIDEO_HEIGHT: z.coerce.number().default(1080),
-  OUTPUT_DIR: z.string().default("./output"),
-  TEMP_DIR: z.string().default("./temp")
+  OUTPUT_DIR: z.string().default("./output")
 });
 
 const parsed = envSchema.safeParse(process.env);

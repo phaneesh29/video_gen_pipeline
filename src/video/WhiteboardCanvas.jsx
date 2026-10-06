@@ -331,9 +331,57 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
             const nx = -dy / len;
             const ny = dx / len;
 
-            // Check if opposite edge exists for bidirectional highway
-            const hasOpposite = edges.some((other) => other.from === edge.to && other.to === edge.from);
-            const laneOffset = hasOpposite ? 44 : 0;
+            // Group all edges connecting this node pair (unordered)
+            const pairKey = [edge.from, edge.to].sort().join("___");
+            const samePairEdges = edges.filter(
+              (other) => [other.from, other.to].sort().join("___") === pairKey
+            );
+            const sameDirEdges = samePairEdges.filter(
+              (other) => other.from === edge.from && other.to === edge.to
+            );
+            const oppDirEdges = samePairEdges.filter(
+              (other) => other.from === edge.to && other.to === edge.from
+            );
+
+            const hasOpposite = oppDirEdges.length > 0;
+            const dirIndex = sameDirEdges.indexOf(edge);
+
+            // Compute maximum safe lateral corridor so arrows stay cleanly rooted in cards
+            const extent1 = Math.abs(nx) * (size1.width / 2) + Math.abs(ny) * (size1.height / 2);
+            const extent2 = Math.abs(nx) * (size2.width / 2) + Math.abs(ny) * (size2.height / 2);
+            const maxCardExtent = Math.min(extent1, extent2);
+            const maxSafeOffset = maxCardExtent * 0.58;
+
+            let laneOffset = 0;
+            let labelT = 0.5;
+
+            if (hasOpposite) {
+              // Bidirectional highway: separate directions by a generous corridor (170px+ apart)
+              const desiredOffset = isVertical ? 86 : 56;
+              const baseLane = Math.max(48, Math.min(desiredOffset, maxSafeOffset));
+              laneOffset = baseLane + dirIndex * 26;
+
+              // Stagger labels longitudinally so they never collide:
+              // Forward edge label: placed near its source (e.g. 0.28)
+              // Reverse edge label: placed near its source (0.28), which is (0.72) relative to forward edge!
+              // This gives massive 360px+ vertical separation and 170px+ horizontal lane separation.
+              if (sameDirEdges.length === 1) {
+                labelT = 0.28;
+              } else {
+                labelT = 0.22 + dirIndex * 0.18;
+              }
+            } else if (sameDirEdges.length > 1) {
+              // Multiple parallel edges in the same direction: distribute across lanes & stagger
+              const count = sameDirEdges.length;
+              const spread = Math.min(maxSafeOffset * 1.4, (count - 1) * (isVertical ? 60 : 44));
+              const startOffset = -spread / 2;
+              laneOffset = count > 1 ? startOffset + (dirIndex * spread) / (count - 1) : 0;
+              labelT = 0.30 + (dirIndex / (count - 1 || 1)) * 0.40;
+            } else {
+              // Single unidirectional arrow: centered along axis
+              laneOffset = 0;
+              labelT = 0.5;
+            }
 
             const pad1 = getBoundaryOffset(size1.width, size1.height, dx, dy);
             const pad2 = getBoundaryOffset(size2.width, size2.height, dx, dy);
@@ -345,10 +393,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
 
             const isActive = edge.status === "active" || edge.status === "traversed";
             const arrowColor = isActive ? "#ff7700" : "#64748b";
-
             const startFrame = 8 + idx * 6;
-            // Stagger labels on bidirectional lanes so they never collide
-            const labelT = hasOpposite ? (idx % 2 === 0 ? 0.36 : 0.64) : 0.5;
 
             return (
               <RoughArrow

@@ -313,16 +313,23 @@ export function RoughArrow({
       )}
 
       {/* Handwritten sticky label on arrow */}
-      {label && (
+      {Boolean(
+        label &&
+          label.trim() !== "" &&
+          label.toLowerCase() !== "none" &&
+          label.toLowerCase() !== "null"
+      ) && (
         <foreignObject
-          x={mx - 170}
-          y={my - 28}
-          width={340}
-          height={56}
+          x={mx - 200}
+          y={my - 30}
+          width={400}
+          height={60}
           style={{ pointerEvents: "none" }}
         >
           <div
             style={{
+              width: "100%",
+              height: "100%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -331,7 +338,7 @@ export function RoughArrow({
           >
             <div
               style={{
-                background: "#181822",
+                background: "#161622",
                 border: `2px dashed ${color}`,
                 borderRadius: "12px",
                 padding: "6px 18px",
@@ -341,7 +348,7 @@ export function RoughArrow({
                 fontFamily: primaryFont.fontFamily,
                 whiteSpace: "nowrap",
                 letterSpacing: "0.2px",
-                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.9)"
+                boxShadow: "0 6px 20px rgba(0, 0, 0, 0.95)"
               }}
             >
               {label}

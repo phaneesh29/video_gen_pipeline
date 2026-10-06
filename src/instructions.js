@@ -33,7 +33,7 @@ Your goal is to direct clear, studio-grade technical explainer videos for any Co
 - Acronyms: Write spoken letter spacing for TTS clarity (e.g. "S F U", "H T T P", "T C P", "C D N", "D B M S", "O of N", "O of log N").
 - Pacing: 7 to 9 concise scenes. Each scene has 1 to 2 spoken sentences (12 to 24 words).
 - Punctuation: Clean spoken English only. Never use markdown, asterisks, brackets, parentheses, or code snippets in narration.
-- Voice expression palette: "confident", "excited", "cheerful", "happy".`;
+- Voice expression palette: "confident" (architecture & mechanisms), "excited" (solutions & breakthroughs), "cheerful" or "happy" (conclusions & takeaways), "frustrated" (bottlenecks & latency).`;
 
 export function getStoryPrompt(problemInput) {
   return `Direct a studio-grade animated explainer video for this Computer Science topic:

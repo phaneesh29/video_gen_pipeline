@@ -19,6 +19,7 @@ export async function processStoryboardAudio(storyboard, outputDir = path.resolv
     const audioPath = path.resolve(outputDir, fileName);
 
     await generateSpeech(scene.narration, audioPath, scene.expression);
+    console.log(`      🎙️ Scene ${i + 1} [${scene.expression}]: "${scene.narration.slice(0, 42)}..."`);
 
     const meta = await parseFile(audioPath, { duration: true });
     const durationInSeconds = meta.format.duration || 2;

@@ -207,7 +207,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                 const ny = dx / len;
                 const offsetDist = hasOpposite ? 30 : 0;
 
-                const pad = 48;
+                const pad = isVertical ? 56 : 50;
                 const startX = p1.x + (dx / len) * pad + nx * offsetDist;
                 const startY = p1.y + (dy / len) * pad + ny * offsetDist;
                 const endX = p2.x - (dx / len) * pad + nx * offsetDist;
@@ -246,8 +246,8 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                     subLabel={node.subLabel}
                     x={pos.x}
                     y={pos.y}
-                    width={isHub ? (isVertical ? 220 : 200) : isVertical ? 180 : 160}
-                    height={isHub ? 90 : 76}
+                    width={isHub ? (isVertical ? 250 : 230) : isVertical ? 220 : 190}
+                    height={isHub ? 96 : 84}
                     status={node.status}
                     startFrame={startFrame}
                     isHub={isHub}

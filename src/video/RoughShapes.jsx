@@ -88,47 +88,34 @@ export function RoughBoxNode({
   if (frame < startFrame) return null;
 
   const colorMap = {
-    normal: { stroke: "#e2e8f0", fill: "rgba(255, 255, 255, 0.12)", text: "#f8fafc", sub: "#cbd5e1" },
-    active: { stroke: "#ff7700", fill: "rgba(255, 119, 0, 0.25)", text: "#ffffff", sub: "#ffedd5" },
-    visited: { stroke: "#22c55e", fill: "rgba(34, 197, 94, 0.2)", text: "#86efac", sub: "#bbf7d0" },
-    highlighted: { stroke: "#fbbf24", fill: "rgba(251, 191, 36, 0.22)", text: "#fef08a", sub: "#fef9c3" }
+    normal: { stroke: "#cbd5e1", bg: "#161622", text: "#ffffff", sub: "#94a3b8" },
+    active: { stroke: "#ff7700", bg: "#251712", text: "#ffffff", sub: "#fed7aa" },
+    visited: { stroke: "#22c55e", bg: "#132318", text: "#ffffff", sub: "#bbf7d0" },
+    highlighted: { stroke: "#fbbf24", bg: "#252112", text: "#ffffff", sub: "#fef08a" }
   };
 
   const scheme = colorMap[status] || colorMap.normal;
   const strokeColor = isHub && status === "normal" ? "#38bdf8" : scheme.stroke;
-  const hachureFill = isHub && status === "normal" ? "rgba(56, 189, 248, 0.2)" : scheme.fill;
+  const solidBg = isHub && status === "normal" ? "#121d28" : scheme.bg;
 
   const left = x - width / 2;
   const top = y - height / 2;
   const nodeSeed = getSeed(id || label);
 
-  // 1. Solid blackboard backdrop so text is crystal clear (deterministic seed)
-  const solidBgShape = generator.rectangle(left, top, width, height, {
-    seed: nodeSeed,
-    roughness: 0.8,
-    fill: "#181822",
-    fillStyle: "solid",
-    stroke: "none"
-  });
-
-  // 2. Sketchy rough border + hachure shading (deterministic seed)
+  // Clean hand-drawn sketchy rough border - HOLLOW outline only (NO diagonal hachure shading)
   const rectShape = generator.rectangle(left, top, width, height, {
     seed: nodeSeed + 10,
-    roughness: isHub ? 1.8 : 1.4,
-    bowing: 1.2,
+    roughness: isHub ? 1.4 : 1.1,
+    bowing: 1.0,
     stroke: strokeColor,
-    strokeWidth: isHub ? 3.2 : 2.6,
-    fill: hachureFill,
-    fillStyle: "hachure",
-    hachureAngle: -45,
-    hachureGap: 10
+    strokeWidth: isHub ? 3.4 : 2.6,
+    fill: "none"
   });
 
-  const bgPaths = generator.toPaths(solidBgShape);
   const borderPaths = generator.toPaths(rectShape);
 
   // Handwritten text fade-in as box completes drawing
-  const textOpacity = interpolate(frame, [startFrame + 8, startFrame + 18], [0, 1], {
+  const textOpacity = interpolate(frame, [startFrame + 6, startFrame + 16], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp"
   });
@@ -137,22 +124,29 @@ export function RoughBoxNode({
 
   return (
     <g>
-      {/* Dark chalk card backing */}
-      {bgPaths.map((p, idx) => (
-        <path key={`bg-${idx}`} d={p.d} fill="#181824" opacity={textOpacity} stroke="none" />
-      ))}
+      {/* 1. Solid dark card backing for 100% text contrast and clean readability */}
+      <rect
+        x={left}
+        y={top}
+        width={width}
+        height={height}
+        rx={14}
+        fill={solidBg}
+        stroke={status === "active" ? "#ff7700" : "rgba(255, 255, 255, 0.08)"}
+        strokeWidth={status === "active" ? 2 : 1}
+        opacity={textOpacity}
+      />
 
-      {/* Hand-drawn sketchy borders & hachure shading */}
+      {/* 2. Hand-drawn sketchy hollow border (outline only, no scribble shading) */}
       <AnimatedRoughPath
         pathData={borderPaths}
         strokeColor={strokeColor}
-        strokeWidth={isHub ? 3.2 : 2.6}
+        strokeWidth={isHub ? 3.4 : 2.6}
         startFrame={startFrame}
         duration={18}
-        fillColor={hachureFill}
       />
 
-      {/* Hand-drawn active highlight loop */}
+      {/* 3. Hand-drawn active highlight loop */}
       {status === "active" && (
         <circle
           cx={x}
@@ -166,7 +160,7 @@ export function RoughBoxNode({
         />
       )}
 
-      {/* Handwritten text */}
+      {/* 4. Bold, crystal-clear readable text */}
       <foreignObject
         x={left}
         y={top}
@@ -183,7 +177,7 @@ export function RoughBoxNode({
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
-            padding: "8px 12px",
+            padding: "8px 14px",
             opacity: textOpacity,
             fontFamily: sketchFont.fontFamily,
             boxSizing: "border-box"
@@ -192,25 +186,26 @@ export function RoughBoxNode({
           {isHub && (
             <div
               style={{
-                fontSize: "12px",
-                fontWeight: 700,
+                fontSize: "11px",
+                fontWeight: 800,
                 color: "#38bdf8",
-                letterSpacing: "0.8px",
+                letterSpacing: "1px",
                 fontFamily: monoFont.fontFamily,
-                marginBottom: "3px"
+                marginBottom: "3px",
+                textTransform: "uppercase"
               }}
             >
-              ★ CENTRAL SFU HUB
+              ★ CENTRAL SERVER
             </div>
           )}
           <div
             style={{
-              fontSize: isHub ? "20px" : "19px",
-              fontWeight: 700,
+              fontSize: isHub ? "22px" : "20px",
+              fontWeight: 800,
               color: scheme.text,
-              lineHeight: 1.22,
+              lineHeight: 1.25,
               letterSpacing: "0.2px",
-              textShadow: "0 2px 8px rgba(0,0,0,0.8)"
+              textShadow: "0 2px 10px rgba(0,0,0,0.9)"
             }}
           >
             {label}
@@ -218,12 +213,12 @@ export function RoughBoxNode({
           {subLabel && (
             <div
               style={{
-                fontSize: "14px",
+                fontSize: "15px",
                 color: scheme.sub,
                 marginTop: "3px",
                 fontFamily: caveatFont.fontFamily,
-                fontWeight: 600,
-                letterSpacing: "0.2px"
+                fontWeight: 700,
+                letterSpacing: "0.3px"
               }}
             >
               {subLabel}

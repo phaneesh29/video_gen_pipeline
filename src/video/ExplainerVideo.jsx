@@ -15,7 +15,7 @@ export function ExplainerVideo({ storyboard }) {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: "#0d1117",
+        background: "#060608",
         position: "relative",
         overflow: "hidden"
       }}
@@ -35,7 +35,7 @@ export function ExplainerVideo({ storyboard }) {
                   flex: 1,
                   display: "flex",
                   width: "100%",
-                  height: "calc(100% - 85px)",
+                  height: "calc(100% - 95px)",
                   position: "relative"
                 }}
               >

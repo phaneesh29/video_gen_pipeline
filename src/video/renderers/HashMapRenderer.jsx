@@ -6,20 +6,25 @@ export function HashMapRenderer({ name, entries, type }) {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "8px",
-        background: "rgba(22, 27, 34, 0.6)",
-        border: "1px solid #30363d",
-        borderRadius: "12px",
-        padding: "16px 20px"
+        gap: "12px",
+        background: "rgba(14, 14, 18, 0.7)",
+        border: "1px solid rgba(255, 107, 0, 0.18)",
+        borderRadius: "16px",
+        padding: "20px 24px",
+        boxShadow: "0 8px 30px rgba(0, 0, 0, 0.6)",
+        backdropFilter: "blur(10px)"
       }}
     >
-      <div style={{ fontSize: "14px", fontWeight: 700, color: "#8b949e", textTransform: "uppercase" }}>
-        {name} ({type})
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ff6b00", boxShadow: "0 0 10px #ff6b00" }} />
+        <div style={{ fontSize: "16px", fontWeight: 800, color: "#ff9d42", textTransform: "uppercase", letterSpacing: "1px" }}>
+          {name} <span style={{ color: "#6e7681", fontSize: "14px", fontWeight: 600 }}>({type})</span>
+        </div>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "4px" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "4px" }}>
         {entries.length === 0 ? (
-          <div style={{ fontSize: "14px", color: "#6e7681", fontStyle: "italic" }}>
+          <div style={{ fontSize: "15px", color: "#6e7681", fontStyle: "italic" }}>
             {"{ empty }"}
           </div>
         ) : (
@@ -29,21 +34,21 @@ export function HashMapRenderer({ name, entries, type }) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "8px",
-                padding: "8px 14px",
-                borderRadius: "8px",
-                background: entry.highlight ? "rgba(56, 139, 253, 0.15)" : "#21262d",
-                border: entry.highlight ? "1px solid #58a6ff" : "1px solid #30363d",
-                boxShadow: entry.highlight ? "0 0 12px rgba(88, 166, 255, 0.3)" : "none",
-                fontSize: "15px",
-                fontWeight: 600,
-                color: "#f0f6fc",
+                gap: "10px",
+                padding: "10px 18px",
+                borderRadius: "10px",
+                background: entry.highlight ? "rgba(255, 107, 0, 0.2)" : "#13131a",
+                border: entry.highlight ? "1.5px solid #ff7700" : "1px solid rgba(255, 255, 255, 0.1)",
+                boxShadow: entry.highlight ? "0 0 20px rgba(255, 107, 0, 0.4)" : "0 4px 10px rgba(0,0,0,0.3)",
+                fontSize: "17px",
+                fontWeight: 700,
+                color: "#ffffff",
                 transition: "all 0.2s ease"
               }}
             >
-              <span style={{ color: "#79c0ff" }}>{entry.key}</span>
-              <span style={{ color: "#8b949e" }}>:</span>
-              <span style={{ color: "#a5d6ff" }}>{entry.value}</span>
+              <span style={{ color: "#ff9d42" }}>{entry.key}</span>
+              <span style={{ color: "#6e7681" }}>→</span>
+              <span style={{ color: "#ffffff" }}>{entry.value}</span>
             </div>
           ))
         )}

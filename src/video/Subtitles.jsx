@@ -7,29 +7,44 @@ export function Subtitles({ text }) {
     <div
       style={{
         position: "absolute",
-        bottom: "24px",
+        bottom: "28px",
         left: "50%",
         transform: "translateX(-50%)",
-        width: "85%",
-        maxWidth: "1400px",
-        padding: "16px 28px",
-        background: "rgba(13, 17, 23, 0.92)",
-        border: "1px solid #30363d",
-        borderRadius: "12px",
-        backdropFilter: "blur(12px)",
+        width: "88%",
+        maxWidth: "1500px",
+        padding: "18px 36px",
+        background: "rgba(8, 8, 12, 0.95)",
+        border: "1.5px solid rgba(255, 107, 0, 0.35)",
+        borderRadius: "14px",
+        backdropFilter: "blur(16px)",
         textAlign: "center",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.6)"
+        boxShadow: "0 10px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 107, 0, 0.15)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "16px"
       }}
     >
+      <div
+        style={{
+          width: "10px",
+          height: "10px",
+          borderRadius: "50%",
+          background: "#ff6b00",
+          boxShadow: "0 0 14px #ff6b00",
+          flexShrink: 0
+        }}
+      />
       <p
         style={{
           margin: 0,
-          color: "#f0f6fc",
-          fontSize: "22px",
-          fontWeight: 600,
+          color: "#ffffff",
+          fontSize: "26px",
+          fontWeight: 700,
           lineHeight: 1.4,
-          letterSpacing: "-0.2px",
-          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+          letterSpacing: "-0.3px",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          textShadow: "0 2px 10px rgba(0, 0, 0, 0.6)"
         }}
       >
         {text}

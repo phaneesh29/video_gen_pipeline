@@ -7,31 +7,36 @@ export function CodeEditor({ codeLines, activeLine }) {
         flex: "0 0 42%",
         display: "flex",
         flexDirection: "column",
-        background: "#0d1117",
-        borderLeft: "1px solid #30363d",
+        background: "#08080b",
+        borderLeft: "1px solid rgba(255, 107, 0, 0.15)",
         overflow: "hidden",
-        fontFamily: "'Fira Code', 'JetBrains Mono', 'Consolas', monospace"
+        fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace"
       }}
     >
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "8px",
-          padding: "14px 20px",
-          background: "#161b22",
-          borderBottom: "1px solid #30363d"
+          justifyContent: "space-between",
+          padding: "16px 24px",
+          background: "#0e0e13",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.06)"
         }}
       >
-        <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#ff5f56" }} />
-        <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#ffbd2e" }} />
-        <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#27c93f" }} />
-        <span style={{ marginLeft: "12px", fontSize: "13px", color: "#8b949e", fontWeight: 600 }}>
-          solution.py
-        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ width: "13px", height: "13px", borderRadius: "50%", background: "#ff5f56" }} />
+          <div style={{ width: "13px", height: "13px", borderRadius: "50%", background: "#ffbd2e" }} />
+          <div style={{ width: "13px", height: "13px", borderRadius: "50%", background: "#27c93f" }} />
+          <span style={{ marginLeft: "14px", fontSize: "14px", color: "#e6edf3", fontWeight: 700, letterSpacing: "0.5px" }}>
+            solution.py
+          </span>
+        </div>
+        <div style={{ fontSize: "12px", color: "#ff8533", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
+          Python 3
+        </div>
       </div>
 
-      <div style={{ padding: "24px 0", display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: "28px 0", display: "flex", flexDirection: "column", gap: "2px" }}>
         {codeLines.map((line, index) => {
           const lineNumber = index + 1;
           const isActive = lineNumber === activeLine;
@@ -42,21 +47,24 @@ export function CodeEditor({ codeLines, activeLine }) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                padding: "4px 20px",
-                background: isActive ? "rgba(56, 139, 253, 0.15)" : "transparent",
-                borderLeft: isActive ? "4px solid #58a6ff" : "4px solid transparent",
+                padding: "6px 24px",
+                background: isActive
+                  ? "linear-gradient(90deg, rgba(255, 107, 0, 0.22) 0%, rgba(255, 107, 0, 0.04) 100%)"
+                  : "transparent",
+                borderLeft: isActive ? "5px solid #ff6b00" : "5px solid transparent",
+                boxShadow: isActive ? "inset 0 0 20px rgba(255, 107, 0, 0.12)" : "none",
                 transition: "all 0.2s ease"
               }}
             >
               <div
                 style={{
-                  width: "36px",
-                  fontSize: "15px",
-                  color: isActive ? "#58a6ff" : "#484f58",
+                  width: "42px",
+                  fontSize: "17px",
+                  color: isActive ? "#ff9d42" : "#4a4a58",
                   textAlign: "right",
-                  marginRight: "20px",
+                  marginRight: "24px",
                   userSelect: "none",
-                  fontWeight: isActive ? 700 : 400
+                  fontWeight: isActive ? 800 : 500
                 }}
               >
                 {lineNumber}
@@ -64,10 +72,12 @@ export function CodeEditor({ codeLines, activeLine }) {
 
               <div
                 style={{
-                  fontSize: "16px",
-                  color: isActive ? "#ffffff" : "#c9d1d9",
-                  fontWeight: isActive ? 600 : 400,
-                  whiteSpace: "pre"
+                  fontSize: "18px",
+                  color: isActive ? "#ffffff" : "#abb2bf",
+                  fontWeight: isActive ? 700 : 500,
+                  whiteSpace: "pre",
+                  textShadow: isActive ? "0 0 12px rgba(255, 107, 0, 0.5)" : "none",
+                  lineHeight: 1.5
                 }}
               >
                 {line}

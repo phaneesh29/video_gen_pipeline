@@ -6,42 +6,53 @@ export function ArrayRenderer({ name, elements, type }) {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "8px",
-        background: "rgba(22, 27, 34, 0.6)",
-        border: "1px solid #30363d",
-        borderRadius: "12px",
-        padding: "20px 24px"
+        gap: "14px",
+        background: "rgba(14, 14, 18, 0.7)",
+        border: "1px solid rgba(255, 107, 0, 0.18)",
+        borderRadius: "16px",
+        padding: "24px 30px",
+        boxShadow: "0 8px 30px rgba(0, 0, 0, 0.6)",
+        backdropFilter: "blur(10px)"
       }}
     >
-      <div style={{ fontSize: "14px", fontWeight: 700, color: "#8b949e", textTransform: "uppercase" }}>
-        {name} ({type})
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ff6b00", boxShadow: "0 0 10px #ff6b00" }} />
+        <div style={{ fontSize: "16px", fontWeight: 800, color: "#ff9d42", textTransform: "uppercase", letterSpacing: "1px" }}>
+          {name} <span style={{ color: "#6e7681", fontSize: "14px", fontWeight: 600 }}>({type})</span>
+        </div>
       </div>
 
-      <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", marginTop: "8px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "14px", alignItems: "flex-start", marginTop: "10px", flexWrap: "wrap" }}>
         {elements.map((el, idx) => {
           return (
-            <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "56px" }}>
-              <div style={{ fontSize: "12px", color: "#6e7681", marginBottom: "4px", fontWeight: 600 }}>
+            <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "70px" }}>
+              <div style={{ fontSize: "14px", color: "#8b949e", marginBottom: "8px", fontWeight: 700 }}>
                 {idx}
               </div>
 
               <div
                 style={{
-                  width: "56px",
-                  height: "56px",
+                  width: "70px",
+                  height: "70px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  borderRadius: "8px",
-                  fontSize: "22px",
-                  fontWeight: 700,
+                  borderRadius: "12px",
+                  fontSize: "30px",
+                  fontWeight: 800,
                   color: "#ffffff",
                   background: el.highlight
-                    ? "linear-gradient(135deg, #1f6feb, #238636)"
-                    : "#21262d",
-                  border: el.highlight ? "2px solid #58a6ff" : "1px solid #30363d",
-                  boxShadow: el.highlight ? "0 0 16px rgba(88, 166, 255, 0.4)" : "none",
-                  transition: "all 0.2s ease"
+                    ? "linear-gradient(135deg, #ff7700 0%, #ff3b00 100%)"
+                    : "#13131a",
+                  border: el.highlight
+                    ? "2px solid #ffa34d"
+                    : "1px solid rgba(255, 255, 255, 0.1)",
+                  boxShadow: el.highlight
+                    ? "0 0 35px rgba(255, 107, 0, 0.75)"
+                    : "0 4px 12px rgba(0, 0, 0, 0.4)",
+                  textShadow: el.highlight ? "0 2px 8px rgba(0,0,0,0.6)" : "none",
+                  transform: el.highlight ? "scale(1.05)" : "scale(1)",
+                  transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)"
                 }}
               >
                 {el.value}
@@ -53,25 +64,28 @@ export function ArrayRenderer({ name, elements, type }) {
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    marginTop: "6px"
+                    marginTop: "10px"
                   }}
                 >
-                  <div style={{ fontSize: "14px", color: "#58a6ff" }}>▲</div>
+                  <div style={{ fontSize: "16px", color: "#ff8533", textShadow: "0 0 8px #ff6b00" }}>▲</div>
                   <div
                     style={{
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      color: "#58a6ff",
-                      background: "rgba(56, 139, 253, 0.15)",
-                      padding: "2px 6px",
-                      borderRadius: "4px"
+                      fontSize: "13px",
+                      fontWeight: 800,
+                      color: "#ffffff",
+                      background: "linear-gradient(135deg, #ff7700, #ff4400)",
+                      padding: "4px 10px",
+                      borderRadius: "6px",
+                      boxShadow: "0 0 16px rgba(255, 107, 0, 0.5)",
+                      marginTop: "2px",
+                      letterSpacing: "0.5px"
                     }}
                   >
                     {el.pointerLabel}
                   </div>
                 </div>
               ) : (
-                <div style={{ height: "24px" }} />
+                <div style={{ height: "34px" }} />
               )}
             </div>
           );

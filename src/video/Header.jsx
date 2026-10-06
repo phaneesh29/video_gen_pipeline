@@ -7,59 +7,73 @@ export function Header({ title, topic, complexity }) {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "20px 48px",
-        background: "rgba(13, 17, 23, 0.95)",
-        borderBottom: "1px solid #30363d",
-        color: "#f0f6fc",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+        padding: "24px 56px",
+        background: "#070709",
+        borderBottom: "1px solid rgba(255, 107, 0, 0.2)",
+        boxShadow: "0 4px 30px rgba(0, 0, 0, 0.8)",
+        color: "#ffffff",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
         <div
           style={{
-            background: "linear-gradient(135deg, #388bfd, #1f6feb)",
+            background: "linear-gradient(135deg, #ff7700 0%, #ff4800 100%)",
             color: "#ffffff",
-            fontSize: "14px",
-            fontWeight: 700,
-            padding: "6px 14px",
-            borderRadius: "6px",
+            fontSize: "15px",
+            fontWeight: 800,
+            padding: "8px 18px",
+            borderRadius: "8px",
             textTransform: "uppercase",
-            letterSpacing: "0.5px"
+            letterSpacing: "1px",
+            boxShadow: "0 0 25px rgba(255, 107, 0, 0.5)",
+            border: "1px solid rgba(255, 255, 255, 0.2)"
           }}
         >
           {topic}
         </div>
-        <h1 style={{ margin: 0, fontSize: "28px", fontWeight: 700, letterSpacing: "-0.5px" }}>
+        <h1
+          style={{
+            margin: 0,
+            fontSize: "34px",
+            fontWeight: 800,
+            letterSpacing: "-0.8px",
+            color: "#ffffff",
+            textShadow: "0 2px 10px rgba(0, 0, 0, 0.5)"
+          }}
+        >
           {title}
         </h1>
       </div>
 
-      <div style={{ display: "flex", gap: "12px" }}>
+      <div style={{ display: "flex", gap: "16px" }}>
         <div
           style={{
-            background: "#21262d",
-            border: "1px solid #30363d",
-            padding: "6px 14px",
-            borderRadius: "6px",
-            fontSize: "14px",
-            fontWeight: 600,
-            color: "#58a6ff"
+            background: "#101015",
+            border: "1px solid rgba(255, 107, 0, 0.35)",
+            boxShadow: "0 0 15px rgba(255, 107, 0, 0.15)",
+            padding: "8px 20px",
+            borderRadius: "8px",
+            fontSize: "16px",
+            fontWeight: 700,
+            color: "#ff9d42"
           }}
         >
-          Time: {complexity.time}
+          Time: <span style={{ color: "#ffffff" }}>{complexity.time}</span>
         </div>
         <div
           style={{
-            background: "#21262d",
-            border: "1px solid #30363d",
-            padding: "6px 14px",
-            borderRadius: "6px",
-            fontSize: "14px",
-            fontWeight: 600,
-            color: "#3fb950"
+            background: "#101015",
+            border: "1px solid rgba(255, 166, 0, 0.35)",
+            boxShadow: "0 0 15px rgba(255, 166, 0, 0.15)",
+            padding: "8px 20px",
+            borderRadius: "8px",
+            fontSize: "16px",
+            fontWeight: 700,
+            color: "#ffc042"
           }}
         >
-          Space: {complexity.space}
+          Space: <span style={{ color: "#ffffff" }}>{complexity.space}</span>
         </div>
       </div>
     </div>

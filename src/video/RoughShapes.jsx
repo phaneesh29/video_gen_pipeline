@@ -341,6 +341,8 @@ export function RoughArrow({
               {label}
             </div>
           </div>
+        </foreignObject>
+      )}
     </g>
   );
 }

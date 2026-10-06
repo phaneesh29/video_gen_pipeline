@@ -80,6 +80,7 @@ Examples:
         .slice(0, 45);
 
       const suffix = targetAspectRatio === "9:16" ? "_vertical" : "";
+      fs.mkdirSync(config.OUTPUT_DIR, { recursive: true });
       const outputFilePath = path.resolve(config.OUTPUT_DIR, `${cleanSlug}${suffix}.mp4`);
       const tempVideoPath = path.resolve(tempDir, `video_${cleanSlug}.mp4`);
       const masterAudioPath = path.resolve(tempDir, `audio_${cleanSlug}.m4a`);

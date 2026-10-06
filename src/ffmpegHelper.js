@@ -1,7 +1,16 @@
 import { execFile } from "child_process";
+import fs from "fs";
+import path from "path";
 import ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
 
 const ffmpegPath = ffmpegInstaller.path;
+
+function ensureDir(filePath) {
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
 
 export function executeFfmpeg(args) {
   return new Promise((resolve, reject) => {
@@ -16,6 +25,7 @@ export function executeFfmpeg(args) {
 }
 
 export async function buildMasterAudio(scenes, fps, outputPath) {
+  ensureDir(outputPath);
   const inputs = [];
   const filterParts = [];
   const concatInputs = [];
@@ -52,6 +62,7 @@ export async function buildMasterAudio(scenes, fps, outputPath) {
 }
 
 export async function muxVideoAndAudio(videoPath, audioPath, outputPath) {
+  ensureDir(outputPath);
   const args = [
     "-i",
     videoPath,

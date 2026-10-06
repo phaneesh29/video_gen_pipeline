@@ -1,5 +1,5 @@
 import React from "react";
-import { interFont } from "./fonts.js";
+import { primaryFont, displayFont, monoFont } from "./fonts.js";
 
 export function Header({
   title,
@@ -26,7 +26,7 @@ export function Header({
         position: "relative",
         zIndex: 30,
         backdropFilter: "blur(16px)",
-        fontFamily: interFont.fontFamily
+        fontFamily: primaryFont.fontFamily
       }}
     >
       {/* Global animated video progress bar */}
@@ -116,6 +116,7 @@ export function Header({
               fontSize: isVertical ? "29px" : "30px",
               fontWeight: 800,
               letterSpacing: "-0.5px",
+              fontFamily: displayFont.fontFamily,
               color: "#ffffff",
               textShadow: "0 2px 12px rgba(0, 0, 0, 0.6)",
               lineHeight: 1.25

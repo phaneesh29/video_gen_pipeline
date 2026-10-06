@@ -1,7 +1,7 @@
 import React from "react";
 import rough from "roughjs";
 import { useCurrentFrame, interpolate, Easing } from "remotion";
-import { sketchFont, caveatFont, monoFont } from "./fonts.js";
+import { primaryFont, displayFont, monoFont } from "./fonts.js";
 
 const generator = rough.generator();
 
@@ -179,7 +179,7 @@ export function RoughBoxNode({
             textAlign: "center",
             padding: "8px 14px",
             opacity: textOpacity,
-            fontFamily: sketchFont.fontFamily,
+            fontFamily: primaryFont.fontFamily,
             boxSizing: "border-box"
           }}
         >
@@ -204,7 +204,8 @@ export function RoughBoxNode({
               fontWeight: 800,
               color: scheme.text,
               lineHeight: 1.25,
-              letterSpacing: "0.2px",
+              letterSpacing: "-0.3px",
+              fontFamily: displayFont.fontFamily,
               textShadow: "0 2px 10px rgba(0,0,0,0.9)"
             }}
           >
@@ -216,9 +217,9 @@ export function RoughBoxNode({
                 fontSize: "18px",
                 color: scheme.sub,
                 marginTop: "4px",
-                fontFamily: caveatFont.fontFamily,
+                fontFamily: primaryFont.fontFamily,
                 fontWeight: 700,
-                letterSpacing: "0.3px"
+                letterSpacing: "0.2px"
               }}
             >
               {subLabel}
@@ -330,11 +331,12 @@ export function RoughArrow({
                 border: `2px dashed ${color}`,
                 borderRadius: "10px",
                 padding: "4px 14px",
-                fontSize: "19px",
+                fontSize: "18px",
                 fontWeight: 800,
                 color: "#ffffff",
-                fontFamily: caveatFont.fontFamily,
+                fontFamily: primaryFont.fontFamily,
                 whiteSpace: "nowrap",
+                letterSpacing: "0.2px",
                 boxShadow: "0 4px 14px rgba(0, 0, 0, 0.85)"
               }}
             >

@@ -1,7 +1,7 @@
 import React from "react";
 import { useCurrentFrame, interpolate, Easing } from "remotion";
 import { RoughBoxNode, RoughArrow } from "./RoughShapes.jsx";
-import { sketchFont, caveatFont, monoFont } from "./fonts.js";
+import { primaryFont, displayFont, monoFont } from "./fonts.js";
 
 export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidth = false }) {
   const frame = useCurrentFrame();
@@ -163,10 +163,10 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
           <div
             style={{
               fontSize: isVertical ? "22px" : "18px",
-              fontWeight: 700,
+              fontWeight: 800,
               color: "#fbbf24",
               letterSpacing: "0.5px",
-              fontFamily: sketchFont.fontFamily,
+              fontFamily: displayFont.fontFamily,
               textTransform: "uppercase"
             }}
           >
@@ -280,9 +280,9 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                       alignItems: "center",
                       justifyContent: "center",
                       fontSize: isVertical ? "34px" : "28px",
-                      fontWeight: 700,
+                      fontWeight: 800,
                       color: isHigh ? "#ffedd5" : "#ffffff",
-                      fontFamily: sketchFont.fontFamily,
+                      fontFamily: displayFont.fontFamily,
                       boxShadow: isHigh ? "0 0 20px rgba(255, 107, 0, 0.5)" : "none"
                     }}
                   >
@@ -291,7 +291,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                   {el.pointerLabel && (
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "8px", transform: `translateY(${bounce}px)` }}>
                       <span style={{ color: "#ff7700", fontSize: isVertical ? "16px" : "14px" }}>▲</span>
-                      <span style={{ fontSize: isVertical ? "17px" : "14px", fontWeight: 700, color: "#ffaa55", fontFamily: caveatFont.fontFamily }}>
+                      <span style={{ fontSize: isVertical ? "17px" : "14px", fontWeight: 700, color: "#ffaa55", fontFamily: primaryFont.fontFamily }}>
                         {el.pointerLabel}
                       </span>
                     </div>
@@ -318,7 +318,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                     background: isHigh ? "rgba(255, 119, 0, 0.25)" : "#181824",
                     border: isHigh ? "2.5px solid #ff7700" : "1.5px dashed rgba(255, 255, 255, 0.3)",
                     borderRadius: "12px",
-                    fontFamily: sketchFont.fontFamily,
+                    fontFamily: primaryFont.fontFamily,
                     fontSize: isVertical ? "24px" : "20px",
                     color: "#ffffff"
                   }}

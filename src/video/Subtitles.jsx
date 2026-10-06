@@ -1,6 +1,6 @@
 import React from "react";
 import { useCurrentFrame, interpolate, Easing } from "remotion";
-import { interFont } from "./fonts.js";
+import { primaryFont } from "./fonts.js";
 
 export function Subtitles({ text, isVertical }) {
   const frame = useCurrentFrame();
@@ -40,7 +40,7 @@ export function Subtitles({ text, isVertical }) {
         justifyContent: "center",
         gap: isVertical ? "16px" : "18px",
         zIndex: 50,
-        fontFamily: interFont.fontFamily
+        fontFamily: primaryFont.fontFamily
       }}
     >
       {/* Live Audio Equalizer Waveform Bars (simulates real-time speech cadence) */}

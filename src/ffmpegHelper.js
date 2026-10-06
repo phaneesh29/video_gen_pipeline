@@ -39,7 +39,7 @@ export async function buildMasterAudio(scenes, fps, outputPath) {
     concatInputs.push(`[a${i}]`);
   }
 
-  const filterComplex = `${filterParts.join(";")};${concatInputs.join("")}concat=n=${scenes.length}:v=0:a=1[outa]`;
+  const filterComplex = `${filterParts.join(";")};${concatInputs.join("")}concat=n=${scenes.length}:v=0:a=1[concata];[concata]dynaudnorm=f=120:g=15:m=10.0,loudnorm=I=-11:TP=-0.5:LRA=6[outa]`;
 
   const args = [
     ...inputs,

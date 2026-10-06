@@ -17,10 +17,13 @@ export const PAUL_EXPRESSIONS = {
 export async function generateSpeech(text, outputPath, expression = "confident") {
   const voiceId = PAUL_EXPRESSIONS[expression] || expression || PAUL_EXPRESSIONS.confident;
 
+  const trimmed = text.trim();
+  const cleanInput = /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+
   const response = await client.audio.speech.complete({
     model: config.VOXTRAL_MODEL,
     voiceId,
-    input: text,
+    input: cleanInput,
     responseFormat: "mp3"
   });
 

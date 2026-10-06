@@ -40,6 +40,10 @@ Analyze the topic and choose the optimal visual structure type:
   - Use for: Multi-tier architectures (e.g. Ingestion -> Transcoder -> Origin -> CDN -> Viewers) and OSI network layer journeys.
 - DATABASE TABLES & PARTITIONS (type: "table"):
   - Use for: Sharded database tables, partition keys, B+ tree leaf pages, transaction logs.
+- ARCHITECTURAL COMPARISONS & EVOLUTION:
+  - If the topic contrasts architectures (such as WebRTC P2P Mesh vs SFU Star Architecture):
+  - In problem/bottleneck scenes: use type: "mesh_network" to clearly depict the N*(N-1) connection tangle!
+  - In solution/hub scenes: transition to type: "star_network" to showcase the central SFU Media Server routing streams cleanly!
 - DATA STRUCTURES & ALGORITHMS (type: "array", "tree", "hashmap", "stack", "queue"):
   - Use for: Coding problems, pointers, array elements, tree nodes.
 

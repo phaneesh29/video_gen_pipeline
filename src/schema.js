@@ -88,5 +88,6 @@ export const storyboardSchema = z.object({
   codeTitle: z.string().default(""),
   codeLanguage: z.string().default(""),
   codeLines: z.array(z.string()).default([]),
+  theme: z.enum(["cyber", "whiteboard"]).default("whiteboard"),
   scenes: z.array(sceneSchema)
 });

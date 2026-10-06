@@ -29,6 +29,7 @@ export async function renderExplainerVideo(enrichedStoryboard, outputFilePath) {
     composition,
     serveUrl: bundleLocation,
     codec: "h264",
+    imageFormat: "jpeg",
     outputLocation: outputFilePath,
     inputProps: {
       storyboard: enrichedStoryboard

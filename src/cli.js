@@ -1,99 +1,119 @@
 import path from "path";
 import fs from "fs";
+import { Command } from "commander";
 import { generateStoryboard } from "./llmEngine.js";
 import { processStoryboardAudio } from "./audioPipeline.js";
 import { renderExplainerVideo } from "./videoRenderer.js";
 import { buildMasterAudio, muxVideoAndAudio } from "./ffmpegHelper.js";
 import { config } from "./config.js";
 
-async function main() {
-  const args = process.argv.slice(2);
-  const isVerticalArg = args.some((a) =>
-    ["--vertical", "-v", "--9:16", "--shorts", "--reels"].includes(a.toLowerCase())
-  );
-  const cleanArgs = args.filter(
-    (a) => !["--vertical", "-v", "--9:16", "--shorts", "--reels"].includes(a.toLowerCase())
-  );
-  const rawArg = cleanArgs.join(" ").trim();
+const program = new Command();
 
-  let problemInput = "";
+program
+  .name("video-gen")
+  .description("Excalidraw-style technical explainer video generator using Remotion, Codestral & Voxtral")
+  .version("1.0.0")
+  .argument("[input]", "Path to text file (e.g. problem.txt) or inline topic string", "problem.txt")
+  .option("-v, --vertical", "Render in 9:16 vertical format (1080x1920) for Shorts/Reels")
+  .addHelpText(
+    "after",
+    `
+Examples:
+  $ node src/cli.js problem.txt
+  $ node src/cli.js problem.txt --vertical
+  $ node src/cli.js "How WebSockets Work" -v
+`
+  )
+  .action(async (input, options) => {
+    let problemInput = "";
+    let inputSource = "";
 
-  if (rawArg && fs.existsSync(rawArg)) {
-    problemInput = fs.readFileSync(rawArg, "utf-8").trim();
-  } else if (rawArg) {
-    problemInput = rawArg;
-  } else if (fs.existsSync("problem.txt")) {
-    problemInput = fs.readFileSync("problem.txt", "utf-8").trim();
-  } else {
-    problemInput = "Reverse a String";
-  }
+    if (fs.existsSync(input)) {
+      problemInput = fs.readFileSync(input, "utf-8").trim();
+      inputSource = `file: ${input}`;
+    } else if (input && input !== "problem.txt") {
+      problemInput = input.trim();
+      inputSource = "inline prompt";
+    } else if (fs.existsSync("problem.txt")) {
+      problemInput = fs.readFileSync("problem.txt", "utf-8").trim();
+      inputSource = "problem.txt";
+    } else {
+      console.error("❌ Error: No input specified and problem.txt was not found.\n");
+      program.help();
+      return;
+    }
 
-  const isVerticalInput =
-    isVerticalArg ||
-    /9:16|vertical|shorts|reels/i.test(problemInput);
+    const targetAspectRatio = options.vertical || /9:16|vertical/i.test(problemInput) ? "9:16" : "16:9";
+    const resolution = targetAspectRatio === "9:16" ? "1080x1920 (Vertical)" : "1920x1080 (Landscape)";
 
-  console.log(`\n========================================`);
-  console.log(`🎬 CS & System Design Explainer Pipeline`);
-  console.log(`Input Length: ${problemInput.length} chars | Target: ${isVerticalInput ? "9:16 Vertical" : "16:9 Landscape"}`);
-  console.log(`========================================\n`);
+    console.log(`\n========================================`);
+    console.log(`🎬 Technical Explainer Video Pipeline`);
+    console.log(`Source:      ${inputSource}`);
+    console.log(`Target:      ${targetAspectRatio} | ${resolution}`);
+    console.log(`Visuals:     Excalidraw Whiteboard (RoughJS)`);
+    console.log(`========================================\n`);
 
-  const tempDir = path.resolve("./temp");
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir, { recursive: true });
-  }
+    const tempDir = path.resolve("./temp");
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
 
-  console.log(`[1/4] Generating Storyboard with Codestral...`);
-  const storyboard = await generateStoryboard(problemInput);
+    try {
+      // Stage 1: Storyboard generation
+      console.log(`[1/4] Generating Storyboard with Codestral...`);
+      const storyboard = await generateStoryboard(problemInput);
 
-  if (isVerticalInput) {
-    storyboard.aspectRatio = "9:16";
-  }
+      storyboard.aspectRatio = targetAspectRatio;
+      storyboard.theme = "whiteboard";
 
-  const hasCode = Array.isArray(storyboard.codeLines) && storyboard.codeLines.length > 0;
+      const hasCode = Array.isArray(storyboard.codeLines) && storyboard.codeLines.length > 0;
 
-  console.log(`      ✓ Storyboard created: "${storyboard.title}"`);
-  console.log(`      ✓ Category: ${storyboard.category} | Topic: ${storyboard.topic}`);
-  console.log(`      ✓ Format: ${storyboard.aspectRatio} (${storyboard.aspectRatio === "9:16" ? "Vertical Shorts/Reels" : "Landscape 16:9"})`);
-  console.log(`      ✓ Code: ${hasCode ? `${storyboard.codeTitle} (${storyboard.codeLanguage})` : "None (Full-Width Visual Canvas)"}`);
-  console.log(`      ✓ Total Scenes: ${storyboard.scenes.length}`);
+      console.log(`      ✓ Storyboard: "${storyboard.title}"`);
+      console.log(`      ✓ Topic:      ${storyboard.category} / ${storyboard.topic}`);
+      console.log(`      ✓ Canvas:     ${hasCode ? `Split View (${storyboard.codeLanguage})` : "Full-Width Whiteboard"}`);
+      console.log(`      ✓ Scenes:     ${storyboard.scenes.length} scenes`);
 
-  const cleanSlug = (storyboard.title || "explainer_video")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "")
-    .slice(0, 45);
+      const cleanSlug = (storyboard.title || "explainer_video")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        .slice(0, 45);
 
-  const suffix = storyboard.aspectRatio === "9:16" ? "_vertical" : "";
-  const outputFilePath = path.resolve(config.OUTPUT_DIR, `${cleanSlug}${suffix}.mp4`);
-  const tempVideoPath = path.resolve(tempDir, `video_${cleanSlug}.mp4`);
-  const masterAudioPath = path.resolve(tempDir, `audio_${cleanSlug}.m4a`);
+      const suffix = targetAspectRatio === "9:16" ? "_vertical" : "";
+      const outputFilePath = path.resolve(config.OUTPUT_DIR, `${cleanSlug}${suffix}.mp4`);
+      const tempVideoPath = path.resolve(tempDir, `video_${cleanSlug}.mp4`);
+      const masterAudioPath = path.resolve(tempDir, `audio_${cleanSlug}.m4a`);
 
-  console.log(`\n[2/4] Synthesizing Voiceovers with Mistral Voxtral...`);
-  const enrichedStoryboard = await processStoryboardAudio(storyboard, tempDir);
-  console.log(`      ✓ All scene audios synthesized`);
-  console.log(`      ✓ Runtime: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s (${enrichedStoryboard.totalDurationInFrames} frames at 30fps)`);
+      // Stage 2: Audio synthesis
+      console.log(`\n[2/4] Synthesizing Voiceovers with Mistral Voxtral...`);
+      const enrichedStoryboard = await processStoryboardAudio(storyboard, tempDir);
+      console.log(`      ✓ Speech synthesized for all ${enrichedStoryboard.scenes.length} scenes`);
+      console.log(`      ✓ Duration: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s (${enrichedStoryboard.totalDurationInFrames} frames at 30fps)`);
 
-  console.log(`\n[3/4] Rendering ${storyboard.aspectRatio} Video Canvas with Remotion...`);
-  await renderExplainerVideo(enrichedStoryboard, tempVideoPath);
+      // Stage 3: Video rendering
+      console.log(`\n[3/4] Rendering ${targetAspectRatio} Whiteboard Canvas with Remotion...`);
+      await renderExplainerVideo(enrichedStoryboard, tempVideoPath);
 
-  console.log(`\n[4/4] Stitching Audio & Muxing with FFmpeg...`);
-  await buildMasterAudio(enrichedStoryboard.scenes, config.VIDEO_FPS, masterAudioPath);
-  await muxVideoAndAudio(tempVideoPath, masterAudioPath, outputFilePath);
-  console.log(`      ✓ Master audio stitched and final video muxed`);
+      // Stage 4: FFmpeg audio muxing
+      console.log(`\n[4/4] Stitching Audio & Muxing with FFmpeg...`);
+      await buildMasterAudio(enrichedStoryboard.scenes, config.VIDEO_FPS, masterAudioPath);
+      await muxVideoAndAudio(tempVideoPath, masterAudioPath, outputFilePath);
+      console.log(`      ✓ Final video and synchronized audio muxed`);
 
-  if (fs.existsSync(tempDir)) {
-    fs.rmSync(tempDir, { recursive: true, force: true });
-  }
+      console.log(`\n========================================`);
+      console.log(`🎉 Video Render Complete!`);
+      console.log(`📁 File:     ${outputFilePath}`);
+      console.log(`⏱️ Duration: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s`);
+      console.log(`📐 Format:   ${targetAspectRatio} (${resolution})`);
+      console.log(`========================================\n`);
+    } finally {
+      if (fs.existsSync(tempDir)) {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      }
+    }
+  });
 
-  console.log(`\n========================================`);
-  console.log(`🎉 Video Render Complete!`);
-  console.log(`📁 File: ${outputFilePath}`);
-  console.log(`⏱️ Duration: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s`);
-  console.log(`📐 Aspect: ${storyboard.aspectRatio}`);
-  console.log(`========================================\n`);
-}
-
-main().catch((err) => {
+program.parseAsync(process.argv).catch((err) => {
   console.error("\n❌ Pipeline failed:", err.message);
   process.exit(1);
 });

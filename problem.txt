@@ -1,6 +1,7 @@
-WebRTC SFU Star Architecture.
-Format: 9:16 Vertical Shorts (No code needed, focus 100% on full-screen visual star topology diagram).
-1. Why P2P Mesh fails at N*(N-1) connections.
-2. The Central SFU Media Hub star layout.
-3. Single 1080p RTP uplink from the publisher to the SFU server.
-4. Selective downstream RTP forwarding to subscribers based on network bandwidth.
+How WebSockets Work: Full-Duplex Bidirectional Communication.
+Format: 9:16 Vertical Shorts (Focus on full-screen visual architecture diagram).
+1. The HTTP Request-Response Polling bottleneck (half-duplex latency and heavy header overhead).
+2. The HTTP Upgrade Handshake: Client sends Upgrade request, Server replies with 101 Switching Protocols.
+3. Persistent Full-Duplex TCP Connection established.
+4. Bidirectional framing: instant Client ws.send() upstream and Server push downstream with minimal 2-byte frame overhead.
+5. Heartbeat Ping and Pong keep-alive frames ensuring real-time connection reliability.

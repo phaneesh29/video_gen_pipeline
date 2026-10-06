@@ -1,114 +1,240 @@
 import React from "react";
-import { useCurrentFrame, interpolate, Easing } from "remotion";
+import { useCurrentFrame } from "remotion";
 import { RoughBoxNode, RoughArrow } from "./RoughShapes.jsx";
 import { primaryFont, displayFont, monoFont } from "./fonts.js";
+
+/**
+ * Universal, generic layout engine that computes spacious, collision-free
+ * coordinates and proportional card sizes for ANY graph or system architecture.
+ */
+function computeGenericLayout(nodes, edges, isVertical, width, height) {
+  const positions = new Map();
+  const nodeSizes = new Map();
+  const total = nodes.length;
+
+  if (total === 0) return { positions, nodeSizes };
+
+  const cx = width / 2;
+  const cy = isVertical ? 900 : height / 2;
+
+  // Identify roles: sources (clients), hubs (servers/gateways), targets (subscribers/dbs)
+  const isSource = (n) => {
+    const s = (n.id + " " + n.label).toLowerCase();
+    return s.includes("client") || s.includes("publisher") || s.includes("browser") || s.includes("sender") || s.includes("user") || s.includes("host");
+  };
+  const isHub = (n) => {
+    const s = (n.id + " " + n.label).toLowerCase();
+    return s.includes("server") || s.includes("hub") || s.includes("gateway") || s.includes("broker") || s.includes("router") || s.includes("proxy") || s.includes("switch");
+  };
+  const isTarget = (n) => {
+    const s = (n.id + " " + n.label).toLowerCase();
+    return s.includes("sub") || s.includes("db") || s.includes("database") || s.includes("consumer") || s.includes("viewer") || s.includes("sink") || s.includes("storage");
+  };
+
+  // Group into tiers
+  const sources = [];
+  const hubs = [];
+  const targets = [];
+  const others = [];
+
+  nodes.forEach((n) => {
+    if (isHub(n)) hubs.push(n);
+    else if (isSource(n)) sources.push(n);
+    else if (isTarget(n)) targets.push(n);
+    else others.push(n);
+  });
+
+  let tiers = [];
+
+  if (sources.length > 0 || hubs.length > 0) {
+    if (sources.length > 0) tiers.push(sources);
+    if (hubs.length > 0) tiers.push(hubs);
+    if (targets.length > 0) tiers.push(targets);
+    if (others.length > 0) {
+      if (tiers.length === 1) tiers.push(others);
+      else if (tiers.length === 2 && targets.length === 0) tiers.push(others);
+      else tiers[tiers.length - 1].push(...others);
+    }
+  } else {
+    // Generic fallback by node count
+    if (total === 1) tiers = [[nodes[0]]];
+    else if (total === 2) tiers = [[nodes[0]], [nodes[1]]];
+    else if (total === 3) tiers = [[nodes[0]], [nodes[1]], [nodes[2]]];
+    else if (total === 4) tiers = [[nodes[0]], [nodes[1]], [nodes[2], nodes[3]]];
+    else tiers = [nodes]; // Circular mesh
+  }
+
+  // Remove empty tiers
+  tiers = tiers.filter((t) => t.length > 0);
+
+  if (isVertical) {
+    // 9:16 Vertical Screen (1080 x 1920)
+    // Generous vertical range: 360px (top) to 1480px (bottom)
+    if (tiers.length === 1 && total > 4) {
+      // Circular ring / mesh
+      const rx = 360;
+      const ry = 460;
+      nodes.forEach((node, i) => {
+        const angle = (i * 2 * Math.PI) / total - Math.PI / 2;
+        const x = cx + rx * Math.cos(angle);
+        const y = cy + ry * Math.sin(angle);
+        positions.set(node.id, { x, y });
+        nodeSizes.set(node.id, { width: 280, height: 110, isHub: isHub(node) });
+      });
+      return { positions, nodeSizes };
+    }
+
+    // Determine Y coordinates for each tier with massive breathing room
+    let tierYs = [];
+    if (tiers.length === 1) {
+      tierYs = [cy];
+    } else if (tiers.length === 2) {
+      // 2 tiers (e.g. Client & Server): Massive 980px vertical breathing space!
+      tierYs = [420, 1420];
+    } else if (tiers.length === 3) {
+      // 3 tiers: 570px vertical space between tiers
+      tierYs = [330, 900, 1470];
+    } else {
+      // 4+ tiers
+      const startY = 280;
+      const endY = 1520;
+      const step = (endY - startY) / (tiers.length - 1);
+      tierYs = tiers.map((_, i) => startY + i * step);
+    }
+
+    tiers.forEach((tierNodes, tierIdx) => {
+      const ty = tierYs[tierIdx];
+      const count = tierNodes.length;
+
+      tierNodes.forEach((node, nodeIdx) => {
+        let tx = cx;
+        let cardW = 380;
+        let cardH = 140;
+
+        if (count === 1) {
+          tx = cx;
+          cardW = isHub(node) ? 440 : 380;
+          cardH = isHub(node) ? 155 : 140;
+        } else if (count === 2) {
+          tx = nodeIdx === 0 ? cx - 260 : cx + 260;
+          cardW = 330;
+          cardH = 130;
+        } else if (count === 3) {
+          tx = nodeIdx === 0 ? cx - 340 : nodeIdx === 1 ? cx : cx + 340;
+          cardW = 260;
+          cardH = 120;
+        } else {
+          const spread = width - 260;
+          tx = 130 + (nodeIdx * spread) / (count - 1);
+          cardW = Math.max(220, Math.min(280, (spread / count) - 20));
+          cardH = 115;
+        }
+
+        positions.set(node.id, { x: tx, y: ty });
+        nodeSizes.set(node.id, { width: cardW, height: cardH, isHub: isHub(node) });
+      });
+    });
+  } else {
+    // 16:9 Landscape Screen (1920 x 1080)
+    if (tiers.length === 1 && total > 4) {
+      const rx = 560;
+      const ry = 260;
+      nodes.forEach((node, i) => {
+        const angle = (i * 2 * Math.PI) / total - Math.PI / 2;
+        const x = cx + rx * Math.cos(angle);
+        const y = cy + ry * Math.sin(angle);
+        positions.set(node.id, { x, y });
+        nodeSizes.set(node.id, { width: 280, height: 110, isHub: isHub(node) });
+      });
+      return { positions, nodeSizes };
+    }
+
+    let tierXs = [];
+    if (tiers.length === 1) {
+      tierXs = [cx];
+    } else if (tiers.length === 2) {
+      // 2 tiers (Client & Server): 960px horizontal breathing space!
+      tierXs = [460, 1460];
+    } else if (tiers.length === 3) {
+      tierXs = [340, 960, 1580];
+    } else {
+      const startX = 280;
+      const endX = 1640;
+      const step = (endX - startX) / (tiers.length - 1);
+      tierXs = tiers.map((_, i) => startX + i * step);
+    }
+
+    tiers.forEach((tierNodes, tierIdx) => {
+      const tx = tierXs[tierIdx];
+      const count = tierNodes.length;
+
+      tierNodes.forEach((node, nodeIdx) => {
+        let ty = cy;
+        let cardW = 360;
+        let cardH = 140;
+
+        if (count === 1) {
+          ty = cy;
+          cardW = isHub(node) ? 420 : 360;
+          cardH = isHub(node) ? 150 : 140;
+        } else if (count === 2) {
+          ty = nodeIdx === 0 ? cy - 180 : cy + 180;
+          cardW = 320;
+          cardH = 125;
+        } else if (count === 3) {
+          ty = nodeIdx === 0 ? cy - 230 : nodeIdx === 1 ? cy : cy + 230;
+          cardW = 280;
+          cardH = 115;
+        } else {
+          const spread = height - 260;
+          ty = 130 + (nodeIdx * spread) / (count - 1);
+          cardW = 260;
+          cardH = 110;
+        }
+
+        positions.set(node.id, { x: tx, y: ty });
+        nodeSizes.set(node.id, { width: cardW, height: cardH, isHub: isHub(node) });
+      });
+    });
+  }
+
+  return { positions, nodeSizes };
+}
+
+/**
+ * Mathematically computes the exact distance from node center to outer rectangle boundary
+ * along direction angle to ensure arrows terminate cleanly outside cards.
+ */
+function getBoundaryOffset(w, h, dx, dy) {
+  const len = Math.sqrt(dx * dx + dy * dy) || 1;
+  const cos = Math.abs(dx / len);
+  const sin = Math.abs(dy / len);
+
+  const halfW = w / 2;
+  const halfH = h / 2;
+
+  let offset = halfH + 16;
+  if (cos > 0.001 && sin > 0.001) {
+    offset = Math.min(halfW / cos, halfH / sin) + 16;
+  } else if (cos > 0.001) {
+    offset = halfW + 16;
+  }
+  return offset;
+}
 
 export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidth = false }) {
   const frame = useCurrentFrame();
 
-  const width = isVertical ? 1000 : fullWidth ? 1440 : 940;
-  const height = isVertical ? 1160 : fullWidth ? 620 : 440;
-  const cx = width / 2;
-  const cy = height / 2;
+  const width = isVertical ? 1080 : fullWidth ? 1920 : 1100;
+  const height = isVertical ? 1920 : fullWidth ? 1080 : 700;
 
   const structure = structures[0] || { name: "Whiteboard Diagram", nodes: [], edges: [], elements: [], entries: [] };
   const nodes = structure.nodes || [];
   const edges = structure.edges || [];
   const elements = structure.elements || [];
   const entries = structure.entries || [];
-  const total = nodes.length;
 
-  const positions = new Map();
-
-  const hubKeywords = ["sfu", "hub", "server", "switch", "router", "gateway", "coordinator", "broker", "central"];
-  let hubNode = nodes.find((n) =>
-    hubKeywords.some((kw) => (n.id + " " + n.label).toLowerCase().includes(kw))
-  );
-
-  const isPublisher = (n) => {
-    const text = (n.id + " " + n.label).toLowerCase();
-    return text.includes("publish") || text.includes("host") || text.includes("cam") || text.includes("sender") || text.includes("client");
-  };
-
-  const publisher = nodes.find((n) => n !== hubNode && isPublisher(n));
-  const peripherals = nodes.filter((n) => (!hubNode || n.id !== hubNode.id) && (!publisher || n.id !== publisher.id));
-
-  // Adaptive chalkboard layout positioning
-  if (isVertical) {
-    if (hubNode && publisher) {
-      positions.set(publisher.id, { x: cx, y: 170 });
-      positions.set(hubNode.id, { x: cx, y: 580 });
-      const pCount = peripherals.length;
-      peripherals.forEach((sub, i) => {
-        let sx = cx;
-        const sy = 990;
-        if (pCount === 1) sx = cx;
-        else if (pCount === 2) sx = i === 0 ? cx - 260 : cx + 260;
-        else if (pCount === 3) sx = i === 0 ? cx - 320 : i === 1 ? cx : cx + 320;
-        else {
-          const spacing = (width - 240) / Math.max(1, pCount - 1);
-          sx = 120 + i * spacing;
-        }
-        positions.set(sub.id, { x: sx, y: sy });
-      });
-    } else {
-      if (total <= 4) {
-        nodes.forEach((node, i) => {
-          let y = cy;
-          if (total === 1) y = cy;
-          else if (total === 2) y = i === 0 ? 260 : 880;
-          else if (total === 3) y = i === 0 ? 200 : i === 1 ? 580 : 960;
-          else if (total === 4) y = 160 + i * 270;
-          positions.set(node.id, { x: cx, y });
-        });
-      } else {
-        const rx = 360;
-        const ry = 340;
-        nodes.forEach((node, i) => {
-          const angle = (i * 2 * Math.PI) / total - Math.PI / 2;
-          const x = cx + rx * Math.cos(angle);
-          const y = cy + ry * Math.sin(angle);
-          positions.set(node.id, { x, y });
-        });
-      }
-    }
-  } else {
-    if (hubNode && publisher) {
-      positions.set(publisher.id, { x: fullWidth ? 220 : 160, y: cy });
-      positions.set(hubNode.id, { x: cx, y: cy });
-      const rightX = width - (fullWidth ? 220 : 160);
-      const pCount = peripherals.length;
-      peripherals.forEach((sub, i) => {
-        let sy = cy;
-        if (pCount === 1) sy = cy;
-        else if (pCount === 2) sy = i === 0 ? cy - 120 : cy + 120;
-        else if (pCount === 3) sy = i === 0 ? cy - 140 : i === 1 ? cy : cy + 140;
-        else {
-          const spread = height - 140;
-          sy = 70 + (i * spread) / (pCount - 1);
-        }
-        positions.set(sub.id, { x: rightX, y: sy });
-      });
-    } else {
-      if (total <= 4) {
-        const spacing = total > 1 ? (width - 340) / (total - 1) : 0;
-        nodes.forEach((node, i) => {
-          const x = total === 1 ? cx : 170 + i * spacing;
-          const y = cy;
-          positions.set(node.id, { x, y });
-        });
-      } else {
-        const rx = fullWidth ? 460 : 300;
-        const ry = fullWidth ? 200 : 140;
-        nodes.forEach((node, i) => {
-          const angle = (i * 2 * Math.PI) / total - Math.PI / 2;
-          const x = cx + rx * Math.cos(angle);
-          const y = cy + ry * Math.sin(angle);
-          positions.set(node.id, { x, y });
-        });
-      }
-    }
-  }
+  const { positions, nodeSizes } = computeGenericLayout(nodes, edges, isVertical, width, height);
 
   const findPos = (id) => {
     if (!id) return null;
@@ -120,6 +246,16 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
     return null;
   };
 
+  const findSize = (id) => {
+    if (!id) return { width: 340, height: 130, isHub: false };
+    if (nodeSizes.has(id)) return nodeSizes.get(id);
+    const target = id.toLowerCase().replace(/[^a-z0-9]/g, "");
+    for (const [k, v] of nodeSizes.entries()) {
+      if (k.toLowerCase().replace(/[^a-z0-9]/g, "") === target) return v;
+    }
+    return { width: 340, height: 130, isHub: false };
+  };
+
   const hasNodesOrEdges = nodes.length > 0 || edges.length > 0;
   const hasElements = elements.length > 0;
   const hasEntries = entries.length > 0;
@@ -127,211 +263,232 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
   return (
     <div
       style={{
-        flex: fullWidth ? "1 1 100%" : isVertical ? "0 0 58%" : "0 0 58%",
-        width: fullWidth ? "100%" : "auto",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: isVertical ? "20px 20px 170px 20px" : "18px 36px 120px 36px",
-        background: "transparent",
+        width: "100%",
+        height: "100%",
         position: "relative",
-        zIndex: 2,
-        overflow: "hidden"
+        overflow: "hidden",
+        zIndex: 2
       }}
     >
-      {/* Blackboard Card Container with Chalk Border */}
+      {/* Floating Whiteboard Canvas Badge */}
       <div
         style={{
-          width: "100%",
-          maxWidth: `${width + 30}px`,
-          background: "rgba(18, 18, 24, 0.9)",
-          border: "2px dashed rgba(255, 255, 255, 0.22)",
-          borderRadius: "22px",
-          padding: isVertical ? "20px 14px" : "18px 24px",
-          boxShadow: "0 16px 50px rgba(0, 0, 0, 0.85), inset 0 0 40px rgba(0, 0, 0, 0.6)",
-          backdropFilter: "blur(20px)",
+          position: "absolute",
+          top: isVertical ? "48px" : "32px",
+          left: "50%",
+          transform: "translateX(-50%)",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
-          gap: "12px"
+          gap: "10px",
+          padding: isVertical ? "8px 24px" : "6px 20px",
+          background: "rgba(18, 18, 24, 0.88)",
+          border: "1.5px solid rgba(251, 191, 36, 0.35)",
+          borderRadius: "14px",
+          backdropFilter: "blur(14px)",
+          boxShadow: "0 6px 24px rgba(0, 0, 0, 0.8)",
+          zIndex: 15
         }}
       >
-        {/* Sketch Whiteboard Title Badge */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ fontSize: isVertical ? "22px" : "18px" }}>✎</span>
-          <div
-            style={{
-              fontSize: isVertical ? "22px" : "18px",
-              fontWeight: 800,
-              color: "#fbbf24",
-              letterSpacing: "0.5px",
-              fontFamily: displayFont.fontFamily,
-              textTransform: "uppercase"
-            }}
-          >
-            {structure.name || "Whiteboard Diagram"}
-          </div>
+        <span style={{ fontSize: isVertical ? "20px" : "18px" }}>✎</span>
+        <div
+          style={{
+            fontSize: isVertical ? "20px" : "17px",
+            fontWeight: 800,
+            color: "#fbbf24",
+            letterSpacing: "0.8px",
+            fontFamily: displayFont.fontFamily,
+            textTransform: "uppercase"
+          }}
+        >
+          {structure.name || "Whiteboard Architecture"}
         </div>
+      </div>
 
-        {/* 1. Network / Architecture Diagram View */}
-        {hasNodesOrEdges && (
-          <div
-            style={{
-              position: "relative",
-              width: `${width}px`,
-              height: `${height}px`,
-              overflow: "visible"
-            }}
-          >
-            <svg
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                overflow: "visible"
-              }}
-            >
-              {edges.map((edge, idx) => {
-                const p1 = findPos(edge.from);
-                const p2 = findPos(edge.to);
-                if (!p1 || !p2) return null;
+      {/* 1. Full-Screen Architecture SVG Board */}
+      {hasNodesOrEdges && (
+        <svg
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            overflow: "visible"
+          }}
+          viewBox={`0 0 ${width} ${height}`}
+        >
+          {edges.map((edge, idx) => {
+            const p1 = findPos(edge.from);
+            const p2 = findPos(edge.to);
+            if (!p1 || !p2) return null;
 
-                const hasOpposite = edges.some((other) => other.from === edge.to && other.to === edge.from);
-                const dx = p2.x - p1.x;
-                const dy = p2.y - p1.y;
-                const len = Math.sqrt(dx * dx + dy * dy) || 1;
-                const nx = -dy / len;
-                const ny = dx / len;
-                const offsetDist = hasOpposite ? 30 : 0;
+            const size1 = findSize(edge.from);
+            const size2 = findSize(edge.to);
 
-                const pad = isVertical ? 72 : 54;
-                const startX = p1.x + (dx / len) * pad + nx * offsetDist;
-                const startY = p1.y + (dy / len) * pad + ny * offsetDist;
-                const endX = p2.x - (dx / len) * pad + nx * offsetDist;
-                const endY = p2.y - (dy / len) * pad + ny * offsetDist;
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const len = Math.sqrt(dx * dx + dy * dy) || 1;
+            const nx = -dy / len;
+            const ny = dx / len;
 
-                const isActive = edge.status === "active" || edge.status === "traversed";
-                const arrowColor = isActive ? "#ff7700" : "#64748b";
+            // Check if opposite edge exists for bidirectional highway
+            const hasOpposite = edges.some((other) => other.from === edge.to && other.to === edge.from);
+            const laneOffset = hasOpposite ? 44 : 0;
 
-                const startFrame = 8 + idx * 6;
+            const pad1 = getBoundaryOffset(size1.width, size1.height, dx, dy);
+            const pad2 = getBoundaryOffset(size2.width, size2.height, dx, dy);
 
-                return (
-                  <RoughArrow
-                    key={`edge-${idx}`}
-                    x1={startX}
-                    y1={startY}
-                    x2={endX}
-                    y2={endY}
-                    label={edge.label}
-                    color={arrowColor}
-                    startFrame={startFrame}
-                    duration={16}
-                  />
-                );
-              })}
+            const startX = p1.x + (dx / len) * pad1 + nx * laneOffset;
+            const startY = p1.y + (dy / len) * pad1 + ny * laneOffset;
+            const endX = p2.x - (dx / len) * pad2 + nx * laneOffset;
+            const endY = p2.y - (dy / len) * pad2 + ny * laneOffset;
 
-              {nodes.map((node, i) => {
-                const pos = positions.get(node.id) || { x: cx, y: cy };
-                const isHub = hubNode && node.id === hubNode.id;
-                const startFrame = i * 4;
+            const isActive = edge.status === "active" || edge.status === "traversed";
+            const arrowColor = isActive ? "#ff7700" : "#64748b";
 
-                return (
-                  <RoughBoxNode
-                    key={node.id}
-                    id={node.id}
-                    label={node.label}
-                    subLabel={node.subLabel}
-                    x={pos.x}
-                    y={pos.y}
-                    width={isHub ? (isVertical ? 360 : 280) : isVertical ? 320 : 250}
-                    height={isHub ? (isVertical ? 130 : 108) : isVertical ? 118 : 96}
-                    status={node.status}
-                    startFrame={startFrame}
-                    isHub={isHub}
-                  />
-                );
-              })}
-            </svg>
-          </div>
-        )}
+            const startFrame = 8 + idx * 6;
+            // Stagger labels on bidirectional lanes so they never collide
+            const labelT = hasOpposite ? (idx % 2 === 0 ? 0.36 : 0.64) : 0.5;
 
-        {/* 2. Array / Elements Sketch View */}
-        {hasElements && (
-          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center", padding: "24px 10px" }}>
-            {elements.map((el, idx) => {
-              const isHigh = !!el.highlight;
-              const bounce = Math.sin(frame * 0.25) * 4;
-              return (
-                <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                  <div style={{ fontSize: isVertical ? "16px" : "14px", color: "#94a3b8", fontFamily: monoFont.fontFamily, marginBottom: "5px" }}>
-                    [{idx}]
-                  </div>
-                  <div
-                    style={{
-                      width: isVertical ? "86px" : "72px",
-                      height: isVertical ? "86px" : "72px",
-                      border: isHigh ? "3px solid #ff7700" : "2px dashed rgba(255, 255, 255, 0.4)",
-                      borderRadius: "12px",
-                      background: isHigh ? "rgba(255, 119, 0, 0.25)" : "#181824",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: isVertical ? "34px" : "28px",
-                      fontWeight: 800,
-                      color: isHigh ? "#ffedd5" : "#ffffff",
-                      fontFamily: displayFont.fontFamily,
-                      boxShadow: isHigh ? "0 0 20px rgba(255, 107, 0, 0.5)" : "none"
-                    }}
-                  >
-                    {el.value}
-                  </div>
-                  {el.pointerLabel && (
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "8px", transform: `translateY(${bounce}px)` }}>
-                      <span style={{ color: "#ff7700", fontSize: isVertical ? "16px" : "14px" }}>▲</span>
-                      <span style={{ fontSize: isVertical ? "17px" : "14px", fontWeight: 700, color: "#ffaa55", fontFamily: primaryFont.fontFamily }}>
-                        {el.pointerLabel}
-                      </span>
-                    </div>
-                  )}
+            return (
+              <RoughArrow
+                key={`edge-${idx}`}
+                x1={startX}
+                y1={startY}
+                x2={endX}
+                y2={endY}
+                label={edge.label}
+                color={arrowColor}
+                startFrame={startFrame}
+                duration={16}
+                labelT={labelT}
+              />
+            );
+          })}
+
+          {nodes.map((node, i) => {
+            const pos = positions.get(node.id) || { x: width / 2, y: height / 2 };
+            const size = nodeSizes.get(node.id) || { width: 360, height: 140, isHub: false };
+            const startFrame = i * 4;
+
+            return (
+              <RoughBoxNode
+                key={node.id}
+                id={node.id}
+                label={node.label}
+                subLabel={node.subLabel}
+                x={pos.x}
+                y={pos.y}
+                width={size.width}
+                height={size.height}
+                status={node.status}
+                startFrame={startFrame}
+                isHub={size.isHub}
+              />
+            );
+          })}
+        </svg>
+      )}
+
+      {/* 2. Array / Elements Sketch View */}
+      {hasElements && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            gap: "24px",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            width: "90%",
+            maxWidth: "1400px"
+          }}
+        >
+          {elements.map((el, idx) => {
+            const isHigh = !!el.highlight;
+            const bounce = Math.sin(frame * 0.25) * 5;
+            return (
+              <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <div style={{ fontSize: isVertical ? "18px" : "16px", color: "#94a3b8", fontFamily: monoFont.fontFamily, marginBottom: "8px" }}>
+                  [{idx}]
                 </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* 3. Entries / Key-Value / Table Sketch View */}
-        {hasEntries && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "14px", justifyContent: "center", padding: "18px 12px", width: "100%" }}>
-            {entries.map((entry, idx) => {
-              const isHigh = !!entry.highlight;
-              return (
                 <div
-                  key={idx}
                   style={{
+                    width: isVertical ? "110px" : "90px",
+                    height: isVertical ? "110px" : "90px",
+                    border: isHigh ? "3.5px solid #ff7700" : "2.5px dashed rgba(255, 255, 255, 0.4)",
+                    borderRadius: "16px",
+                    background: isHigh ? "rgba(255, 119, 0, 0.25)" : "#181824",
                     display: "flex",
                     alignItems: "center",
-                    gap: "12px",
-                    padding: isVertical ? "12px 24px" : "10px 18px",
-                    background: isHigh ? "rgba(255, 119, 0, 0.25)" : "#181824",
-                    border: isHigh ? "2.5px solid #ff7700" : "1.5px dashed rgba(255, 255, 255, 0.3)",
-                    borderRadius: "12px",
-                    fontFamily: primaryFont.fontFamily,
-                    fontSize: isVertical ? "24px" : "20px",
-                    color: "#ffffff"
+                    justifyContent: "center",
+                    fontSize: isVertical ? "44px" : "36px",
+                    fontWeight: 800,
+                    color: isHigh ? "#ffedd5" : "#ffffff",
+                    fontFamily: displayFont.fontFamily,
+                    boxShadow: isHigh ? "0 0 24px rgba(255, 107, 0, 0.55)" : "none"
                   }}
                 >
-                  <span style={{ color: "#fbbf24", fontWeight: 700 }}>{entry.key}</span>
-                  <span style={{ color: "#94a3b8" }}>→</span>
-                  <span>{entry.value}</span>
+                  {el.value}
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                {el.pointerLabel && (
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "12px", transform: `translateY(${bounce}px)` }}>
+                    <span style={{ color: "#ff7700", fontSize: isVertical ? "18px" : "16px" }}>▲</span>
+                    <span style={{ fontSize: isVertical ? "20px" : "16px", fontWeight: 700, color: "#ffaa55", fontFamily: primaryFont.fontFamily }}>
+                      {el.pointerLabel}
+                    </span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 3. Entries / Key-Value / Table Sketch View */}
+      {hasEntries && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "20px",
+            justifyContent: "center",
+            width: "90%",
+            maxWidth: "1400px"
+          }}
+        >
+          {entries.map((entry, idx) => {
+            const isHigh = !!entry.highlight;
+            return (
+              <div
+                key={idx}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "16px",
+                  padding: isVertical ? "18px 36px" : "14px 28px",
+                  background: isHigh ? "rgba(255, 119, 0, 0.25)" : "#181824",
+                  border: isHigh ? "3px solid #ff7700" : "2px dashed rgba(255, 255, 255, 0.35)",
+                  borderRadius: "16px",
+                  fontFamily: primaryFont.fontFamily,
+                  fontSize: isVertical ? "28px" : "22px",
+                  color: "#ffffff"
+                }}
+              >
+                <span style={{ color: "#fbbf24", fontWeight: 800 }}>{entry.key}</span>
+                <span style={{ color: "#94a3b8" }}>→</span>
+                <span>{entry.value}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

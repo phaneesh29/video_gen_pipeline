@@ -122,6 +122,9 @@ export function RoughBoxNode({
 
   const wiggleOffset = Math.sin(frame * 0.2) * 2;
 
+  const titleSize = width < 300 ? "23px" : width < 370 ? "27px" : isHub ? "33px" : "29px";
+  const subSize = width < 300 ? "16px" : width < 370 ? "18px" : "21px";
+
   return (
     <g>
       {/* 1. Solid dark card backing for 100% text contrast and clean readability */}
@@ -130,10 +133,10 @@ export function RoughBoxNode({
         y={top}
         width={width}
         height={height}
-        rx={14}
+        rx={16}
         fill={solidBg}
         stroke={status === "active" ? "#ff7700" : "rgba(255, 255, 255, 0.08)"}
-        strokeWidth={status === "active" ? 2 : 1}
+        strokeWidth={status === "active" ? 2.5 : 1}
         opacity={textOpacity}
       />
 
@@ -141,7 +144,7 @@ export function RoughBoxNode({
       <AnimatedRoughPath
         pathData={borderPaths}
         strokeColor={strokeColor}
-        strokeWidth={isHub ? 3.4 : 2.6}
+        strokeWidth={isHub ? 3.6 : 2.8}
         startFrame={startFrame}
         duration={18}
       />
@@ -177,7 +180,7 @@ export function RoughBoxNode({
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
-            padding: "8px 14px",
+            padding: "8px 16px",
             opacity: textOpacity,
             fontFamily: primaryFont.fontFamily,
             boxSizing: "border-box"
@@ -191,7 +194,7 @@ export function RoughBoxNode({
                 color: "#38bdf8",
                 letterSpacing: "1.2px",
                 fontFamily: monoFont.fontFamily,
-                marginBottom: "4px",
+                marginBottom: "5px",
                 textTransform: "uppercase"
               }}
             >
@@ -200,7 +203,7 @@ export function RoughBoxNode({
           )}
           <div
             style={{
-              fontSize: isHub ? "28px" : "25px",
+              fontSize: titleSize,
               fontWeight: 800,
               color: scheme.text,
               lineHeight: 1.25,
@@ -214,9 +217,9 @@ export function RoughBoxNode({
           {subLabel && (
             <div
               style={{
-                fontSize: "18px",
+                fontSize: subSize,
                 color: scheme.sub,
-                marginTop: "4px",
+                marginTop: "5px",
                 fontFamily: primaryFont.fontFamily,
                 fontWeight: 700,
                 letterSpacing: "0.2px"
@@ -242,7 +245,8 @@ export function RoughArrow({
   label,
   color = "#ff7700",
   startFrame = 0,
-  duration = 20
+  duration = 20,
+  labelT = 0.5
 }) {
   const frame = useCurrentFrame();
 
@@ -254,18 +258,18 @@ export function RoughArrow({
     seed: arrowSeed,
     roughness: 1.3,
     stroke: color,
-    strokeWidth: 3.5
+    strokeWidth: 4.5
   });
 
   const angle = Math.atan2(y2 - y1, x2 - x1);
-  const headLen = 22;
+  const headLen = 26;
   const hx1 = x2 - headLen * Math.cos(angle - Math.PI / 6);
   const hy1 = y2 - headLen * Math.sin(angle - Math.PI / 6);
   const hx2 = x2 - headLen * Math.cos(angle + Math.PI / 6);
   const hy2 = y2 - headLen * Math.sin(angle + Math.PI / 6);
 
-  const headShape1 = generator.line(x2, y2, hx1, hy1, { seed: arrowSeed + 1, roughness: 1.2, stroke: color, strokeWidth: 3.5 });
-  const headShape2 = generator.line(x2, y2, hx2, hy2, { seed: arrowSeed + 2, roughness: 1.2, stroke: color, strokeWidth: 3.5 });
+  const headShape1 = generator.line(x2, y2, hx1, hy1, { seed: arrowSeed + 1, roughness: 1.2, stroke: color, strokeWidth: 4.5 });
+  const headShape2 = generator.line(x2, y2, hx2, hy2, { seed: arrowSeed + 2, roughness: 1.2, stroke: color, strokeWidth: 4.5 });
 
   const allPaths = [
     ...generator.toPaths(lineShape),
@@ -278,8 +282,8 @@ export function RoughArrow({
     extrapolateRight: "clamp"
   });
 
-  const mx = (x1 + x2) / 2;
-  const my = (y1 + y2) / 2;
+  const mx = x1 + (x2 - x1) * labelT;
+  const my = y1 + (y2 - y1) * labelT;
 
   const progress = interpolate(frame, [startFrame, startFrame + duration], [0, 1], {
     extrapolateLeft: "clamp",
@@ -294,15 +298,15 @@ export function RoughArrow({
       <AnimatedRoughPath
         pathData={allPaths}
         strokeColor={color}
-        strokeWidth={3.5}
+        strokeWidth={4.5}
         startFrame={startFrame}
         duration={duration}
       />
 
       {/* Floating animated pencil tip */}
       {showPen && (
-        <foreignObject x={penX - 10} y={penY - 30} width={44} height={44}>
-          <div style={{ fontSize: "26px", transform: "rotate(-40deg)" }}>
+        <foreignObject x={penX - 12} y={penY - 34} width={52} height={52}>
+          <div style={{ fontSize: "32px", transform: "rotate(-40deg)" }}>
             ✏️
           </div>
         </foreignObject>
@@ -311,10 +315,10 @@ export function RoughArrow({
       {/* Handwritten sticky label on arrow */}
       {label && (
         <foreignObject
-          x={mx - 150}
-          y={my - 24}
-          width={300}
-          height={50}
+          x={mx - 170}
+          y={my - 28}
+          width={340}
+          height={56}
           style={{ pointerEvents: "none" }}
         >
           <div
@@ -329,15 +333,15 @@ export function RoughArrow({
               style={{
                 background: "#181822",
                 border: `2px dashed ${color}`,
-                borderRadius: "10px",
-                padding: "4px 14px",
-                fontSize: "18px",
+                borderRadius: "12px",
+                padding: "6px 18px",
+                fontSize: "21px",
                 fontWeight: 800,
                 color: "#ffffff",
                 fontFamily: primaryFont.fontFamily,
                 whiteSpace: "nowrap",
                 letterSpacing: "0.2px",
-                boxShadow: "0 4px 14px rgba(0, 0, 0, 0.85)"
+                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.9)"
               }}
             >
               {label}

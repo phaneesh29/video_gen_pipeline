@@ -22,7 +22,7 @@ export function Subtitles({ text, isVertical }) {
     <div
       style={{
         position: "absolute",
-        bottom: isVertical ? "120px" : "32px",
+        bottom: isVertical ? "60px" : "32px",
         left: "50%",
         transform: `translateX(-50%) scale(${enterScale})`,
         opacity: enterOpacity,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Series, Audio, staticFile } from "remotion";
+import { Series } from "remotion";
 import { Header } from "./Header.jsx";
 import { CodeEditor } from "./CodeEditor.jsx";
 import { VisualCanvas } from "./VisualCanvas.jsx";
@@ -26,10 +26,6 @@ export function ExplainerVideo({ storyboard }) {
         {scenes.map((scene, idx) => {
           return (
             <Series.Sequence key={idx} durationInFrames={scene.durationInFrames}>
-              {scene.audioStaticPath ? (
-                <Audio src={staticFile(scene.audioStaticPath)} />
-              ) : null}
-
               <div
                 style={{
                   flex: 1,

@@ -63,9 +63,11 @@ export function TreeRenderer({ name, nodes, edges }) {
   return (
     <div
       style={{
+        width: "100%",
         display: "flex",
         flexDirection: "column",
-        gap: "12px",
+        alignItems: "center",
+        gap: "14px",
         background: "rgba(14, 14, 18, 0.7)",
         border: "1px solid rgba(255, 107, 0, 0.18)",
         borderRadius: "16px",
@@ -74,14 +76,14 @@ export function TreeRenderer({ name, nodes, edges }) {
         backdropFilter: "blur(10px)"
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
         <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ff6b00", boxShadow: "0 0 10px #ff6b00" }} />
         <div style={{ fontSize: "16px", fontWeight: 800, color: "#ff9d42", textTransform: "uppercase", letterSpacing: "1px" }}>
           {name} <span style={{ color: "#6e7681", fontSize: "14px", fontWeight: 600 }}>(tree)</span>
         </div>
       </div>
 
-      <div style={{ position: "relative", width: "100%", height: `${height}px`, overflow: "hidden" }}>
+      <div style={{ position: "relative", width: `${width}px`, height: `${height}px`, overflow: "hidden" }}>
         <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
           {nodes.map((parent) => {
             const pPos = positions.get(parent.id);

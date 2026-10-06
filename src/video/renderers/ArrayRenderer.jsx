@@ -4,25 +4,27 @@ export function ArrayRenderer({ name, elements, type }) {
   return (
     <div
       style={{
+        width: "100%",
         display: "flex",
         flexDirection: "column",
-        gap: "14px",
+        gap: "16px",
         background: "rgba(14, 14, 18, 0.7)",
         border: "1px solid rgba(255, 107, 0, 0.18)",
         borderRadius: "16px",
         padding: "24px 30px",
         boxShadow: "0 8px 30px rgba(0, 0, 0, 0.6)",
-        backdropFilter: "blur(10px)"
+        backdropFilter: "blur(10px)",
+        alignItems: "center"
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
         <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ff6b00", boxShadow: "0 0 10px #ff6b00" }} />
         <div style={{ fontSize: "16px", fontWeight: 800, color: "#ff9d42", textTransform: "uppercase", letterSpacing: "1px" }}>
           {name} <span style={{ color: "#6e7681", fontSize: "14px", fontWeight: 600 }}>({type})</span>
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: "14px", alignItems: "flex-start", marginTop: "10px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "14px", alignItems: "flex-start", justifyContent: "center", marginTop: "10px", flexWrap: "wrap", width: "100%" }}>
         {elements.map((el, idx) => {
           return (
             <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "70px" }}>

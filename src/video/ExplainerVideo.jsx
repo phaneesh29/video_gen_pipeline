@@ -41,7 +41,6 @@ export function ExplainerVideo({ storyboard }) {
               >
                 <VisualCanvas
                   structures={scene.visual.structures}
-                  actionDescription={scene.visual.actionDescription}
                 />
                 <CodeEditor
                   codeLines={pythonCode}

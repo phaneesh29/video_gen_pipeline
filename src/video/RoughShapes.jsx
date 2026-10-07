@@ -81,6 +81,7 @@ export function RoughBoxNode({
   y,
   width = 210,
   height = 88,
+  shape = "rectangle",
   status = "normal",
   startFrame = 0,
   isHub = false
@@ -104,32 +105,181 @@ export function RoughBoxNode({
   const top = y - height / 2;
   const nodeSeed = getSeed(id || label);
 
-  // Clean hand-drawn sketchy rough border - HOLLOW outline only (NO diagonal hachure shading)
-  const rectShape = generator.rectangle(left, top, width, height, {
-    seed: nodeSeed + 10,
-    roughness: isHub ? 1.4 : 1.1,
-    bowing: 1.0,
-    stroke: strokeColor,
-    strokeWidth: isHub ? 3.4 : 2.6,
-    fill: "none"
-  });
-
-  const borderPaths = generator.toPaths(rectShape);
-
   // Handwritten text fade-in as box completes drawing
   const textOpacity = interpolate(frame, [startFrame + 6, startFrame + 16], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp"
   });
 
-  const wiggleOffset = Math.sin(frame * 0.2) * 2;
+  let borderPaths = [];
+  let backingElement = null;
 
-  const titleSize = width < 300 ? "23px" : width < 370 ? "27px" : isHub ? "33px" : "29px";
-  const subSize = width < 300 ? "16px" : width < 370 ? "18px" : "21px";
+  if (shape === "cylinder") {
+    const ry = Math.min(24, height * 0.18);
+    const topEllipse = generator.ellipse(x, top + ry, width, ry * 2, {
+      seed: nodeSeed,
+      roughness: isHub ? 1.4 : 1.1,
+      stroke: strokeColor,
+      strokeWidth: isHub ? 3.4 : 2.6,
+      fill: "none"
+    });
+    const leftLine = generator.line(left, top + ry, left, top + height - ry, {
+      seed: nodeSeed + 1,
+      roughness: 1.1,
+      stroke: strokeColor,
+      strokeWidth: isHub ? 3.4 : 2.6
+    });
+    const rightLine = generator.line(left + width, top + ry, left + width, top + height - ry, {
+      seed: nodeSeed + 2,
+      roughness: 1.1,
+      stroke: strokeColor,
+      strokeWidth: isHub ? 3.4 : 2.6
+    });
+    const bottomArc = generator.arc(x, top + height - ry, width, ry * 2, 0, Math.PI, false, {
+      seed: nodeSeed + 3,
+      roughness: 1.2,
+      stroke: strokeColor,
+      strokeWidth: isHub ? 3.4 : 2.6
+    });
+    const midArc = generator.arc(x, top + height * 0.48, width, ry * 2, 0, Math.PI, false, {
+      seed: nodeSeed + 4,
+      roughness: 1.1,
+      stroke: strokeColor,
+      strokeWidth: 1.8
+    });
 
-  return (
-    <g>
-      {/* 1. Solid dark card backing for 100% text contrast and clean readability */}
+    borderPaths = [
+      ...generator.toPaths(topEllipse),
+      ...generator.toPaths(leftLine),
+      ...generator.toPaths(rightLine),
+      ...generator.toPaths(bottomArc),
+      ...generator.toPaths(midArc)
+    ];
+
+    const cylinderD = `M ${left} ${top + ry} A ${width / 2} ${ry} 0 0 1 ${left + width} ${top + ry} L ${left + width} ${top + height - ry} A ${width / 2} ${ry} 0 0 1 ${left} ${top + height - ry} Z`;
+    backingElement = (
+      <path
+        d={cylinderD}
+        fill={solidBg}
+        stroke={status === "active" ? "#ff7700" : "rgba(255, 255, 255, 0.08)"}
+        strokeWidth={status === "active" ? 2.5 : 1}
+        opacity={textOpacity}
+      />
+    );
+  } else if (shape === "diamond") {
+    const pts = [
+      [x, top],
+      [left + width, y],
+      [x, top + height],
+      [left, y]
+    ];
+    const diamondShape = generator.polygon(pts, {
+      seed: nodeSeed,
+      roughness: isHub ? 1.4 : 1.1,
+      stroke: strokeColor,
+      strokeWidth: isHub ? 3.4 : 2.6,
+      fill: "none"
+    });
+    borderPaths = generator.toPaths(diamondShape);
+    backingElement = (
+      <polygon
+        points={pts.map((p) => p.join(",")).join(" ")}
+        fill={solidBg}
+        stroke={status === "active" ? "#ff7700" : "rgba(255, 255, 255, 0.08)"}
+        strokeWidth={status === "active" ? 2.5 : 1}
+        opacity={textOpacity}
+      />
+    );
+  } else if (shape === "hexagon") {
+    const inset = width * 0.15;
+    const pts = [
+      [left + inset, top],
+      [left + width - inset, top],
+      [left + width, y],
+      [left + width - inset, top + height],
+      [left + inset, top + height],
+      [left, y]
+    ];
+    const hexShape = generator.polygon(pts, {
+      seed: nodeSeed,
+      roughness: isHub ? 1.4 : 1.1,
+      stroke: strokeColor,
+      strokeWidth: isHub ? 3.4 : 2.6,
+      fill: "none"
+    });
+    borderPaths = generator.toPaths(hexShape);
+    backingElement = (
+      <polygon
+        points={pts.map((p) => p.join(",")).join(" ")}
+        fill={solidBg}
+        stroke={status === "active" ? "#ff7700" : "rgba(255, 255, 255, 0.08)"}
+        strokeWidth={status === "active" ? 2.5 : 1}
+        opacity={textOpacity}
+      />
+    );
+  } else if (shape === "funnel") {
+    const inset = width * 0.20;
+    const pts = [
+      [left, top],
+      [left + width, top],
+      [left + width - inset, top + height],
+      [left + inset, top + height]
+    ];
+    const funnelShape = generator.polygon(pts, {
+      seed: nodeSeed,
+      roughness: isHub ? 1.4 : 1.1,
+      stroke: strokeColor,
+      strokeWidth: isHub ? 3.4 : 2.6,
+      fill: "none"
+    });
+    borderPaths = generator.toPaths(funnelShape);
+    backingElement = (
+      <polygon
+        points={pts.map((p) => p.join(",")).join(" ")}
+        fill={solidBg}
+        stroke={status === "active" ? "#ff7700" : "rgba(255, 255, 255, 0.08)"}
+        strokeWidth={status === "active" ? 2.5 : 1}
+        opacity={textOpacity}
+      />
+    );
+  } else if (shape === "cloud") {
+    const b = top + height;
+    const r = left + width;
+    const cloudD = `M ${left + 40} ${b - 12}
+      C ${left - 8} ${b - 12}, ${left - 8} ${top + height * 0.52}, ${left + 22} ${top + height * 0.44}
+      C ${left + 10} ${top + 14}, ${left + width * 0.36} ${top + 4}, ${left + width * 0.48} ${top + 18}
+      C ${left + width * 0.60} ${top + 2}, ${r - 20} ${top + 16}, ${r - 14} ${top + height * 0.44}
+      C ${r + 14} ${top + height * 0.52}, ${r + 14} ${b - 12}, ${r - 35} ${b - 12}
+      Z`;
+    const cloudShape = generator.path(cloudD, {
+      seed: nodeSeed,
+      roughness: 1.4,
+      stroke: strokeColor,
+      strokeWidth: isHub ? 3.4 : 2.6,
+      fill: "none"
+    });
+    borderPaths = generator.toPaths(cloudShape);
+    backingElement = (
+      <path
+        d={cloudD}
+        fill={solidBg}
+        stroke={status === "active" ? "#ff7700" : "rgba(255, 255, 255, 0.08)"}
+        strokeWidth={status === "active" ? 2.5 : 1}
+        opacity={textOpacity}
+      />
+    );
+  } else {
+    // Default: rounded rectangle
+    const rectShape = generator.rectangle(left, top, width, height, {
+      seed: nodeSeed + 10,
+      roughness: isHub ? 1.4 : 1.1,
+      bowing: 1.0,
+      stroke: strokeColor,
+      strokeWidth: isHub ? 3.4 : 2.6,
+      fill: "none"
+    });
+    borderPaths = generator.toPaths(rectShape);
+    backingElement = (
       <rect
         x={left}
         y={top}
@@ -141,8 +291,20 @@ export function RoughBoxNode({
         strokeWidth={status === "active" ? 2.5 : 1}
         opacity={textOpacity}
       />
+    );
+  }
 
-      {/* 2. Hand-drawn sketchy hollow border (outline only, no scribble shading) */}
+  const wiggleOffset = Math.sin(frame * 0.2) * 2;
+
+  const titleSize = width < 300 ? "23px" : width < 370 ? "27px" : isHub ? "33px" : "29px";
+  const subSize = width < 300 ? "16px" : width < 370 ? "18px" : "21px";
+
+  return (
+    <g>
+      {/* 1. Solid dark card backing for 100% text contrast and clean readability */}
+      {backingElement}
+
+      {/* 2. Hand-drawn sketchy hollow border */}
       <AnimatedRoughPath
         pathData={borderPaths}
         strokeColor={strokeColor}
@@ -392,3 +554,75 @@ export function RoughArrow({
     </g>
   );
 }
+
+/**
+ * Hand-drawn bounding container box enclosing a group of related cluster nodes
+ */
+export function RoughContainer({
+  x,
+  y,
+  width,
+  height,
+  label,
+  startFrame = 0
+}) {
+  const frame = useCurrentFrame();
+  if (frame < startFrame) return null;
+
+  const left = x;
+  const top = y;
+  const boxSeed = getSeed(`container-${label}`);
+  const rectShape = generator.rectangle(left, top, width, height, {
+    seed: boxSeed,
+    roughness: 1.2,
+    stroke: "rgba(255, 119, 0, 0.4)",
+    strokeWidth: 2,
+    fill: "none"
+  });
+  const paths = generator.toPaths(rectShape);
+
+  return (
+    <g>
+      <rect
+        x={left}
+        y={top}
+        width={width}
+        height={height}
+        rx={24}
+        fill="rgba(255, 119, 0, 0.03)"
+        stroke="rgba(255, 119, 0, 0.35)"
+        strokeWidth={1.5}
+        strokeDasharray="10,8"
+      />
+      <AnimatedRoughPath
+        pathData={paths}
+        strokeColor="rgba(255, 119, 0, 0.4)"
+        strokeWidth={2}
+        startFrame={startFrame}
+        duration={14}
+      />
+      {label && (
+        <foreignObject x={left + 24} y={top - 18} width={Math.max(260, width - 48)} height={40}>
+          <div
+            style={{
+              display: "inline-block",
+              background: "#181824",
+              border: "1.5px solid rgba(255, 119, 0, 0.5)",
+              borderRadius: "10px",
+              padding: "4px 14px",
+              fontSize: "14px",
+              fontWeight: 800,
+              color: "#ffaa55",
+              fontFamily: monoFont.fontFamily,
+              letterSpacing: "0.8px",
+              textTransform: "uppercase"
+            }}
+          >
+            {label}
+          </div>
+        </foreignObject>
+      )}
+    </g>
+  );
+}
+

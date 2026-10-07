@@ -76,7 +76,17 @@ When explaining end-to-end data pipelines:
 - Always include Lucide icon names: "User", "Server", "Database", "Layers", "Globe", "Cpu", "ShieldCheck", "Play", "Zap".
 - Every edge MUST have a meaningful label (never empty or null).
 
-## 3. TTS-Native Narration Rules
+## 3. EXPRESSIVE ARCHITECTURE SHAPES (Never make all nodes plain boxes!)
+Every node in \`nodes\` MUST specify a semantic \`shape\`:
+- "cylinder": Databases, Blob Storage, Redis, Caches, Persistent Tables
+- "cloud": Global C D N, Internet, Edge Servers, External Services
+- "diamond": Conditionals, Decisions, Verification, Copyright Scanning, Auth Gateways
+- "hexagon": Distributed Workers, Transcoders, M L Inference, Microservices
+- "funnel": Candidate Generation, Search Retrieval, Filtering
+- "rectangle": Standard Clients, Endpoints, API Gateways
+Optional: Set \`containerLabel\` (e.g. "Google Cloud Ingest Fleet" or "Edge CDN Cluster") on the data structure to draw a surrounding group enclosure boundary around the nodes!
+
+## 4. TTS-Native Narration Rules
 - Acronyms: Write spoken letter spacing for TTS clarity (e.g. "S F U", "H T T P", "T C P", "C D N", "D B M S", "A V 1", "V P 9", "H 2 6 4", "A B R", "H L S", "D A S H", "V C U").
 - Pacing: 7 to 9 concise scenes. Each scene has 1 to 2 spoken sentences (12 to 24 words).
 - Punctuation: Clean spoken English only. Never use markdown, asterisks, brackets, parentheses, or code snippets in narration.

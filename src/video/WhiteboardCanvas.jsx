@@ -1,6 +1,6 @@
 import React from "react";
 import { useCurrentFrame } from "remotion";
-import { RoughBoxNode, RoughArrow } from "./RoughShapes.jsx";
+import { RoughBoxNode, RoughArrow, RoughContainer } from "./RoughShapes.jsx";
 import { primaryFont, displayFont, monoFont } from "./fonts.js";
 
 /**
@@ -223,13 +223,18 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
  * Mathematically computes the exact distance from node center to outer rectangle boundary
  * along direction angle to ensure arrows terminate cleanly outside cards.
  */
-function getBoundaryOffset(w, h, dx, dy) {
+function getBoundaryOffset(w, h, dx, dy, shape = "rectangle") {
   const len = Math.sqrt(dx * dx + dy * dy) || 1;
   const cos = Math.abs(dx / len);
   const sin = Math.abs(dy / len);
 
   const halfW = w / 2;
   const halfH = h / 2;
+
+  if (shape === "diamond") {
+    const denom = (cos / halfW) + (sin / halfH) || 1;
+    return (1 / denom) + 14;
+  }
 
   let offset = halfH + 16;
   if (cos > 0.001 && sin > 0.001) {
@@ -336,6 +341,31 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
           }}
           viewBox={`0 0 ${width} ${height}`}
         >
+          {/* Bounding Cluster Container (if containerLabel is specified) */}
+          {structure.containerLabel && nodes.length > 1 && (() => {
+            const allXs = nodes.map((n) => (positions.get(n.id) || { x: width / 2 }).x);
+            const allYs = nodes.map((n) => (positions.get(n.id) || { y: height / 2 }).y);
+            const allWs = nodes.map((n) => (nodeSizes.get(n.id) || { width: 360 }).width);
+            const allHs = nodes.map((n) => (nodeSizes.get(n.id) || { height: 140 }).height);
+
+            const minX = Math.min(...allXs.map((x, i) => x - allWs[i] / 2)) - 32;
+            const maxX = Math.max(...allXs.map((x, i) => x + allWs[i] / 2)) + 32;
+            const minY = Math.min(...allYs.map((y, i) => y - allHs[i] / 2)) - 42;
+            const maxY = Math.max(...allYs.map((y, i) => y + allHs[i] / 2)) + 32;
+
+            return (
+              <RoughContainer
+                key="cluster-container"
+                x={minX}
+                y={minY}
+                width={maxX - minX}
+                height={maxY - minY}
+                label={structure.containerLabel}
+                startFrame={2}
+              />
+            );
+          })()}
+
           {edges.map((edge, idx) => {
             const p1 = findPos(edge.from);
             const p2 = findPos(edge.to);
@@ -380,25 +410,18 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
               const baseLane = Math.max(48, Math.min(desiredOffset, maxSafeOffset));
               laneOffset = baseLane + dirIndex * 26;
 
-              // Stagger labels longitudinally so they never collide:
-              // Forward edge label: placed near its source (e.g. 0.28)
-              // Reverse edge label: placed near its source (0.28), which is (0.72) relative to forward edge!
-              // This gives massive 360px+ vertical separation and 170px+ horizontal lane separation.
               if (sameDirEdges.length === 1) {
                 labelT = 0.28;
               } else {
                 labelT = 0.22 + dirIndex * 0.18;
               }
             } else if (sameDirEdges.length > 1) {
-              // Multiple parallel edges in the same direction: distribute across lanes & stagger
               const count = sameDirEdges.length;
               const spread = Math.min(maxSafeOffset * 1.4, (count - 1) * (isVertical ? 60 : 44));
               const startOffset = -spread / 2;
               laneOffset = count > 1 ? startOffset + (dirIndex * spread) / (count - 1) : 0;
               labelT = 0.30 + (dirIndex / (count - 1 || 1)) * 0.40;
             } else {
-              // Single unidirectional arrow between this pair.
-              // If multiple arrows fan out from the same source node, stagger labels along rays so they never collide horizontally:
               const fanOutEdges = edges.filter((e) => e.from === edge.from);
               if (fanOutEdges.length > 1) {
                 const fanIndex = fanOutEdges.indexOf(edge);
@@ -410,8 +433,10 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
               laneOffset = 0;
             }
 
-            const pad1 = getBoundaryOffset(size1.width, size1.height, dx, dy);
-            const pad2 = getBoundaryOffset(size2.width, size2.height, dx, dy);
+            const node1 = nodes.find((n) => n.id === edge.from);
+            const node2 = nodes.find((n) => n.id === edge.to);
+            const pad1 = getBoundaryOffset(size1.width, size1.height, dx, dy, node1?.shape || "rectangle");
+            const pad2 = getBoundaryOffset(size2.width, size2.height, dx, dy, node2?.shape || "rectangle");
 
             const startX = p1.x + (dx / len) * pad1 + nx * laneOffset;
             const startY = p1.y + (dy / len) * pad1 + ny * laneOffset;
@@ -454,6 +479,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                 y={pos.y}
                 width={size.width}
                 height={size.height}
+                shape={node.shape || "rectangle"}
                 status={node.status}
                 startFrame={startFrame}
                 isHub={size.isHub}

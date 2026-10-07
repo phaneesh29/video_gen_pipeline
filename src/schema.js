@@ -17,6 +17,14 @@ export const graphNodeSchema = z.object({
   label: z.string(),
   subLabel: z.string().nullable(),
   icon: z.string().nullable().default(null),
+  shape: z.enum([
+    "rectangle",
+    "cylinder",
+    "cloud",
+    "diamond",
+    "hexagon",
+    "funnel"
+  ]).default("rectangle"),
   status: z.enum(["normal", "active", "visited", "highlighted"])
 });
 
@@ -29,6 +37,7 @@ export const graphEdgeSchema = z.object({
 
 export const dataStructureSchema = z.object({
   name: z.string(),
+  containerLabel: z.string().nullable().default(null),
   type: z.enum([
     "array",
     "string",

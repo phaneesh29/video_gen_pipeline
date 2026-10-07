@@ -1,9 +1,15 @@
-Live Video Streaming Architecture: Ingestion, Multi-CDN Distribution, and Latency Bottlenecks.
-Format: 9:16 Vertical Shorts (Full-screen visual architecture diagram).
-Architecture Style: Clean, minimal diagram with 3 to 4 distinct key components (Broadcaster, Media Server, CDN Edge, and 1 or 2 Viewers). Never generate duplicate clone boxes!
+How ChatGPT Works: Predicting the Next Word (Beginner Layman Guide)
+Format: 9:16 Vertical Shorts (Full-screen visual architecture whiteboard).
+Visual Architecture: Clean, intuitive 3 to 4 component flow:
+- User Prompt (Incoming Tokens)
+- LLM Neural Core (Context & Probability Scorer)
+- Word Sampler (Picking the next best word)
+- Generated Output (The Autocomplete Loop)
 
-1. Ingestion: Broadcaster pushes raw video feed to the Origin Media Server using RTMP, SRT, or WebRTC.
-2. Transcoding: Media Server transcodes raw streams into Multi-Bitrate ABR ladders (1080p, 720p, 360p) and packages chunks into HLS or DASH.
-3. Edge Distribution: CDN Edge Servers cache video segments at edge points of presence, serving downstream viewers worldwide without overloading origin.
-4. Scale vs Mesh: Why HTTP chunk caching allows broadcast scale to millions of viewers, unlike peer-to-peer WebRTC meshes.
-5. Latency Issues: Chunk duration buffers cause 15 to 30 second latency in standard HLS; Low-Latency HLS drops it to 2 to 4 seconds, trading off caching complexity.
+Concept & Storyboard Guide for Laymen:
+1. The Setup: ChatGPT seems like magic, but at its heart, it is the world's smartest autocomplete engine.
+2. Tokenization: When you type a prompt, it breaks your sentence into small bite-sized pieces called tokens, like Lego blocks.
+3. Reading Context: The model scans all the previous words together to understand the topic and meaning.
+4. Predicting Odds: Instead of thinking like a human, it calculates probability percentages for every possible next word in the dictionary.
+5. Example: If the prompt is "The sky is...", it scores "blue" at 85 percent, "dark" at 10 percent, and "pizza" at zero percent.
+6. The Feedback Loop: It picks the winning word, appends it to the sentence, and repeats the exact same calculation for the next word until the response is done!

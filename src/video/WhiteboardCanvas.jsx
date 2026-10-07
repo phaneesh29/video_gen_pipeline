@@ -277,6 +277,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
   const hasNodesOrEdges = nodes.length > 0 || edges.length > 0;
   const hasElements = elements.length > 0;
   const hasEntries = entries.length > 0;
+  const isDataMode = hasElements || hasEntries;
 
   return (
     <div
@@ -323,7 +324,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
       </div>
 
       {/* 1. Full-Screen Architecture SVG Board */}
-      {hasNodesOrEdges && (
+      {!isDataMode && hasNodesOrEdges && (
         <svg
           style={{
             width: "100%",
@@ -466,7 +467,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
         <div
           style={{
             position: "absolute",
-            top: "50%",
+            top: hasElements && hasEntries ? (isVertical ? "33%" : "30%") : "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             display: "flex",
@@ -523,7 +524,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
         <div
           style={{
             position: "absolute",
-            top: "50%",
+            top: hasElements && hasEntries ? (isVertical ? "65%" : "66%") : "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             display: "flex",

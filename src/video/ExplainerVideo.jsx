@@ -51,7 +51,7 @@ function SceneWrapper({ scene, isVertical, hasCode, codeLines, codeTitle, codeLa
   );
 }
 
-export function ExplainerVideo({ storyboard }) {
+export function ExplainerVideo({ storyboard, branding }) {
   const { fps } = useVideoConfig();
 
   if (!storyboard || !storyboard.scenes) {
@@ -73,6 +73,33 @@ export function ExplainerVideo({ storyboard }) {
       }}
     >
       <AmbientBackground isVertical={isVertical} />
+
+      {/* Persistent Top-Left Logo Watermark */}
+      {branding?.logoSrc && (
+        <div
+          style={{
+            position: "absolute",
+            top: isVertical ? "48px" : "32px",
+            left: isVertical ? "48px" : "40px",
+            zIndex: 40,
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          <img
+            src={branding.logoSrc}
+            alt="Logo"
+            style={{
+              width: isVertical ? "74px" : "64px",
+              height: isVertical ? "74px" : "64px",
+              borderRadius: "16px",
+              border: "2px solid rgba(255, 119, 0, 0.45)",
+              boxShadow: "0 4px 18px rgba(0, 0, 0, 0.7), 0 0 12px rgba(255, 119, 0, 0.3)",
+              objectFit: "cover"
+            }}
+          />
+        </div>
+      )}
 
       <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: 1 }}>
         <Series>

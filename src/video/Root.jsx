@@ -21,7 +21,8 @@ export function Root() {
         };
       }}
       defaultProps={{
-        storyboard: null
+        storyboard: null,
+        branding: null
       }}
     />
   );

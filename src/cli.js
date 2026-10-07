@@ -4,7 +4,7 @@ import { Command } from "commander";
 import { generateStoryboard } from "./llmEngine.js";
 import { processStoryboardAudio } from "./audioPipeline.js";
 import { renderExplainerVideo } from "./videoRenderer.js";
-import { buildMasterAudio, muxVideoAndAudio } from "./ffmpegHelper.js";
+import { buildMasterAudio, stitchBumperCardsAndMux } from "./ffmpegHelper.js";
 import { config } from "./config.js";
 
 const program = new Command();
@@ -94,16 +94,32 @@ Examples:
       console.log(`\n[3/4] Rendering ${targetAspectRatio} Whiteboard Canvas with Remotion...`);
       await renderExplainerVideo(enrichedStoryboard, tempVideoPath);
 
-      // Stage 4: FFmpeg audio muxing
-      console.log(`\n[4/4] Stitching Audio & Muxing with FFmpeg...`);
+      // Stage 4: FFmpeg audio muxing & bumper stitching
+      console.log(`\n[4/4] Stitching Audio & Vidling Bumper Screens with FFmpeg...`);
       await buildMasterAudio(enrichedStoryboard.scenes, config.VIDEO_FPS, masterAudioPath);
-      await muxVideoAndAudio(tempVideoPath, masterAudioPath, outputFilePath);
-      console.log(`      ✓ Final video and synchronized audio muxed`);
 
+      const startImg = targetAspectRatio === "9:16" ? "assets/start_9_16.png" : "assets/start_16_9.png";
+      const endImg = targetAspectRatio === "9:16" ? "assets/end_9_16.png" : "assets/end_16_9.png";
+
+      await stitchBumperCardsAndMux({
+        mainVideoPath: tempVideoPath,
+        masterAudioPath,
+        startImgPath: path.resolve(startImg),
+        endImgPath: path.resolve(endImg),
+        width: targetAspectRatio === "9:16" ? 1080 : 1920,
+        height: targetAspectRatio === "9:16" ? 1920 : 1080,
+        fps: config.VIDEO_FPS,
+        outputPath: outputFilePath,
+        introSec: 2.0,
+        outroSec: 3.0
+      });
+      console.log(`      ✓ Vidling Intro (2s), Main Video, and Outro (3s) stitched`);
+
+      const totalVideoDurationSec = enrichedStoryboard.totalDurationInSeconds + 5.0;
       console.log(`\n========================================`);
       console.log(`🎉 Video Render Complete!`);
       console.log(`📁 File:     ${outputFilePath}`);
-      console.log(`⏱️ Duration: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s`);
+      console.log(`⏱️ Duration: ${totalVideoDurationSec.toFixed(1)}s (Content: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s + 5.0s Vidling Branding)`);
       console.log(`📐 Format:   ${targetAspectRatio} (${resolution})`);
       console.log(`========================================\n`);
     } finally {

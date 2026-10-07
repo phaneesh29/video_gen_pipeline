@@ -101,6 +101,9 @@ Examples:
       const startImg = targetAspectRatio === "9:16" ? "assets/start_9_16.png" : "assets/start_16_9.png";
       const endImg = targetAspectRatio === "9:16" ? "assets/end_9_16.png" : "assets/end_16_9.png";
 
+      const introSec = 0.8;
+      const outroSec = 3.0;
+
       await stitchBumperCardsAndMux({
         mainVideoPath: tempVideoPath,
         masterAudioPath,
@@ -110,16 +113,16 @@ Examples:
         height: targetAspectRatio === "9:16" ? 1920 : 1080,
         fps: config.VIDEO_FPS,
         outputPath: outputFilePath,
-        introSec: 2.0,
-        outroSec: 3.0
+        introSec,
+        outroSec
       });
-      console.log(`      ✓ Vidling Intro (2s), Main Video, and Outro (3s) stitched`);
+      console.log(`      ✓ Vidling Intro (${introSec}s), Main Video, and Outro (${outroSec}s) stitched`);
 
-      const totalVideoDurationSec = enrichedStoryboard.totalDurationInSeconds + 5.0;
+      const totalVideoDurationSec = enrichedStoryboard.totalDurationInSeconds + introSec + outroSec;
       console.log(`\n========================================`);
       console.log(`🎉 Video Render Complete!`);
       console.log(`📁 File:     ${outputFilePath}`);
-      console.log(`⏱️ Duration: ${totalVideoDurationSec.toFixed(1)}s (Content: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s + 5.0s Vidling Branding)`);
+      console.log(`⏱️ Duration: ${totalVideoDurationSec.toFixed(1)}s (Content: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s + ${(introSec + outroSec).toFixed(1)}s Vidling Branding)`);
       console.log(`📐 Format:   ${targetAspectRatio} (${resolution})`);
       console.log(`========================================\n`);
     } finally {

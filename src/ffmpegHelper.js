@@ -92,7 +92,7 @@ export async function stitchBumperCardsAndMux({
   height = 1920,
   fps = 30,
   outputPath,
-  introSec = 2.0,
+  introSec = 0.8,
   outroSec = 3.0
 }) {
   ensureDir(outputPath);

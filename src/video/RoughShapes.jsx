@@ -2,6 +2,7 @@ import React from "react";
 import rough from "roughjs";
 import { useCurrentFrame, interpolate, Easing } from "remotion";
 import { primaryFont, displayFont, monoFont } from "./fonts.js";
+import { DynamicIcon } from "./DynamicIcon.jsx";
 
 const generator = rough.generator();
 
@@ -75,6 +76,7 @@ export function RoughBoxNode({
   id,
   label,
   subLabel,
+  icon,
   x,
   y,
   width = 210,
@@ -203,16 +205,47 @@ export function RoughBoxNode({
           )}
           <div
             style={{
-              fontSize: titleSize,
-              fontWeight: 800,
-              color: scheme.text,
-              lineHeight: 1.25,
-              letterSpacing: "-0.3px",
-              fontFamily: displayFont.fontFamily,
-              textShadow: "0 2px 10px rgba(0,0,0,0.9)"
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "10px",
+              marginBottom: subLabel ? "4px" : "0px"
             }}
           >
-            {label}
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: width < 300 ? "32px" : "38px",
+                height: width < 300 ? "32px" : "38px",
+                borderRadius: "10px",
+                background: status === "active" ? "rgba(255, 119, 0, 0.25)" : "rgba(255, 255, 255, 0.07)",
+                border: status === "active" ? "1.5px solid #ff7700" : "1px solid rgba(255, 255, 255, 0.12)",
+                flexShrink: 0,
+                boxShadow: status === "active" ? "0 0 14px rgba(255, 119, 0, 0.5)" : "none"
+              }}
+            >
+              <DynamicIcon
+                name={icon}
+                label={label}
+                size={width < 300 ? 18 : 22}
+                color={status === "active" ? "#ffedd5" : strokeColor}
+              />
+            </div>
+            <div
+              style={{
+                fontSize: titleSize,
+                fontWeight: 800,
+                color: scheme.text,
+                lineHeight: 1.25,
+                letterSpacing: "-0.3px",
+                fontFamily: displayFont.fontFamily,
+                textShadow: "0 2px 10px rgba(0,0,0,0.9)"
+              }}
+            >
+              {label}
+            </div>
           </div>
           {subLabel && (
             <div

@@ -16,6 +16,7 @@ export const graphNodeSchema = z.object({
   id: z.string(),
   label: z.string(),
   subLabel: z.string().nullable(),
+  icon: z.string().nullable().default(null),
   status: z.enum(["normal", "active", "visited", "highlighted"])
 });
 

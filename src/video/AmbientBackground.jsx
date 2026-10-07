@@ -1,14 +1,11 @@
 import React from "react";
 import { useCurrentFrame } from "remotion";
 
-export function AmbientBackground({ isVertical, isWhiteboard = false }) {
+export function AmbientBackground({ isVertical }) {
   const frame = useCurrentFrame();
 
-  const glowOpacity = isWhiteboard
-    ? 0.12 + Math.sin(frame * 0.03) * 0.03
-    : 0.18 + Math.sin(frame * 0.04) * 0.05;
-
-  const glowColor = isWhiteboard ? "251, 191, 36" : "255, 107, 0";
+  const glowOpacity = 0.12 + Math.sin(frame * 0.03) * 0.03;
+  const glowColor = "251, 191, 36";
 
   return (
     <div
@@ -21,7 +18,7 @@ export function AmbientBackground({ isVertical, isWhiteboard = false }) {
         overflow: "hidden",
         pointerEvents: "none",
         zIndex: 0,
-        background: isWhiteboard ? "#121217" : "#050508"
+        background: "#121217"
       }}
     >
       {/* Radial spotlight behind content */}
@@ -39,7 +36,7 @@ export function AmbientBackground({ isVertical, isWhiteboard = false }) {
         }}
       />
 
-      {/* Grid pattern (chalk grid or cyber tech grid) */}
+      {/* Chalk / whiteboard grid pattern */}
       <svg
         style={{
           position: "absolute",
@@ -47,7 +44,7 @@ export function AmbientBackground({ isVertical, isWhiteboard = false }) {
           left: 0,
           width: "100%",
           height: "100%",
-          opacity: isWhiteboard ? 0.08 : 0.12
+          opacity: 0.08
         }}
       >
         <defs>
@@ -57,7 +54,7 @@ export function AmbientBackground({ isVertical, isWhiteboard = false }) {
             height={isVertical ? "48" : "40"}
             patternUnits="userSpaceOnUse"
           >
-            <circle cx="2" cy="2" r="1.2" fill={isWhiteboard ? "#e2e8f0" : "#ff9d42"} opacity="0.6" />
+            <circle cx="2" cy="2" r="1.2" fill="#e2e8f0" opacity="0.6" />
             <path
               d={isVertical ? "M 48 0 L 0 0 0 48" : "M 40 0 L 0 0 0 40"}
               fill="none"
@@ -69,7 +66,7 @@ export function AmbientBackground({ isVertical, isWhiteboard = false }) {
         <rect width="100%" height="100%" fill="url(#ambient-grid)" />
       </svg>
 
-      {/* Floating particles */}
+      {/* Floating chalk particles */}
       {[
         { x: 15, y: 22, size: 2.5, speed: 0.4 },
         { x: 78, y: 18, size: 3.0, speed: 0.6 },
@@ -80,9 +77,9 @@ export function AmbientBackground({ isVertical, isWhiteboard = false }) {
         { x: 92, y: 35, size: 2.0, speed: 0.55 },
         { x: 65, y: 30, size: 3.2, speed: 0.35 }
       ].map((p, idx) => {
-        const driftY = (p.y + (frame * p.speed * 0.1)) % 100;
-        const driftX = p.x + Math.sin((frame * 0.02) + idx) * 1.5;
-        const pOpacity = (isWhiteboard ? 0.18 : 0.25) + Math.sin(frame * 0.05 + idx * 2) * 0.12;
+        const driftY = (p.y + frame * p.speed * 0.1) % 100;
+        const driftX = p.x + Math.sin(frame * 0.02 + idx) * 1.5;
+        const pOpacity = 0.18 + Math.sin(frame * 0.05 + idx * 2) * 0.12;
 
         return (
           <div
@@ -94,8 +91,8 @@ export function AmbientBackground({ isVertical, isWhiteboard = false }) {
               width: `${p.size}px`,
               height: `${p.size}px`,
               borderRadius: "50%",
-              background: idx % 2 === 0 ? (isWhiteboard ? "#fbbf24" : "#ff9d42") : "#ffffff",
-              boxShadow: `0 0 8px ${idx % 2 === 0 ? (isWhiteboard ? "#fbbf24" : "#ff6b00") : "#ffffff"}`,
+              background: idx % 2 === 0 ? "#fbbf24" : "#ffffff",
+              boxShadow: `0 0 8px ${idx % 2 === 0 ? "#fbbf24" : "#ffffff"}`,
               opacity: pOpacity
             }}
           />
@@ -110,9 +107,7 @@ export function AmbientBackground({ isVertical, isWhiteboard = false }) {
           left: 0,
           width: "100%",
           height: "100%",
-          background: isWhiteboard
-            ? "radial-gradient(ellipse at center, transparent 60%, rgba(10, 10, 14, 0.8) 100%)"
-            : "radial-gradient(ellipse at center, transparent 55%, rgba(3, 3, 5, 0.85) 100%)"
+          background: "radial-gradient(ellipse at center, transparent 60%, rgba(10, 10, 14, 0.8) 100%)"
         }}
       />
     </div>

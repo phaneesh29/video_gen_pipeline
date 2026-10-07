@@ -1,10 +1,5 @@
 import { z } from "zod";
 
-export const badgeSchema = z.object({
-  label: z.string(),
-  value: z.string()
-});
-
 export const elementItemSchema = z.object({
   value: z.string(),
   highlight: z.boolean(),
@@ -58,7 +53,6 @@ export const dataStructureSchema = z.object({
 export const sceneVisualSchema = z.object({
   activeLine: z.number(),
   activeCodeSnippet: z.string(),
-  actionDescription: z.string(),
   structures: z.array(dataStructureSchema)
 });
 
@@ -83,11 +77,9 @@ export const storyboardSchema = z.object({
   title: z.string(),
   category: z.string(),
   topic: z.string(),
-  badges: z.array(badgeSchema),
   aspectRatio: z.enum(["16:9", "9:16"]).default("16:9"),
   codeTitle: z.string().default(""),
   codeLanguage: z.string().default(""),
   codeLines: z.array(z.string()).default([]),
-  theme: z.enum(["cyber", "whiteboard"]).default("whiteboard"),
   scenes: z.array(sceneSchema)
 });

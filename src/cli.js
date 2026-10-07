@@ -64,7 +64,6 @@ Examples:
       const storyboard = await generateStoryboard(problemInput);
 
       storyboard.aspectRatio = targetAspectRatio;
-      storyboard.theme = "whiteboard";
 
       const hasCode = Array.isArray(storyboard.codeLines) && storyboard.codeLines.length > 0;
 

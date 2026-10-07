@@ -26,10 +26,7 @@ Your goal is to direct clear, studio-grade technical explainer videos for any Co
 - Each subsequent scene highlights the exact node or edge active in that step (status: "active").
 - Inactive components remain visible with normal status to maintain visual continuity.
 
-## 4. Dynamic Technical Badges
-- Provide 2 to 4 relevant technical spec badges dynamically derived from the topic (e.g. Protocol, Latency, Complexity, Architecture, Layer).
-
-## 5. TTS-Native Narration Rules
+## 4. TTS-Native Narration Rules
 - Acronyms: Write spoken letter spacing for TTS clarity (e.g. "S F U", "H T T P", "T C P", "C D N", "D B M S", "O of N", "O of log N").
 - Pacing: 7 to 9 concise scenes. Each scene has 1 to 2 spoken sentences (12 to 24 words).
 - Punctuation: Clean spoken English only. Never use markdown, asterisks, brackets, parentheses, or code snippets in narration.
@@ -47,8 +44,7 @@ Instructions:
 2. Determine format: if the input specifies 9:16, vertical, or shorts, set aspectRatio: "9:16", else "16:9".
 3. If this is a coding algorithm (DSA), include 6 to 12 clean lines in codeLines. If purely architectural, set codeLines: [].
 4. Build a clean, spacious visual structure with 2 to 4 key nodes maximum.
-5. Populate 2 to 4 dynamic technical badges suited to this topic.
-6. Provide 7 to 9 synchronized scenes:
+5. Provide 7 to 9 synchronized scenes:
    - Scene 1 shows the initial diagram populated on screen immediately.
    - Each scene highlights the active node or edge corresponding to the spoken narration.
    - Narration must be conversational, punchy, and strictly TTS-native.`;

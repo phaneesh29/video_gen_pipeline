@@ -117,16 +117,16 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
 
         if (count === 1) {
           tx = cx;
-          cardW = isHub(node) ? 440 : 380;
-          cardH = isHub(node) ? 155 : 140;
+          cardW = isHub(node) ? 460 : 420;
+          cardH = isHub(node) ? 165 : 150;
         } else if (count === 2) {
-          tx = nodeIdx === 0 ? cx - 250 : cx + 250;
-          cardW = 330;
-          cardH = 130;
+          tx = nodeIdx === 0 ? cx - 260 : cx + 260;
+          cardW = 360;
+          cardH = 145;
         } else if (count === 3) {
           tx = nodeIdx === 0 ? cx - 340 : nodeIdx === 1 ? cx : cx + 340;
-          cardW = 270;
-          cardH = 120;
+          cardW = 300;
+          cardH = 135;
         } else {
           // Wrap into 2 sub-rows of at most 3 cards so they never collide or squash
           const perRow = Math.ceil(count / 2);
@@ -293,28 +293,28 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
       <div
         style={{
           position: "absolute",
-          top: isVertical ? "48px" : "32px",
+          top: isVertical ? "90px" : "36px",
           left: "50%",
           transform: "translateX(-50%)",
           display: "flex",
           alignItems: "center",
-          gap: "10px",
-          padding: isVertical ? "8px 24px" : "6px 20px",
-          background: "rgba(18, 18, 24, 0.88)",
-          border: "1.5px solid rgba(251, 191, 36, 0.35)",
-          borderRadius: "14px",
-          backdropFilter: "blur(14px)",
-          boxShadow: "0 6px 24px rgba(0, 0, 0, 0.8)",
+          gap: "12px",
+          padding: isVertical ? "12px 36px" : "8px 24px",
+          background: "rgba(18, 18, 24, 0.92)",
+          border: "2px solid rgba(251, 191, 36, 0.45)",
+          borderRadius: "16px",
+          backdropFilter: "blur(16px)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.85)",
           zIndex: 15
         }}
       >
-        <span style={{ fontSize: isVertical ? "20px" : "18px" }}>✎</span>
+        <span style={{ fontSize: isVertical ? "26px" : "20px" }}>✎</span>
         <div
           style={{
-            fontSize: isVertical ? "20px" : "17px",
+            fontSize: isVertical ? "26px" : "18px",
             fontWeight: 800,
             color: "#fbbf24",
-            letterSpacing: "0.8px",
+            letterSpacing: "1px",
             fontFamily: displayFont.fontFamily,
             textTransform: "uppercase"
           }}
@@ -472,44 +472,95 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
             left: "50%",
             transform: "translate(-50%, -50%)",
             display: "flex",
-            gap: "24px",
+            gap: isVertical ? "32px" : "28px",
             flexWrap: "wrap",
             justifyContent: "center",
-            width: "90%",
+            alignItems: "center",
+            width: isVertical ? "940px" : "90%",
             maxWidth: "1400px"
           }}
         >
           {elements.map((el, idx) => {
             const isHigh = !!el.highlight;
-            const bounce = Math.sin(frame * 0.25) * 5;
+            const bounce = Math.sin(frame * 0.25) * 6;
+            const isTwoCol = isVertical && elements.length <= 4;
+            const cardWidth = isVertical ? (elements.length <= 2 ? "860px" : "420px") : "280px";
+            const cardHeight = isVertical ? "220px" : "190px";
+
             return (
-              <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <div style={{ fontSize: isVertical ? "18px" : "16px", color: "#94a3b8", fontFamily: monoFont.fontFamily, marginBottom: "8px" }}>
-                  [{idx}]
-                </div>
+              <div
+                key={idx}
+                style={{
+                  width: cardWidth,
+                  height: cardHeight,
+                  border: isHigh ? "4px solid #ff7700" : "3px dashed rgba(255, 255, 255, 0.4)",
+                  borderRadius: "24px",
+                  background: isHigh ? "rgba(255, 119, 0, 0.25)" : "#181824",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "16px 24px",
+                  boxSizing: "border-box",
+                  position: "relative",
+                  boxShadow: isHigh ? "0 0 35px rgba(255, 107, 0, 0.65)" : "0 8px 30px rgba(0, 0, 0, 0.5)"
+                }}
+              >
+                {/* Index badge at top */}
                 <div
                   style={{
-                    width: isVertical ? "110px" : "90px",
-                    height: isVertical ? "110px" : "90px",
-                    border: isHigh ? "3.5px solid #ff7700" : "2.5px dashed rgba(255, 255, 255, 0.4)",
-                    borderRadius: "16px",
-                    background: isHigh ? "rgba(255, 119, 0, 0.25)" : "#181824",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: isVertical ? "44px" : "36px",
-                    fontWeight: 800,
-                    color: isHigh ? "#ffedd5" : "#ffffff",
+                    position: "absolute",
+                    top: "14px",
+                    left: "20px",
+                    fontSize: isVertical ? "20px" : "16px",
+                    color: isHigh ? "#ffedd5" : "#94a3b8",
+                    fontFamily: monoFont.fontFamily,
+                    fontWeight: 700
+                  }}
+                >
+                  [{idx}]
+                </div>
+
+                {/* Big bold value text */}
+                <div
+                  style={{
+                    fontSize: isVertical ? "46px" : "38px",
+                    fontWeight: 900,
+                    color: isHigh ? "#ffffff" : "#f1f5f9",
                     fontFamily: displayFont.fontFamily,
-                    boxShadow: isHigh ? "0 0 24px rgba(255, 107, 0, 0.55)" : "none"
+                    textAlign: "center",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "100%",
+                    marginTop: el.pointerLabel ? "8px" : "0px",
+                    textShadow: isHigh ? "0 0 16px rgba(255, 119, 0, 0.7)" : "none"
                   }}
                 >
                   {el.value}
                 </div>
+
+                {/* Active pointer label badge */}
                 {el.pointerLabel && (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "12px", transform: `translateY(${bounce}px)` }}>
-                    <span style={{ color: "#ff7700", fontSize: isVertical ? "18px" : "16px" }}>▲</span>
-                    <span style={{ fontSize: isVertical ? "20px" : "16px", fontWeight: 700, color: "#ffaa55", fontFamily: primaryFont.fontFamily }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      marginTop: "12px",
+                      transform: `translateY(${bounce}px)`
+                    }}
+                  >
+                    <span style={{ color: "#ff7700", fontSize: isVertical ? "22px" : "18px" }}>▲</span>
+                    <span
+                      style={{
+                        fontSize: isVertical ? "22px" : "17px",
+                        fontWeight: 800,
+                        color: "#ffaa55",
+                        fontFamily: primaryFont.fontFamily,
+                        letterSpacing: "0.5px"
+                      }}
+                    >
                       {el.pointerLabel}
                     </span>
                   </div>
@@ -529,10 +580,12 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
             left: "50%",
             transform: "translate(-50%, -50%)",
             display: "flex",
+            flexDirection: isVertical ? "column" : "row",
             flexWrap: "wrap",
-            gap: "20px",
+            gap: isVertical ? "24px" : "20px",
             justifyContent: "center",
-            width: "90%",
+            alignItems: "center",
+            width: isVertical ? "920px" : "90%",
             maxWidth: "1400px"
           }}
         >
@@ -544,19 +597,38 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "16px",
-                  padding: isVertical ? "18px 36px" : "14px 28px",
+                  justifyContent: isVertical ? "space-between" : "center",
+                  width: isVertical ? "860px" : "auto",
+                  gap: isVertical ? "24px" : "16px",
+                  padding: isVertical ? "24px 44px" : "16px 32px",
                   background: isHigh ? "rgba(255, 119, 0, 0.25)" : "#181824",
-                  border: isHigh ? "3px solid #ff7700" : "2px dashed rgba(255, 255, 255, 0.35)",
-                  borderRadius: "16px",
+                  border: isHigh ? "4px solid #ff7700" : "2.5px dashed rgba(255, 255, 255, 0.35)",
+                  borderRadius: "22px",
                   fontFamily: primaryFont.fontFamily,
-                  fontSize: isVertical ? "28px" : "22px",
-                  color: "#ffffff"
+                  color: "#ffffff",
+                  boxShadow: isHigh ? "0 0 35px rgba(255, 119, 0, 0.6)" : "0 8px 30px rgba(0, 0, 0, 0.5)"
                 }}
               >
-                <span style={{ color: "#fbbf24", fontWeight: 800 }}>{entry.key}</span>
-                <span style={{ color: "#94a3b8" }}>→</span>
-                <span>{entry.value}</span>
+                <span
+                  style={{
+                    color: "#fbbf24",
+                    fontWeight: 900,
+                    fontSize: isVertical ? "36px" : "26px",
+                    fontFamily: displayFont.fontFamily
+                  }}
+                >
+                  {entry.key}
+                </span>
+                <span style={{ color: "#ff7700", fontSize: isVertical ? "32px" : "22px" }}>➔</span>
+                <span
+                  style={{
+                    fontWeight: 700,
+                    fontSize: isVertical ? "30px" : "22px",
+                    textAlign: isVertical ? "right" : "left"
+                  }}
+                >
+                  {entry.value}
+                </span>
               </div>
             );
           })}

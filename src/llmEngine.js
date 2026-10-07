@@ -7,7 +7,7 @@ export async function generateStoryboard(topic) {
   const response = await client.chat.parse({
     model: config.MISTRAL_MODEL,
     responseFormat: storyboardSchema,
-    temperature: 0,
+    temperature: 0.25,
     messages: [
       { role: "system", content: DSA_SYSTEM_PROMPT },
       { role: "user", content: getStoryPrompt(topic) }

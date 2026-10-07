@@ -1,15 +1,21 @@
-How ChatGPT Works: Predicting the Next Word (Beginner Layman Guide)
+How YouTube Handles Millions of Video Uploads (System Design Layman Guide)
 Format: 9:16 Vertical Shorts (Full-screen visual architecture whiteboard).
-Visual Architecture: Clean, intuitive 3 to 4 component flow:
-- User Prompt (Incoming Tokens)
-- LLM Neural Core (Context & Probability Scorer)
-- Word Sampler (Picking the next best word)
-- Generated Output (The Autocomplete Loop)
+No code lines needed, pure system architecture and visual data structures.
 
-Concept & Storyboard Guide for Laymen:
-1. The Setup: ChatGPT seems like magic, but at its heart, it is the world's smartest autocomplete engine.
-2. Tokenization: When you type a prompt, it breaks your sentence into small bite-sized pieces called tokens, like Lego blocks.
-3. Reading Context: The model scans all the previous words together to understand the topic and meaning.
-4. Predicting Odds: Instead of thinking like a human, it calculates probability percentages for every possible next word in the dictionary.
-5. Example: If the prompt is "The sky is...", it scores "blue" at 85 percent, "dark" at 10 percent, and "pizza" at zero percent.
-6. The Feedback Loop: It picks the winning word, appends it to the sentence, and repeats the exact same calculation for the next word until the response is done!
+Core Architecture Components:
+- Client Ingest: Chunked resumable upload over H T T P
+- Blob Storage & Message Queue: Google Colossus landing storage and distributed event queue
+- Transcoding Fleet: Parallel V C U encoding into 5-second segments, multiple resolutions, and codecs
+- Content ID & AI: Audio fingerprinting, copyright scanning, and automated subtitle generation
+- Adaptive Bitrate Packaging: H L S and D A S H manifest generation
+- Global Edge C D N: Google Global Cache servers inside local internet providers
+
+Concept & Scene Flow:
+1. The Scale: Over 500 hours of video are uploaded every single minute. A single machine would melt instantly.
+2. Chunked Upload: Your device splits the video into small chunks. If your Wi-Fi drops, it resumes right where it stopped.
+3. Queue & Orchestration: Chunks land in raw storage while a message queue splits the job into parallel micro tasks.
+4. Parallel Transcoding: The video is cut into 5-second pieces. Hundreds of servers encode them simultaneously into 1080p and 4K.
+5. Multi-Codec Packaging: Custom Google chips compress footage into A V 1, V P 9, and H 264 for every device.
+6. Content ID & AI Checks: Automated fingerprinting checks for copyright violations while AI transcribes speech into captions.
+7. Adaptive Bitrate Streaming: YouTube builds H L S and D A S H playlists so players switch quality seamlessly without buffering.
+8. Global Edge Delivery: Videos are cached on Google Global Cache edge servers close to your house for instant streaming.

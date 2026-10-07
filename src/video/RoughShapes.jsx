@@ -141,19 +141,11 @@ export function RoughBoxNode({
       stroke: strokeColor,
       strokeWidth: isHub ? 3.4 : 2.6
     });
-    const midArc = generator.arc(x, top + height * 0.48, width, ry * 2, 0, Math.PI, false, {
-      seed: nodeSeed + 4,
-      roughness: 1.1,
-      stroke: strokeColor,
-      strokeWidth: 1.8
-    });
-
     borderPaths = [
       ...generator.toPaths(topEllipse),
       ...generator.toPaths(leftLine),
       ...generator.toPaths(rightLine),
-      ...generator.toPaths(bottomArc),
-      ...generator.toPaths(midArc)
+      ...generator.toPaths(bottomArc)
     ];
 
     const cylinderD = `M ${left} ${top + ry} A ${width / 2} ${ry} 0 0 1 ${left + width} ${top + ry} L ${left + width} ${top + height - ry} A ${width / 2} ${ry} 0 0 1 ${left} ${top + height - ry} Z`;
@@ -344,7 +336,7 @@ export function RoughBoxNode({
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
-            padding: "8px 16px",
+            padding: shape === "cylinder" ? "24px 20px 14px 20px" : shape === "cloud" ? "14px 26px" : shape === "diamond" ? "12px 28px" : "8px 16px",
             opacity: textOpacity,
             fontFamily: primaryFont.fontFamily,
             boxSizing: "border-box"

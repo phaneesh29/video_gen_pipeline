@@ -148,6 +148,17 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
           cardH = 105;
         }
 
+        if (node.shape === "cylinder") {
+          cardH = Math.max(cardH, 160);
+          cardW = Math.max(cardW, 400);
+        } else if (node.shape === "cloud") {
+          cardH = Math.max(cardH, 155);
+          cardW = Math.max(cardW, 420);
+        } else if (node.shape === "diamond") {
+          cardH = Math.max(cardH, 155);
+          cardW = Math.max(cardW, 440);
+        }
+
         positions.set(node.id, { x: tx, y: nodeY });
         nodeSizes.set(node.id, { width: cardW, height: cardH, isHub: isHub(node) });
       });
@@ -208,6 +219,17 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
           ty = 130 + (nodeIdx * spread) / (count - 1);
           cardW = 260;
           cardH = 110;
+        }
+
+        if (node.shape === "cylinder") {
+          cardH = Math.max(cardH, 145);
+          cardW = Math.max(cardW, 360);
+        } else if (node.shape === "cloud") {
+          cardH = Math.max(cardH, 140);
+          cardW = Math.max(cardW, 380);
+        } else if (node.shape === "diamond") {
+          cardH = Math.max(cardH, 145);
+          cardW = Math.max(cardW, 400);
         }
 
         positions.set(node.id, { x: tx, y: ty });

@@ -1,5 +1,5 @@
 import React from "react";
-import { useCurrentFrame, interpolate, Easing } from "remotion";
+import { useCurrentFrame } from "remotion";
 import { monoFont } from "./fonts.js";
 
 // Light syntax tokenizer to give lines rich code colors

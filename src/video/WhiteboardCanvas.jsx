@@ -483,7 +483,6 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
           {elements.map((el, idx) => {
             const isHigh = !!el.highlight;
             const bounce = Math.sin(frame * 0.25) * 6;
-            const isTwoCol = isVertical && elements.length <= 4;
             const cardWidth = isVertical ? (elements.length <= 2 ? "860px" : "420px") : "280px";
             const cardHeight = isVertical ? "220px" : "190px";
 

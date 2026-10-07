@@ -100,7 +100,6 @@ export async function stitchBumperCardsAndMux({
   const hasStart = startImgPath && fs.existsSync(startImgPath);
   const hasEnd = endImgPath && fs.existsSync(endImgPath);
 
-
   if (!hasStart && !hasEnd) {
     return muxVideoAndAudio(mainVideoPath, masterAudioPath, outputPath);
   }

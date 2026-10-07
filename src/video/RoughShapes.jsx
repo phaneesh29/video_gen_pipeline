@@ -9,7 +9,7 @@ const generator = rough.generator();
 /**
  * Animated sketchy rough path that draws itself progressively
  */
-export function AnimatedRoughPath({ pathData, strokeColor, strokeWidth = 2.5, startFrame = 0, duration = 18, fillStyle = "none", fillColor = "none" }) {
+export function AnimatedRoughPath({ pathData, strokeColor, strokeWidth = 2.5, startFrame = 0, duration = 18, fillColor = "none" }) {
   const frame = useCurrentFrame();
 
   const estLength = 1200;

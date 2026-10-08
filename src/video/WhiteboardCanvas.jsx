@@ -17,54 +17,114 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
   const cx = width / 2;
   const cy = isVertical ? 900 : height / 2;
 
-  // Identify roles: sources (clients), hubs (servers/gateways), intermediaries (cdns/caches), targets (viewers/dbs)
-  const isSource = (n) => {
-    const s = (n.id + " " + n.label).toLowerCase();
-    return s.includes("client") || s.includes("publisher") || s.includes("browser") || s.includes("sender") || s.includes("user") || s.includes("host") || s.includes("broadcaster") || s.includes("ingest");
-  };
-  const isHub = (n) => {
+  const isHubNode = (n) => {
     const s = (n.id + " " + n.label).toLowerCase();
     return s.includes("server") || s.includes("hub") || s.includes("gateway") || s.includes("broker") || s.includes("origin") || s.includes("router");
   };
-  const isIntermediary = (n) => {
-    const s = (n.id + " " + n.label).toLowerCase();
-    return s.includes("cdn") || s.includes("edge") || s.includes("cache") || s.includes("proxy") || s.includes("relay") || s.includes("worker") || s.includes("transcoder");
-  };
-  const isTarget = (n) => {
-    const s = (n.id + " " + n.label).toLowerCase();
-    return s.includes("viewer") || s.includes("sub") || s.includes("consumer") || s.includes("db") || s.includes("database") || s.includes("sink") || s.includes("storage");
-  };
 
-  // Group into tiers
-  const sources = [];
-  const hubs = [];
-  const intermediaries = [];
-  const targets = [];
-  const others = [];
-
-  nodes.forEach((n) => {
-    if (isHub(n)) hubs.push(n);
-    else if (isSource(n)) sources.push(n);
-    else if (isIntermediary(n)) intermediaries.push(n);
-    else if (isTarget(n)) targets.push(n);
-    else others.push(n);
-  });
-
+  // 1. First, check if directed graph edges can establish topological layers
   let tiers = [];
+  const hasEdges = Array.isArray(edges) && edges.length > 0;
 
-  if (sources.length > 0 || hubs.length > 0 || intermediaries.length > 0 || targets.length > 0) {
-    if (sources.length > 0) tiers.push(sources);
-    if (hubs.length > 0) tiers.push(hubs);
-    if (intermediaries.length > 0) tiers.push(intermediaries);
-    if (targets.length > 0) tiers.push(targets);
-    if (others.length > 0) tiers.push(others);
-  } else {
-    // Generic fallback by node count
-    if (total === 1) tiers = [[nodes[0]]];
-    else if (total === 2) tiers = [[nodes[0]], [nodes[1]]];
-    else if (total === 3) tiers = [[nodes[0]], [nodes[1]], [nodes[2]]];
-    else if (total === 4) tiers = [[nodes[0]], [nodes[1]], [nodes[2], nodes[3]]];
-    else tiers = [nodes]; // Circular mesh
+  if (hasEdges) {
+    const adj = new Map();
+    const inDegree = new Map();
+    nodes.forEach((n) => {
+      adj.set(n.id, []);
+      inDegree.set(n.id, 0);
+    });
+
+    edges.forEach((e) => {
+      if (adj.has(e.from) && adj.has(e.to)) {
+        adj.get(e.from).push(e.to);
+        inDegree.set(e.to, (inDegree.get(e.to) || 0) + 1);
+      }
+    });
+
+    const depths = new Map();
+    nodes.forEach((n) => depths.set(n.id, 0));
+
+    // Start with roots (inDegree === 0)
+    const queue = nodes.filter((n) => inDegree.get(n.id) === 0).map((n) => n.id);
+    const visited = new Set();
+
+    while (queue.length > 0) {
+      const u = queue.shift();
+      visited.add(u);
+      const uDepth = depths.get(u) || 0;
+      const neighbors = adj.get(u) || [];
+      for (const v of neighbors) {
+        if ((depths.get(v) || 0) < uDepth + 1) {
+          depths.set(v, uDepth + 1);
+        }
+        if (!visited.has(v) && !queue.includes(v)) {
+          queue.push(v);
+        }
+      }
+    }
+
+    const maxDepth = Math.max(...Array.from(depths.values()), 0);
+    if (maxDepth > 0) {
+      const depthGroups = Array.from({ length: maxDepth + 1 }, () => []);
+      nodes.forEach((n) => {
+        const d = depths.get(n.id) || 0;
+        depthGroups[d].push(n);
+      });
+      tiers = depthGroups.filter((g) => g.length > 0);
+    }
+  }
+
+  // 2. If no edge-based layers found, fallback to semantic role matching
+  if (tiers.length <= 1) {
+    const isSource = (n) => {
+      const s = (n.id + " " + n.label).toLowerCase();
+      return s.includes("client") || s.includes("publisher") || s.includes("browser") || s.includes("sender") || s.includes("user") || s.includes("host") || s.includes("broadcaster") || s.includes("ingest");
+    };
+    const isHub = (n) => {
+      const s = (n.id + " " + n.label).toLowerCase();
+      return s.includes("server") || s.includes("hub") || s.includes("gateway") || s.includes("broker") || s.includes("origin") || s.includes("router") || s.includes("switch");
+    };
+    const isIntermediary = (n) => {
+      const s = (n.id + " " + n.label).toLowerCase();
+      return s.includes("cdn") || s.includes("edge") || s.includes("cache") || s.includes("proxy") || s.includes("relay") || s.includes("worker") || s.includes("transcoder") || s.includes("mesh") || s.includes("cluster");
+    };
+    const isTarget = (n) => {
+      const s = (n.id + " " + n.label).toLowerCase();
+      return s.includes("viewer") || s.includes("sub") || s.includes("consumer") || s.includes("db") || s.includes("database") || s.includes("sink") || s.includes("storage") || s.includes("checkpoint");
+    };
+
+    const sources = [];
+    const hubs = [];
+    const intermediaries = [];
+    const targets = [];
+    const others = [];
+
+    nodes.forEach((n) => {
+      if (isHub(n)) hubs.push(n);
+      else if (isSource(n)) sources.push(n);
+      else if (isIntermediary(n)) intermediaries.push(n);
+      else if (isTarget(n)) targets.push(n);
+      else others.push(n);
+    });
+
+    const roleTiers = [];
+    if (sources.length > 0) roleTiers.push(sources);
+    if (hubs.length > 0) roleTiers.push(hubs);
+    if (intermediaries.length > 0) roleTiers.push(intermediaries);
+    if (targets.length > 0) roleTiers.push(targets);
+    if (others.length > 0) roleTiers.push(others);
+
+    if (roleTiers.length > 1) {
+      tiers = roleTiers;
+    } else {
+      // Balanced fallback by node count (e.g. 2x2 grid for 4 nodes)
+      if (total === 1) tiers = [[nodes[0]]];
+      else if (total === 2) tiers = [[nodes[0]], [nodes[1]]];
+      else if (total === 3) tiers = [[nodes[0]], [nodes[1]], [nodes[2]]];
+      else if (total === 4) tiers = [[nodes[0], nodes[1]], [nodes[2], nodes[3]]];
+      else if (total === 6) tiers = [[nodes[0], nodes[1], nodes[2]], [nodes[3], nodes[4], nodes[5]]];
+      else tiers = [nodes]; // Circular mesh
+    }
   }
 
   // Remove empty tiers
@@ -82,7 +142,7 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
         const x = cx + rx * Math.cos(angle);
         const y = cy + ry * Math.sin(angle);
         positions.set(node.id, { x, y });
-        nodeSizes.set(node.id, { width: 280, height: 110, isHub: isHub(node) });
+        nodeSizes.set(node.id, { width: 280, height: 110, isHub: isHubNode(node) });
       });
       return { positions, nodeSizes };
     }
@@ -117,8 +177,8 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
 
         if (count === 1) {
           tx = cx;
-          cardW = isHub(node) ? 460 : 420;
-          cardH = isHub(node) ? 165 : 150;
+          cardW = isHubNode(node) ? 460 : 420;
+          cardH = isHubNode(node) ? 165 : 150;
         } else if (count === 2) {
           tx = nodeIdx === 0 ? cx - 260 : cx + 260;
           cardW = 360;
@@ -148,6 +208,12 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
           cardH = 105;
         }
 
+        const hasBigWebImage = Boolean(node.imageSrc) && !node.isTech;
+        if (hasBigWebImage) {
+          cardH = Math.max(cardH, count <= 2 ? 215 : 185);
+          cardW = Math.max(cardW, count === 1 ? 460 : count === 2 ? 390 : 320);
+        }
+
         if (node.shape === "cylinder") {
           cardH = Math.max(cardH, 160);
           cardW = Math.max(cardW, 400);
@@ -160,7 +226,7 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
         }
 
         positions.set(node.id, { x: tx, y: nodeY });
-        nodeSizes.set(node.id, { width: cardW, height: cardH, isHub: isHub(node) });
+        nodeSizes.set(node.id, { width: cardW, height: cardH, isHub: isHubNode(node) });
       });
     });
   } else {
@@ -204,8 +270,8 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
 
         if (count === 1) {
           ty = cy;
-          cardW = isHub(node) ? 420 : 360;
-          cardH = isHub(node) ? 150 : 140;
+          cardW = isHubNode(node) ? 420 : 360;
+          cardH = isHubNode(node) ? 150 : 140;
         } else if (count === 2) {
           ty = nodeIdx === 0 ? cy - 180 : cy + 180;
           cardW = 320;
@@ -221,6 +287,12 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
           cardH = 110;
         }
 
+        const hasBigWebImage = Boolean(node.imageSrc) && !node.isTech;
+        if (hasBigWebImage) {
+          cardH = Math.max(cardH, count <= 2 ? 180 : 160);
+          cardW = Math.max(cardW, count === 1 ? 420 : 340);
+        }
+
         if (node.shape === "cylinder") {
           cardH = Math.max(cardH, 145);
           cardW = Math.max(cardW, 360);
@@ -233,7 +305,7 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
         }
 
         positions.set(node.id, { x: tx, y: ty });
-        nodeSizes.set(node.id, { width: cardW, height: cardH, isHub: isHub(node) });
+        nodeSizes.set(node.id, { width: cardW, height: cardH, isHub: isHubNode(node) });
       });
     });
   }

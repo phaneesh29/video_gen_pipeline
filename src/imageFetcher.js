@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 
-const CACHE_DIR = path.resolve("./temp/image_cache");
+const CACHE_DIR = path.resolve("./.cache/images");
 
 function ensureCacheDir() {
   if (!fs.existsSync(CACHE_DIR)) {

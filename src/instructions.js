@@ -108,16 +108,19 @@ Every node in nodes can display an official tech vector logo or real-world web i
   * Cloudflare: isTech: true, imagePrompt: "cloudflare"
   * Apache Cassandra: isTech: true, imagePrompt: "apachecassandra"
   * Nginx: isTech: true, imagePrompt: "nginx"
-- Physical Concepts & Devices (Set isTech: false, imagePrompt: "search prompt"):
-  When a node represents a physical object or concept, provide a concise transparent image search prompt:
+- Physical Concepts, Hardware & Devices (Set isTech: false, imagePrompt: "search prompt"):
+  When a node represents a physical object, device, hardware chip, switch, or concept, provide a concise transparent PNG search prompt:
+  * Nvidia GPU: isTech: false, imagePrompt: "nvidia gpu transparent png"
+  * Network Switch: isTech: false, imagePrompt: "network switch transparent png"
+  * Server Rack / Supercomputer: isTech: false, imagePrompt: "server rack transparent png"
   * Smart TV: isTech: false, imagePrompt: "smart tv icon transparent png"
   * Fiber Optic: isTech: false, imagePrompt: "undersea fiber optic cable transparent png"
   * Satellite: isTech: false, imagePrompt: "satellite ground dish transparent png"
 - Generic Components:
-  When a node is a generic concept, set isTech: false, imagePrompt: null (and supply a clean Lucide icon name like "Server", "Layers", "Database").
+  When a node is a generic concept, set isTech: false, imagePrompt: null (and supply a clean Lucide icon name like "Server", "Layers", "Database", "Cpu").
 
 ## 5. TTS-Native Narration Rules
-- Acronyms: Write spoken letter spacing for TTS clarity (e.g. "G P U", "N V L i n k", "N C C L", "P C I e", "T P U", "D R A M", "H B M", "S F U", "H T T P", "T C P", "C D N", "D B M S", "A V 1", "V P 9", "H 2 6 4", "A B R", "H L S", "D A S H", "V C U").
+- Acronyms & Abbreviations: You MUST letter-space ALL acronyms, abbreviations, and capitalized hardware/network terms with spaces (e.g. "G P U", "N V L i n k", "N C C L", "P C I e", "T P U", "D R A M", "H B M", "D G X", "A P I", "D N S", "L L M", "C U D A", "S F U", "H T T P", "T C P", "C D N", "D B M S", "A V 1", "V P 9", "H 2 6 4", "A B R", "H L S", "D A S H", "V C U", "R O C m"). This ensures the neural voice pronounces every letter cleanly.
 - Pacing: 7 to 8 scenes. Each scene has 1 punchy sentence of 14 to 18 spoken words (total video duration ~60 to 70 seconds).
 - Punctuation: Clean spoken English only. Never use markdown, asterisks, brackets, parentheses, or code snippets in narration.
 - Voice expression palette: "confident" (mechanisms), "excited" (breakthroughs & solutions), "cheerful" or "happy" (conclusions), "frustrated" (bottlenecks).`;
@@ -137,15 +140,18 @@ Instructions:
 2. Determine format: set aspectRatio: "${isVertical ? "9:16" : "16:9"}".
 3. ${lengthRule}
 4. If this is a coding algorithm (DSA), include 6 to 12 clean lines in codeLines. If purely architectural, set codeLines: [].
-5. For each of the ${sceneCount}:
-   - Write clear, punchy TTS-native narration following the strict word limit.
-   - Autonomously vary the visual formats across scenes! DO NOT use simple 2-node flows in every scene.
-   - Incorporate:
-     * At least one 'array' with 'elements' (for chunking, slicing, or packets)
-     * At least one 1-to-many fanout with 3+ parallel worker nodes (for distributed tasks)
-     * At least one 'table'/'hashmap' with 'entries' (for codec comparison, metrics, or trade-offs)
-     * Multi-tier pipeline flows (3 to 4 nodes with descriptive arrows) for data transit
-   - Ensure all arrows (edges) have concise, descriptive labels.
+5. MANDATORY VISUAL DIVERSITY ACROSS SCENES (Never repeat the same 3-node diagram!):
+   - Every single scene MUST show a distinctly different visual perspective, diagram, or data structure. NEVER reuse the identical 3-node chain or same node IDs across scenes!
+   - Incorporate a varied progression across the scenes:
+     * Scene 1 (Overview / Problem): High-level system entry or cluster pod overview.
+     * Scene 2 (Interconnect / Network / Ingest): Hierarchical tree or fan-out (e.g. top spine switches cleanly connecting to bottom leaf nodes, or gateway distributing to workers). In graphs, connect adjacent layers directly; DO NOT create crossing edges that skip layers.
+     * Scene 3 (Comparison / Specifications): A 'table' or 'hashmap' with 'entries' comparing latency, bandwidth, specs, or trade-offs.
+     * Scene 4 (Data Movement / Sharding / Slicing): An 'array' with 'elements' (e.g. mini-batches, tensors, packets) or a ring collective communication flow.
+     * Scene 5 (Parallel Execution / Workers): 1-to-many fanout with 3+ parallel workers (e.g. distributed microservices or GPU nodes).
+     * Scene 6 (State / Storage / Reliability): Cylinder database, persistent storage, or checkpoint mechanism.
+     * Scene 7 (End-to-End Synthesis): Complete unified architecture with container enclosures.
+   - Ensure all arrows (edges) have concise, descriptive labels (1-2 words).
 6. When a scene explains an API, SQL query, cache operation, command, or code, provide an on-demand codeSnippet in visual.codeSnippet (title, language, code) so a sleek floating code card appears on that scene. Otherwise set codeSnippet: null.
-7. For every node, assign semantic shape ('cylinder', 'cloud', 'diamond', 'hexagon', 'funnel', 'rectangle'). For known technologies (Nvidia, Redis, Kafka, Postgres, Docker, AWS, etc.), set isTech: true and imagePrompt: 'slug'. For real-world hardware or devices, set isTech: false and imagePrompt: 'descriptive name transparent png'.`;
+7. For every node, assign semantic shape ('cylinder', 'cloud', 'diamond', 'hexagon', 'funnel', 'rectangle'). For known technologies (Nvidia, Redis, Kafka, Postgres, Docker, AWS, etc.), set isTech: true and imagePrompt: 'slug'. For real-world hardware or devices, set isTech: false and imagePrompt: 'descriptive name transparent png'.
+8. Narration Acronym Spacing: Remember to spell out technical abbreviations with spaces in every scene narration (e.g. "G P U", "N V L i n k", "N C C L", "P C I e", "A P I").`;
 }

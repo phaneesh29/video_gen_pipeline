@@ -288,6 +288,14 @@ export function RoughBoxNode({
     );
   }
 
+  const isBigWebImage = !isTech && Boolean(imageSrc);
+  const badgeSize = isBigWebImage
+    ? (width < 320 ? 76 : width < 380 ? 90 : 106)
+    : (width < 300 ? 32 : 38);
+  const imgSize = isBigWebImage
+    ? (width < 320 ? 66 : width < 380 ? 80 : 94)
+    : (width < 300 ? 20 : 24);
+
   const wiggleOffset = Math.sin(frame * 0.2) * 2;
 
   const titleSize = width < 300 ? "23px" : width < 370 ? "27px" : isHub ? "33px" : "29px";
@@ -338,7 +346,7 @@ export function RoughBoxNode({
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
-            padding: shape === "cylinder" ? "24px 20px 14px 20px" : shape === "cloud" ? "14px 26px" : shape === "diamond" ? "12px 28px" : "8px 16px",
+            padding: isBigWebImage ? "10px 14px" : (shape === "cylinder" ? "24px 20px 14px 20px" : shape === "cloud" ? "14px 26px" : shape === "diamond" ? "12px 28px" : "8px 16px"),
             opacity: textOpacity,
             fontFamily: primaryFont.fontFamily,
             boxSizing: "border-box"
@@ -359,21 +367,85 @@ export function RoughBoxNode({
               ★ CENTRAL SERVER
             </div>
           )}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "10px",
-              marginBottom: subLabel ? "4px" : "0px"
-            }}
-          >
-            {(() => {
-              const isBigWebImage = !isTech && Boolean(imageSrc);
-              const badgeSize = isBigWebImage ? (width < 320 ? 56 : 68) : (width < 300 ? 32 : 38);
-              const imgSize = isBigWebImage ? (width < 320 ? 48 : 58) : (width < 300 ? 20 : 24);
-
-              return (
+          {isBigWebImage ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                gap: "5px"
+              }}
+            >
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: `${badgeSize}px`,
+                  height: `${badgeSize}px`,
+                  borderRadius: "16px",
+                  background: "rgba(10, 10, 20, 0.95)",
+                  border: status === "active" ? "2.5px solid #ff7700" : "2px solid rgba(255, 119, 0, 0.6)",
+                  boxShadow: "0 8px 24px rgba(0, 0, 0, 0.85), 0 0 16px rgba(255, 119, 0, 0.35)",
+                  overflow: "hidden",
+                  padding: "4px",
+                  flexShrink: 0
+                }}
+              >
+                <img
+                  src={imageSrc}
+                  alt={label}
+                  style={{
+                    width: `${imgSize}px`,
+                    height: `${imgSize}px`,
+                    objectFit: "contain",
+                    borderRadius: "10px"
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  fontSize: titleSize,
+                  fontWeight: 800,
+                  color: scheme.text,
+                  lineHeight: 1.2,
+                  letterSpacing: "-0.3px",
+                  fontFamily: displayFont.fontFamily,
+                  textAlign: "center",
+                  textShadow: "0 2px 10px rgba(0,0,0,0.9)"
+                }}
+              >
+                {label}
+              </div>
+              {subLabel && (
+                <div
+                  style={{
+                    fontSize: subSize,
+                    color: scheme.sub,
+                    fontFamily: primaryFont.fontFamily,
+                    fontWeight: 700,
+                    letterSpacing: "0.2px",
+                    lineHeight: 1.1,
+                    textAlign: "center"
+                  }}
+                >
+                  {subLabel}
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "10px",
+                  marginBottom: subLabel ? "4px" : "0px"
+                }}
+              >
                 <div
                   style={{
                     display: "inline-flex",
@@ -381,11 +453,11 @@ export function RoughBoxNode({
                     justifyContent: "center",
                     width: `${badgeSize}px`,
                     height: `${badgeSize}px`,
-                    borderRadius: isBigWebImage ? "14px" : "10px",
-                    background: isBigWebImage ? "rgba(10, 10, 18, 0.9)" : status === "active" ? "rgba(255, 119, 0, 0.25)" : "rgba(255, 255, 255, 0.07)",
-                    border: isBigWebImage ? "2px solid rgba(255, 119, 0, 0.5)" : status === "active" ? "1.5px solid #ff7700" : "1px solid rgba(255, 255, 255, 0.12)",
+                    borderRadius: "10px",
+                    background: status === "active" ? "rgba(255, 119, 0, 0.25)" : "rgba(255, 255, 255, 0.07)",
+                    border: status === "active" ? "1.5px solid #ff7700" : "1px solid rgba(255, 255, 255, 0.12)",
                     flexShrink: 0,
-                    boxShadow: isBigWebImage ? "0 8px 24px rgba(0, 0, 0, 0.8), 0 0 16px rgba(255, 119, 0, 0.25)" : status === "active" ? "0 0 14px rgba(255, 119, 0, 0.5)" : "none",
+                    boxShadow: status === "active" ? "0 0 14px rgba(255, 119, 0, 0.5)" : "none",
                     overflow: "hidden"
                   }}
                 >
@@ -397,7 +469,7 @@ export function RoughBoxNode({
                         width: `${imgSize}px`,
                         height: `${imgSize}px`,
                         objectFit: "contain",
-                        borderRadius: isBigWebImage ? "10px" : "4px"
+                        borderRadius: "4px"
                       }}
                     />
                   ) : (
@@ -409,35 +481,35 @@ export function RoughBoxNode({
                     />
                   )}
                 </div>
-              );
-            })()}
-            <div
-              style={{
-                fontSize: titleSize,
-                fontWeight: 800,
-                color: scheme.text,
-                lineHeight: 1.25,
-                letterSpacing: "-0.3px",
-                fontFamily: displayFont.fontFamily,
-                textShadow: "0 2px 10px rgba(0,0,0,0.9)"
-              }}
-            >
-              {label}
-            </div>
-          </div>
-          {subLabel && (
-            <div
-              style={{
-                fontSize: subSize,
-                color: scheme.sub,
-                marginTop: "5px",
-                fontFamily: primaryFont.fontFamily,
-                fontWeight: 700,
-                letterSpacing: "0.2px"
-              }}
-            >
-              {subLabel}
-            </div>
+                <div
+                  style={{
+                    fontSize: titleSize,
+                    fontWeight: 800,
+                    color: scheme.text,
+                    lineHeight: 1.25,
+                    letterSpacing: "-0.3px",
+                    fontFamily: displayFont.fontFamily,
+                    textShadow: "0 2px 10px rgba(0,0,0,0.9)"
+                  }}
+                >
+                  {label}
+                </div>
+              </div>
+              {subLabel && (
+                <div
+                  style={{
+                    fontSize: subSize,
+                    color: scheme.sub,
+                    marginTop: "5px",
+                    fontFamily: primaryFont.fontFamily,
+                    fontWeight: 700,
+                    letterSpacing: "0.2px"
+                  }}
+                >
+                  {subLabel}
+                </div>
+              )}
+            </>
           )}
         </div>
       </foreignObject>

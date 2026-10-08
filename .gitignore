@@ -16,6 +16,7 @@ public/
 output/
 temp/
 tmp/
+.cache/
 *.mp4
 *.mp3
 *.wav

@@ -1,20 +1,14 @@
-How Netflix Streams 4K Video Without Buffering (System Design Explained)
-Format: 9:16 Vertical Shorts (Full-screen visual architecture whiteboard).
-No code lines needed, pure system architecture, distributed systems, and visual data structures.
+Title: Hosting AI at Home: Student Expectation vs Reality
+Format: 9:16 Vertical Shorts.
 
-Core Architecture Components:
-- Client App: 4K Smart TVs and mobile clients negotiating adaptive bitrate streams
-- Control Plane & DRM Gate: Diamond decision checkpoint verifying licenses and 4K capability
-- Parallel Transcoding Fleet: Hexagon worker microservices encoding raw footage into hundreds of chunk profiles
-- Adaptive Bitrate Engine: Funnel selecting the optimal video quality based on real-time network throughput
-- State & Catalog Store: Cylinder databases holding user viewing bookmarks and metadata
-- Open Connect C D N: Custom caching servers deployed directly inside local internet providers
+Topic & Vibe:
+A relatable, humorous take on every student's dream of hosting AI locally at home. Students think: just buy a gaming GPU, host your own LLM, no more subscriptions, and life is pure zingalala! But then the brutal reality of VRAM limits, jet-engine fan noise, and electric bills hits. Keep it funny, fast-paced, and punchy.
 
-Concept & Scene Flow:
-1. The 4K Streaming Challenge: Streaming uncompressed 4K video requires massive bandwidth. Netflix must deliver pristine ultra high definition instantly without a single second of buffering.
-2. The License Check: Before a single frame plays, a diamond decision gate verifies your device D R M and 4K subscription authorization.
-3. Massive Encoding Fleet: Raw film footage is sliced into tiny segments. A cluster of hexagon worker nodes compresses each scene into dozens of resolutions using A V 1 and H E V C codecs.
-4. Adaptive Bitrate Selection: Your device constantly measures connection speed, dynamically choosing whether to pull 4K, 1080p, or 720p chunks as your Wi-Fi fluctuates.
-5. In-Memory State Sync: A distributed cylinder database updates your watch history and timestamp in milliseconds so you can resume on another screen.
-6. Open Connect Edge Delivery: Instead of pulling video across the globe, Netflix stores popular movies on custom caching servers placed directly inside your local internet service provider.
-7. Seamless 4K Playback: The combination of local edge caching, parallel chunk encoding, and intelligent bitrate switching delivers crystal-clear 4K video instantly.
+Core Story Progression:
+1. The Zingalala Dream: Every student thinks: just buy a graphics card, host your own AI, and life is zingalala.
+2. The RTX Unboxing: You unbox a shiny RTX graphics card, feeling like Tony Stark setting up your personal Jarvis.
+3. The CUDA Crash: You download a massive open source model, hit run, and instantly get slammed with CUDA Out of Memory.
+4. The Brutal VRAM Math: Turns out that model needs forty-eight gigabytes of memory, but your student budget only afforded eight.
+5. The Bedroom Space Heater: When it finally runs, the cooling fans scream like a jet engine, turning your room into a sauna.
+6. The Ollama Rescue: You discover Ollama and four-bit quantization, finally getting fast, intelligent replies completely offline.
+7. The Electric Bill Finale: Your local AI dream is finally alive, right until your parents see the massive electricity bill.

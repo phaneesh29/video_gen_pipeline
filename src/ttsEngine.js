@@ -1,39 +1,40 @@
 import fs from "fs";
 import path from "path";
-import { client } from "./client.js";
+import { SarvamAIClient } from "sarvamai";
 import { config } from "./config.js";
 
-export const PAUL_EXPRESSIONS = {
-  confident: "en_paul_confident",
-  excited: "en_paul_excited",
-  cheerful: "en_paul_cheerful",
-  happy: "en_paul_happy",
-  neutral: "en_paul_neutral",
-  frustrated: "en_paul_frustrated",
-  sad: "en_paul_sad",
-  angry: "en_paul_angry"
-};
+const sarvamClient = new SarvamAIClient({
+  apiSubscriptionKey: config.SARVAM_API_KEY
+});
 
-export async function generateSpeech(text, outputPath, expression = "confident") {
-  const voiceId = PAUL_EXPRESSIONS[expression] || expression || PAUL_EXPRESSIONS.confident;
-
-  const trimmed = text.trim();
-  const cleanInput = /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
-
-  const response = await client.audio.speech.complete({
-    model: config.VOXTRAL_MODEL,
-    voiceId,
-    input: cleanInput,
-    responseFormat: "mp3"
-  });
-
+/**
+ * Generate speech using Sarvam AI Bulbul v3 TTS
+ */
+export async function generateSpeech(text, outputPath) {
   const dir = path.dirname(outputPath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 
-  const audioBuffer = Buffer.from(response.audioData, "base64");
-  fs.writeFileSync(outputPath, audioBuffer);
+  const trimmed = text.trim();
+  const cleanInput = /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+
+  const response = await sarvamClient.textToSpeech.convertStream({
+    text: cleanInput,
+    target_language_code: config.SARVAM_LANGUAGE_CODE,
+    speaker: config.SARVAM_SPEAKER,
+    model: config.SARVAM_MODEL,
+    pace: 1,
+    speech_sample_rate: 24000
+  });
+
+  await new Promise((resolve, reject) => {
+    const fileStream = fs.createWriteStream(outputPath);
+    response.pipe(fileStream);
+    fileStream.on("finish", () => resolve(outputPath));
+    fileStream.on("error", reject);
+    response.on("error", reject);
+  });
 
   return outputPath;
 }

@@ -12,7 +12,7 @@ const program = new Command();
 
 program
   .name("video-gen")
-  .description("Excalidraw-style technical explainer video generator using Remotion, Codestral & Voxtral")
+  .description("Excalidraw-style technical explainer video generator using Remotion, Codestral & Sarvam AI")
   .version("1.0.0")
   .argument("[input]", "Path to text file (e.g. problem.txt) or inline topic string", "problem.txt")
   .option("-v, --vertical", "Render in 9:16 vertical format (1080x1920) for Shorts/Reels")
@@ -87,7 +87,7 @@ Examples:
       const masterAudioPath = path.resolve(tempDir, `audio_${cleanSlug}.m4a`);
 
       // Stage 2: Audio synthesis
-      console.log(`\n[2/4] Synthesizing Voiceovers with Mistral Voxtral...`);
+      console.log(`\n[2/4] Synthesizing Voiceovers with Sarvam AI (${config.SARVAM_SPEAKER} / ${config.SARVAM_LANGUAGE_CODE})...`);
       const enrichedStoryboard = await processStoryboardAudio(storyboard, tempDir);
       console.log(`      ✓ Speech synthesized for all ${enrichedStoryboard.scenes.length} scenes`);
       console.log(`      ✓ Duration: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s (${enrichedStoryboard.totalDurationInFrames} frames at 30fps)`);

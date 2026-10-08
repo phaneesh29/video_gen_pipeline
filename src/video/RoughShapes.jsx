@@ -371,23 +371,17 @@ export function RoughBoxNode({
           )}
           {Boolean(imageSrc) ? (
             <>
-              {/* Image Container safely contained INSIDE the rough shape */}
+              {/* Hardware / Object image seamlessly floating inside the rough container */}
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: "84%",
-                  height: isHub ? "55%" : "62%",
-                  borderRadius: "14px",
-                  background: isTech ? "rgba(10, 10, 20, 0.95)" : "#ffffff",
-                  border: status === "active" ? "2px solid #ff7700" : "1.5px solid rgba(255, 119, 0, 0.4)",
-                  boxShadow: status === "active"
-                    ? "0 6px 20px rgba(0, 0, 0, 0.8), 0 0 16px rgba(255, 119, 0, 0.45)"
-                    : "0 4px 14px rgba(0, 0, 0, 0.6)",
-                  padding: isTech ? "10px 16px" : "6px 12px",
+                  width: "92%",
+                  height: isHub ? "60%" : "66%",
+                  padding: "4px",
                   boxSizing: "border-box",
-                  overflow: "hidden",
+                  overflow: "visible",
                   flexShrink: 0
                 }}
               >
@@ -395,14 +389,14 @@ export function RoughBoxNode({
                   src={imageSrc}
                   alt={label}
                   style={{
-                    maxWidth: "100%",
+                    maxWidth: "96%",
                     maxHeight: "100%",
                     width: "auto",
                     height: "auto",
                     objectFit: "contain",
-                    filter: isTech
-                      ? "drop-shadow(0 6px 14px rgba(0, 0, 0, 0.9))"
-                      : "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15))"
+                    filter: status === "active"
+                      ? "drop-shadow(0 8px 18px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 14px rgba(255, 119, 0, 0.6))"
+                      : "drop-shadow(0 6px 14px rgba(0, 0, 0, 0.9))"
                   }}
                 />
               </div>

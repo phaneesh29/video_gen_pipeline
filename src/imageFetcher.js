@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
+import { removeStudioBackground } from "./imageProcessor.js";
 
 const CACHE_DIR = path.resolve("./.cache/images");
 
@@ -165,10 +166,11 @@ export async function fetchWebImage(query) {
     clearTimeout(timeout);
 
     if (downloadRes.ok) {
-      const buffer = await downloadRes.arrayBuffer();
-      const contentType = downloadRes.headers.get("content-type") || "image/jpeg";
-      const base64 = Buffer.from(buffer).toString("base64");
-      const dataUri = `data:${contentType};base64,${base64}`;
+      const arrayBuf = await downloadRes.arrayBuffer();
+      const rawBuf = Buffer.from(arrayBuf);
+      const processedBuf = await removeStudioBackground(rawBuf);
+      const base64 = processedBuf.toString("base64");
+      const dataUri = `data:image/png;base64,${base64}`;
       writeToCache(cacheKey, dataUri);
       return dataUri;
     }

@@ -226,8 +226,8 @@ function computeGenericLayout(nodes, edges, isVertical, width, height, hasTopGal
 
         const hasNodeImage = Boolean(node.imageSrc);
         if (hasNodeImage) {
-          cardH = Math.max(cardH, count <= 2 ? 220 : 190);
-          cardW = Math.max(cardW, count === 1 ? 460 : count === 2 ? 400 : 330);
+          cardH = Math.max(cardH, count <= 2 ? 230 : 200);
+          cardW = Math.max(cardW, count === 1 ? 480 : count === 2 ? 410 : 340);
         }
 
         if (node.shape === "cylinder") {
@@ -395,9 +395,9 @@ function ImageGalleryOverlay({ items = [], isVertical = false, isCompact = false
 
         let imgHeight = isVertical
           ? isCompact
-            ? (count <= 2 ? "190px" : "150px")
-            : (count <= 2 ? "260px" : "200px")
-          : (count <= 2 ? "220px" : "180px");
+            ? (count <= 2 ? "210px" : "165px")
+            : (count <= 2 ? "290px" : "230px")
+          : (count <= 2 ? "250px" : "200px");
 
         return (
           <div
@@ -445,12 +445,12 @@ function ImageGalleryOverlay({ items = [], isVertical = false, isCompact = false
                 alignItems: "center",
                 justifyContent: "center",
                 background: item.imageSrc
-                  ? (item.isTech ? "rgba(8, 8, 14, 0.75)" : "#ffffff")
+                  ? "transparent"
                   : "rgba(10, 10, 18, 0.85)",
                 borderRadius: "18px",
-                padding: "10px",
+                padding: "6px",
                 boxSizing: "border-box",
-                overflow: "hidden"
+                overflow: "visible"
               }}
             >
               {item.imageSrc ? (
@@ -458,12 +458,10 @@ function ImageGalleryOverlay({ items = [], isVertical = false, isCompact = false
                   src={item.imageSrc}
                   alt={item.title}
                   style={{
-                    maxWidth: "92%",
-                    maxHeight: "92%",
+                    maxWidth: "96%",
+                    maxHeight: "96%",
                     objectFit: "contain",
-                    filter: item.isTech
-                      ? "drop-shadow(0 10px 20px rgba(0, 0, 0, 0.9))"
-                      : "drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15))"
+                    filter: "drop-shadow(0 12px 24px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 16px rgba(255, 119, 0, 0.25))"
                   }}
                 />
               ) : (

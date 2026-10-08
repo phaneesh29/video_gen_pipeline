@@ -14,7 +14,10 @@ export async function generateStoryboard(topic, isVertical = false) {
     ]
   });
 
-  const parsed = response.choices[0].message.parsed;
+  let parsed = response.choices[0].message.parsed;
+
+  // Sanitize any accidental letter-spaced terms (e.g. "G P U" -> "GPU", "N V L i n k" -> "NVLink")
+  parsed = sanitizeStoryboard(parsed);
 
   if (parsed && Array.isArray(parsed.codeLines) && Array.isArray(parsed.scenes)) {
     for (const scene of parsed.scenes) {
@@ -34,3 +37,33 @@ export async function generateStoryboard(topic, isVertical = false) {
 
   return parsed;
 }
+
+/**
+ * Universally collapses any artificial sequence of single-letter tokens
+ * (e.g. "G P U", "M C P", "A I", "N V L i n k", "L L M", "g R P C")
+ * using a single universal regex without maintaining any word dictionaries.
+ */
+function cleanSpacedText(str) {
+  if (typeof str !== "string") return str;
+  return str.replace(/\b([a-zA-Z](?:\s+[a-zA-Z])+)\b/g, (match) => {
+    return match.split(/\s+/).join("");
+  });
+}
+
+export function sanitizeStoryboard(val) {
+  if (typeof val === "string") {
+    return cleanSpacedText(val);
+  }
+  if (Array.isArray(val)) {
+    return val.map(sanitizeStoryboard);
+  }
+  if (val && typeof val === "object") {
+    const result = {};
+    for (const key of Object.keys(val)) {
+      result[key] = sanitizeStoryboard(val[key]);
+    }
+    return result;
+  }
+  return val;
+}
+

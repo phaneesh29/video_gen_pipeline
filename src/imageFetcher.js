@@ -184,6 +184,38 @@ export async function enrichStoryboardWithImages(storyboard) {
     return storyboard;
   }
 
+  // 0. Auto-enrich scenes missing a gallery from their key architecture nodes
+  for (const scene of storyboard.scenes) {
+    if (!scene.visual) scene.visual = {};
+    if (!Array.isArray(scene.visual.gallery) || scene.visual.gallery.length === 0) {
+      const nodes = (scene.visual.structures || []).flatMap((s) => s.nodes || []);
+      const candidateNodes = nodes.filter(
+        (n) => n.imagePrompt || n.isTech || (n.label && n.label.trim().length > 1)
+      );
+      if (candidateNodes.length > 0) {
+        const seen = new Set();
+        const gallery = [];
+        for (const node of candidateNodes) {
+          const key = (node.label || node.id || "").toLowerCase();
+          if (seen.has(key)) continue;
+          seen.add(key);
+          gallery.push({
+            title: node.label,
+            subtitle: node.subLabel || (node.isTech ? "Tech Component" : "Hardware Unit"),
+            imagePrompt:
+              node.imagePrompt ||
+              (node.isTech ? normalizeSlug(node.label) : `${node.label} transparent png`),
+            isTech: Boolean(node.isTech)
+          });
+          if (gallery.length >= 3) break;
+        }
+        if (gallery.length > 0) {
+          scene.visual.gallery = gallery;
+        }
+      }
+    }
+  }
+
   // 1. Collect all unique image tasks
   const tasks = new Map(); // key -> { isTech, prompt }
 

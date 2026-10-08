@@ -148,18 +148,18 @@ function computeGenericLayout(nodes, edges, isVertical, width, height, hasTopGal
       return { positions, nodeSizes };
     }
 
-    // Determine Y coordinates for each tier with massive breathing room
+    // Determine Y coordinates for each tier with balanced vertical distribution
     let tierYs = [];
     if (hasTopGallery) {
       if (tiers.length === 1) {
-        tierYs = [1220];
+        tierYs = [1180];
       } else if (tiers.length === 2) {
-        tierYs = [980, 1440];
+        tierYs = [960, 1380];
       } else if (tiers.length === 3) {
-        tierYs = [920, 1220, 1500];
+        tierYs = [880, 1180, 1480];
       } else {
-        const startY = 880;
-        const endY = 1540;
+        const startY = 840;
+        const endY = 1520;
         const step = (endY - startY) / (tiers.length - 1);
         tierYs = tiers.map((_, i) => startY + i * step);
       }
@@ -167,15 +167,15 @@ function computeGenericLayout(nodes, edges, isVertical, width, height, hasTopGal
       if (tiers.length === 1) {
         tierYs = [cy];
       } else if (tiers.length === 2) {
-        // 2 tiers (e.g. Client & Server): Massive 980px vertical breathing space!
-        tierYs = [420, 1420];
+        // 2 tiers (e.g. Client & Server): Balanced ~680px vertical space
+        tierYs = [560, 1260];
       } else if (tiers.length === 3) {
-        // 3 tiers: 570px vertical space between tiers
-        tierYs = [330, 900, 1470];
+        // 3 tiers: Balanced spacing
+        tierYs = [420, 920, 1420];
       } else {
         // 4+ tiers
-        const startY = 280;
-        const endY = 1520;
+        const startY = 320;
+        const endY = 1500;
         const step = (endY - startY) / (tiers.length - 1);
         tierYs = tiers.map((_, i) => startY + i * step);
       }
@@ -224,10 +224,10 @@ function computeGenericLayout(nodes, edges, isVertical, width, height, hasTopGal
           cardH = 105;
         }
 
-        const hasBigWebImage = Boolean(node.imageSrc) && !node.isTech;
-        if (hasBigWebImage) {
-          cardH = Math.max(cardH, count <= 2 ? 215 : 185);
-          cardW = Math.max(cardW, count === 1 ? 460 : count === 2 ? 390 : 320);
+        const hasNodeImage = Boolean(node.imageSrc);
+        if (hasNodeImage) {
+          cardH = Math.max(cardH, count <= 2 ? 220 : 190);
+          cardW = Math.max(cardW, count === 1 ? 460 : count === 2 ? 400 : 330);
         }
 
         if (node.shape === "cylinder") {
@@ -303,10 +303,10 @@ function computeGenericLayout(nodes, edges, isVertical, width, height, hasTopGal
           cardH = 110;
         }
 
-        const hasBigWebImage = Boolean(node.imageSrc) && !node.isTech;
-        if (hasBigWebImage) {
-          cardH = Math.max(cardH, count <= 2 ? 180 : 160);
-          cardW = Math.max(cardW, count === 1 ? 420 : 340);
+        const hasNodeImage = Boolean(node.imageSrc);
+        if (hasNodeImage) {
+          cardH = Math.max(cardH, count <= 2 ? 185 : 160);
+          cardW = Math.max(cardW, count === 1 ? 440 : 350);
         }
 
         if (node.shape === "cylinder") {
@@ -444,7 +444,7 @@ function ImageGalleryOverlay({ items = [], isVertical = false, isCompact = false
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: "rgba(8, 8, 14, 0.75)",
+                background: item.isTech ? "rgba(8, 8, 14, 0.75)" : "#f8fafc",
                 borderRadius: "18px",
                 padding: "10px",
                 boxSizing: "border-box",
@@ -459,7 +459,9 @@ function ImageGalleryOverlay({ items = [], isVertical = false, isCompact = false
                     maxWidth: "92%",
                     maxHeight: "92%",
                     objectFit: "contain",
-                    filter: "drop-shadow(0 10px 20px rgba(0, 0, 0, 0.9))"
+                    filter: item.isTech
+                      ? "drop-shadow(0 10px 20px rgba(0, 0, 0, 0.9))"
+                      : "drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15))"
                   }}
                 />
               ) : (
@@ -754,7 +756,8 @@ export function WhiteboardCanvas({ structures = [], gallery = [], isVertical = f
 
             const isActive = edge.status === "active" || edge.status === "traversed";
             const arrowColor = isActive ? "#ff7700" : "#64748b";
-            const startFrame = 8 + idx * 6;
+            const archiBaseDelay = isCombinedMode ? 38 : 0;
+            const startFrame = archiBaseDelay + nodes.length * 5 + idx * 6;
 
             return (
               <RoughArrow
@@ -775,7 +778,8 @@ export function WhiteboardCanvas({ structures = [], gallery = [], isVertical = f
           {nodes.map((node, i) => {
             const pos = positions.get(node.id) || { x: width / 2, y: height / 2 };
             const size = nodeSizes.get(node.id) || { width: 360, height: 140, isHub: false };
-            const startFrame = i * 4;
+            const archiBaseDelay = isCombinedMode ? 38 : 0;
+            const startFrame = archiBaseDelay + i * 5;
 
             return (
               <RoughBoxNode

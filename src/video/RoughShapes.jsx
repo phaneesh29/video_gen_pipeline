@@ -346,13 +346,13 @@ export function RoughBoxNode({
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
-            padding: isBigWebImage ? "10px 14px" : (shape === "cylinder" ? "24px 20px 14px 20px" : shape === "cloud" ? "14px 26px" : shape === "diamond" ? "12px 28px" : "8px 16px"),
+            padding: Boolean(imageSrc) ? "4px" : (shape === "cylinder" ? "24px 20px 14px 20px" : shape === "cloud" ? "14px 26px" : shape === "diamond" ? "12px 28px" : "8px 16px"),
             opacity: textOpacity,
             fontFamily: primaryFont.fontFamily,
             boxSizing: "border-box"
           }}
         >
-          {isHub && (
+          {!imageSrc && isHub && (
             <div
               style={{
                 fontSize: "13px",
@@ -367,73 +367,128 @@ export function RoughBoxNode({
               ★ CENTRAL SERVER
             </div>
           )}
-          {isBigWebImage ? (
+          {Boolean(imageSrc) ? (
             <div
               style={{
+                width: "100%",
+                height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-                gap: "5px"
+                borderRadius: shape === "cylinder" ? "22px" : "18px",
+                overflow: "hidden",
+                background: isTech ? "rgba(14, 14, 24, 0.95)" : "#f8fafc",
+                boxShadow: status === "active"
+                  ? "0 0 28px rgba(255, 119, 0, 0.55), inset 0 0 16px rgba(255, 119, 0, 0.2)"
+                  : "0 8px 24px rgba(0, 0, 0, 0.75)",
+                border: status === "active" ? "2.5px solid #ff7700" : "1.5px solid rgba(255, 255, 255, 0.12)",
+                boxSizing: "border-box",
+                position: "relative"
               }}
             >
+              {/* Top / Main Image Area that FILLS the shape */}
               <div
                 style={{
-                  display: "inline-flex",
+                  flex: 1,
+                  width: "100%",
+                  display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: `${badgeSize}px`,
-                  height: `${badgeSize}px`,
-                  borderRadius: "16px",
-                  background: "rgba(10, 10, 20, 0.95)",
-                  border: status === "active" ? "2.5px solid #ff7700" : "2px solid rgba(255, 119, 0, 0.6)",
-                  boxShadow: "0 8px 24px rgba(0, 0, 0, 0.85), 0 0 16px rgba(255, 119, 0, 0.35)",
-                  overflow: "hidden",
-                  padding: "4px",
-                  flexShrink: 0
+                  padding: isTech ? "14px 20px" : "6px 12px",
+                  boxSizing: "border-box",
+                  position: "relative",
+                  overflow: "hidden"
                 }}
               >
+                {isHub && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "6px",
+                      left: "8px",
+                      fontSize: "11px",
+                      fontWeight: 800,
+                      color: isTech ? "#38bdf8" : "#0284c7",
+                      fontFamily: monoFont.fontFamily,
+                      letterSpacing: "1px",
+                      textTransform: "uppercase",
+                      background: isTech ? "rgba(2, 132, 199, 0.2)" : "rgba(2, 132, 199, 0.12)",
+                      padding: "2px 8px",
+                      borderRadius: "6px",
+                      zIndex: 2
+                    }}
+                  >
+                    ★ CENTRAL HUB
+                  </div>
+                )}
                 <img
                   src={imageSrc}
                   alt={label}
                   style={{
-                    width: `${imgSize}px`,
-                    height: `${imgSize}px`,
+                    width: "100%",
+                    height: "100%",
+                    maxHeight: "100%",
+                    maxWidth: "100%",
                     objectFit: "contain",
-                    borderRadius: "10px"
+                    filter: isTech
+                      ? "drop-shadow(0 6px 16px rgba(0, 0, 0, 0.85))"
+                      : "drop-shadow(0 4px 10px rgba(0, 0, 0, 0.18))"
                   }}
                 />
               </div>
+
+              {/* Integrated Frosted Glass Bottom Banner */}
               <div
                 style={{
-                  fontSize: titleSize,
-                  fontWeight: 800,
-                  color: scheme.text,
-                  lineHeight: 1.2,
-                  letterSpacing: "-0.3px",
-                  fontFamily: displayFont.fontFamily,
-                  textAlign: "center",
-                  textShadow: "0 2px 10px rgba(0,0,0,0.9)"
+                  width: "100%",
+                  padding: "6px 12px 8px 12px",
+                  boxSizing: "border-box",
+                  background: isTech ? "rgba(8, 8, 14, 0.92)" : "rgba(18, 18, 28, 0.95)",
+                  borderTop: status === "active" ? "1.5px solid #ff7700" : "1px solid rgba(255, 119, 0, 0.35)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center"
                 }}
               >
-                {label}
-              </div>
-              {subLabel && (
                 <div
                   style={{
-                    fontSize: subSize,
-                    color: scheme.sub,
-                    fontFamily: primaryFont.fontFamily,
-                    fontWeight: 700,
-                    letterSpacing: "0.2px",
-                    lineHeight: 1.1,
-                    textAlign: "center"
+                    fontSize: titleSize,
+                    fontWeight: 800,
+                    color: "#ffffff",
+                    lineHeight: 1.2,
+                    letterSpacing: "-0.2px",
+                    fontFamily: displayFont.fontFamily,
+                    textAlign: "center",
+                    textShadow: "0 2px 8px rgba(0, 0, 0, 0.9)",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "100%"
                   }}
                 >
-                  {subLabel}
+                  {label}
                 </div>
-              )}
+                {subLabel && (
+                  <div
+                    style={{
+                      fontSize: subSize,
+                      color: "#fbbf24",
+                      fontFamily: primaryFont.fontFamily,
+                      fontWeight: 700,
+                      letterSpacing: "0.2px",
+                      lineHeight: 1.1,
+                      textAlign: "center",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      maxWidth: "100%",
+                      marginTop: "2px"
+                    }}
+                  >
+                    {subLabel}
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <>
@@ -594,6 +649,27 @@ export function RoughArrow({
           </div>
         </foreignObject>
       )}
+
+      {/* Continuous animated flowing data packet traveling across arrow */}
+      {frame > startFrame + duration && (() => {
+        const pulseCycle = 36;
+        const progressFrac = ((frame - (startFrame + duration)) % pulseCycle) / pulseCycle;
+        const dotX = x1 + (x2 - x1) * progressFrac;
+        const dotY = y1 + (y2 - y1) * progressFrac;
+        return (
+          <circle
+            cx={dotX}
+            cy={dotY}
+            r={8}
+            fill="#ffffff"
+            stroke="#ff7700"
+            strokeWidth={3}
+            style={{
+              filter: "drop-shadow(0 0 12px #ff7700)"
+            }}
+          />
+        );
+      })()}
 
       {/* Handwritten sticky label on arrow */}
       {Boolean(

@@ -222,15 +222,17 @@ export async function enrichStoryboardWithImages(storyboard) {
   for (const scene of storyboard.scenes) {
     if (Array.isArray(scene.visual?.gallery)) {
       for (const item of scene.visual.gallery) {
-        if (item.isTech && (item.imagePrompt || item.title)) {
-          const key = `tech:${item.imagePrompt || item.title}`;
+        const query = item.imagePrompt || item.title;
+        if (!query || !query.trim()) continue;
+        if (item.isTech) {
+          const key = `tech:${query.trim()}`;
           if (!tasks.has(key)) {
-            tasks.set(key, { isTech: true, prompt: item.imagePrompt || item.title });
+            tasks.set(key, { isTech: true, prompt: query.trim() });
           }
-        } else if (item.imagePrompt && item.imagePrompt.trim()) {
-          const key = `web:${item.imagePrompt}`;
+        } else {
+          const key = `web:${query.trim()}`;
           if (!tasks.has(key)) {
-            tasks.set(key, { isTech: false, prompt: item.imagePrompt });
+            tasks.set(key, { isTech: false, prompt: query.trim() });
           }
         }
       }
@@ -240,15 +242,17 @@ export async function enrichStoryboardWithImages(storyboard) {
     for (const struct of structures) {
       const nodes = struct.nodes || [];
       for (const node of nodes) {
-        if (node.isTech && (node.imagePrompt || node.label)) {
-          const key = `tech:${node.imagePrompt || node.label}`;
+        const query = node.imagePrompt || node.label;
+        if (!query || !query.trim()) continue;
+        if (node.isTech) {
+          const key = `tech:${query.trim()}`;
           if (!tasks.has(key)) {
-            tasks.set(key, { isTech: true, prompt: node.imagePrompt || node.label });
+            tasks.set(key, { isTech: true, prompt: query.trim() });
           }
-        } else if (node.imagePrompt && node.imagePrompt.trim()) {
-          const key = `web:${node.imagePrompt}`;
+        } else {
+          const key = `web:${query.trim()}`;
           if (!tasks.has(key)) {
-            tasks.set(key, { isTech: false, prompt: node.imagePrompt });
+            tasks.set(key, { isTech: false, prompt: query.trim() });
           }
         }
       }
@@ -281,16 +285,11 @@ export async function enrichStoryboardWithImages(storyboard) {
   for (const scene of storyboard.scenes) {
     if (Array.isArray(scene.visual?.gallery)) {
       for (const item of scene.visual.gallery) {
-        if (item.isTech && (item.imagePrompt || item.title)) {
-          const key = `tech:${item.imagePrompt || item.title}`;
-          if (resolvedImages.has(key)) {
-            item.imageSrc = resolvedImages.get(key);
-          }
-        } else if (item.imagePrompt && item.imagePrompt.trim()) {
-          const key = `web:${item.imagePrompt}`;
-          if (resolvedImages.has(key)) {
-            item.imageSrc = resolvedImages.get(key);
-          }
+        const query = item.imagePrompt || item.title;
+        if (!query || !query.trim()) continue;
+        const key = item.isTech ? `tech:${query.trim()}` : `web:${query.trim()}`;
+        if (resolvedImages.has(key)) {
+          item.imageSrc = resolvedImages.get(key);
         }
       }
     }
@@ -299,16 +298,11 @@ export async function enrichStoryboardWithImages(storyboard) {
     for (const struct of structures) {
       const nodes = struct.nodes || [];
       for (const node of nodes) {
-        if (node.isTech && (node.imagePrompt || node.label)) {
-          const key = `tech:${node.imagePrompt || node.label}`;
-          if (resolvedImages.has(key)) {
-            node.imageSrc = resolvedImages.get(key);
-          }
-        } else if (node.imagePrompt && node.imagePrompt.trim()) {
-          const key = `web:${node.imagePrompt}`;
-          if (resolvedImages.has(key)) {
-            node.imageSrc = resolvedImages.get(key);
-          }
+        const query = node.imagePrompt || node.label;
+        if (!query || !query.trim()) continue;
+        const key = node.isTech ? `tech:${query.trim()}` : `web:${query.trim()}`;
+        if (resolvedImages.has(key)) {
+          node.imageSrc = resolvedImages.get(key);
         }
       }
     }

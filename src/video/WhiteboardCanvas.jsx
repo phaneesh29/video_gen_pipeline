@@ -444,7 +444,9 @@ function ImageGalleryOverlay({ items = [], isVertical = false, isCompact = false
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: item.isTech ? "rgba(8, 8, 14, 0.75)" : "#f8fafc",
+                background: item.imageSrc
+                  ? (item.isTech ? "rgba(8, 8, 14, 0.75)" : "#ffffff")
+                  : "rgba(10, 10, 18, 0.85)",
                 borderRadius: "18px",
                 padding: "10px",
                 boxSizing: "border-box",

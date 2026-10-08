@@ -346,150 +346,108 @@ export function RoughBoxNode({
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
-            padding: Boolean(imageSrc) ? "4px" : (shape === "cylinder" ? "24px 20px 14px 20px" : shape === "cloud" ? "14px 26px" : shape === "diamond" ? "12px 28px" : "8px 16px"),
+            padding: Boolean(imageSrc)
+              ? (shape === "cylinder" ? "20px 16px 14px 16px" : "12px 16px")
+              : (shape === "cylinder" ? "24px 20px 14px 20px" : shape === "cloud" ? "14px 26px" : shape === "diamond" ? "12px 28px" : "8px 16px"),
             opacity: textOpacity,
             fontFamily: primaryFont.fontFamily,
             boxSizing: "border-box"
           }}
         >
-          {!imageSrc && isHub && (
+          {isHub && (
             <div
               style={{
-                fontSize: "13px",
+                fontSize: "12px",
                 fontWeight: 800,
                 color: "#38bdf8",
-                letterSpacing: "1.2px",
+                letterSpacing: "1px",
                 fontFamily: monoFont.fontFamily,
-                marginBottom: "5px",
+                marginBottom: "4px",
                 textTransform: "uppercase"
               }}
             >
-              ★ CENTRAL SERVER
+              ★ CENTRAL HUB
             </div>
           )}
           {Boolean(imageSrc) ? (
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                borderRadius: shape === "cylinder" ? "22px" : "18px",
-                overflow: "hidden",
-                background: isTech ? "rgba(14, 14, 24, 0.95)" : "#f8fafc",
-                boxShadow: status === "active"
-                  ? "0 0 28px rgba(255, 119, 0, 0.55), inset 0 0 16px rgba(255, 119, 0, 0.2)"
-                  : "0 8px 24px rgba(0, 0, 0, 0.75)",
-                border: status === "active" ? "2.5px solid #ff7700" : "1.5px solid rgba(255, 255, 255, 0.12)",
-                boxSizing: "border-box",
-                position: "relative"
-              }}
-            >
-              {/* Top / Main Image Area that FILLS the shape */}
+            <>
+              {/* Image Container safely contained INSIDE the rough shape */}
               <div
                 style={{
-                  flex: 1,
-                  width: "100%",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  padding: isTech ? "14px 20px" : "6px 12px",
+                  width: "84%",
+                  height: isHub ? "55%" : "62%",
+                  borderRadius: "14px",
+                  background: isTech ? "rgba(10, 10, 20, 0.95)" : "#ffffff",
+                  border: status === "active" ? "2px solid #ff7700" : "1.5px solid rgba(255, 119, 0, 0.4)",
+                  boxShadow: status === "active"
+                    ? "0 6px 20px rgba(0, 0, 0, 0.8), 0 0 16px rgba(255, 119, 0, 0.45)"
+                    : "0 4px 14px rgba(0, 0, 0, 0.6)",
+                  padding: isTech ? "10px 16px" : "6px 12px",
                   boxSizing: "border-box",
-                  position: "relative",
-                  overflow: "hidden"
+                  overflow: "hidden",
+                  flexShrink: 0
                 }}
               >
-                {isHub && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "6px",
-                      left: "8px",
-                      fontSize: "11px",
-                      fontWeight: 800,
-                      color: isTech ? "#38bdf8" : "#0284c7",
-                      fontFamily: monoFont.fontFamily,
-                      letterSpacing: "1px",
-                      textTransform: "uppercase",
-                      background: isTech ? "rgba(2, 132, 199, 0.2)" : "rgba(2, 132, 199, 0.12)",
-                      padding: "2px 8px",
-                      borderRadius: "6px",
-                      zIndex: 2
-                    }}
-                  >
-                    ★ CENTRAL HUB
-                  </div>
-                )}
                 <img
                   src={imageSrc}
                   alt={label}
                   style={{
-                    width: "100%",
-                    height: "100%",
-                    maxHeight: "100%",
                     maxWidth: "100%",
+                    maxHeight: "100%",
+                    width: "auto",
+                    height: "auto",
                     objectFit: "contain",
                     filter: isTech
-                      ? "drop-shadow(0 6px 16px rgba(0, 0, 0, 0.85))"
-                      : "drop-shadow(0 4px 10px rgba(0, 0, 0, 0.18))"
+                      ? "drop-shadow(0 6px 14px rgba(0, 0, 0, 0.9))"
+                      : "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15))"
                   }}
                 />
               </div>
 
-              {/* Integrated Frosted Glass Bottom Banner */}
+              {/* Title & SubLabel contained inside the rough shape */}
               <div
                 style={{
-                  width: "100%",
-                  padding: "6px 12px 8px 12px",
-                  boxSizing: "border-box",
-                  background: isTech ? "rgba(8, 8, 14, 0.92)" : "rgba(18, 18, 28, 0.95)",
-                  borderTop: status === "active" ? "1.5px solid #ff7700" : "1px solid rgba(255, 119, 0, 0.35)",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center"
+                  fontSize: titleSize,
+                  fontWeight: 800,
+                  color: "#ffffff",
+                  lineHeight: 1.2,
+                  letterSpacing: "-0.2px",
+                  fontFamily: displayFont.fontFamily,
+                  textAlign: "center",
+                  textShadow: "0 2px 8px rgba(0, 0, 0, 0.9)",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  maxWidth: "92%",
+                  marginTop: "6px"
                 }}
               >
+                {label}
+              </div>
+              {subLabel && (
                 <div
                   style={{
-                    fontSize: titleSize,
-                    fontWeight: 800,
-                    color: "#ffffff",
-                    lineHeight: 1.2,
-                    letterSpacing: "-0.2px",
-                    fontFamily: displayFont.fontFamily,
+                    fontSize: subSize,
+                    color: "#fbbf24",
+                    fontFamily: primaryFont.fontFamily,
+                    fontWeight: 700,
+                    letterSpacing: "0.2px",
+                    lineHeight: 1.1,
                     textAlign: "center",
-                    textShadow: "0 2px 8px rgba(0, 0, 0, 0.9)",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                    maxWidth: "100%"
+                    maxWidth: "92%",
+                    marginTop: "2px"
                   }}
                 >
-                  {label}
+                  {subLabel}
                 </div>
-                {subLabel && (
-                  <div
-                    style={{
-                      fontSize: subSize,
-                      color: "#fbbf24",
-                      fontFamily: primaryFont.fontFamily,
-                      fontWeight: 700,
-                      letterSpacing: "0.2px",
-                      lineHeight: 1.1,
-                      textAlign: "center",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      maxWidth: "100%",
-                      marginTop: "2px"
-                    }}
-                  >
-                    {subLabel}
-                  </div>
-                )}
-              </div>
-            </div>
+              )}
+            </>
           ) : (
             <>
               <div

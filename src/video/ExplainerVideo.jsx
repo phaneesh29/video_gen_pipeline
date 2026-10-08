@@ -1,6 +1,7 @@
 import React from "react";
 import { Series, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
 import { CodeEditor } from "./CodeEditor.jsx";
+import { FloatingCodeSnippet, getActiveSnippet } from "./FloatingCodeSnippet.jsx";
 import { WhiteboardCanvas } from "./WhiteboardCanvas.jsx";
 import { Subtitles } from "./Subtitles.jsx";
 import { AmbientBackground } from "./AmbientBackground.jsx";
@@ -19,6 +20,8 @@ function SceneWrapper({ scene, isVertical, hasCode, codeLines, codeTitle, codeLa
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp"
   });
+
+  const activeSnippet = !hasCode ? getActiveSnippet(scene.visual) : null;
 
   return (
     <div
@@ -43,6 +46,12 @@ function SceneWrapper({ scene, isVertical, hasCode, codeLines, codeTitle, codeLa
           activeLine={scene.visual.activeLine}
           codeTitle={codeTitle}
           codeLanguage={codeLanguage}
+          isVertical={isVertical}
+        />
+      ) : null}
+      {activeSnippet ? (
+        <FloatingCodeSnippet
+          snippet={activeSnippet}
           isVertical={isVertical}
         />
       ) : null}

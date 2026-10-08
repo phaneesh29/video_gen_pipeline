@@ -220,6 +220,13 @@ When explaining end-to-end data flow:
 - Auto-calculated boundary offsets (`getBoundaryOffset`) ensure arrows dock exactly at the perimeter of diamonds, cylinders, and clouds.
 - Bidirectional highway separation (170px+ apart) and staggered labels prevent edge collisions.
 
+### Archetype 5: On-Demand Floating Code Snippets (`codeSnippet`)
+When explaining API routes, SQL queries, Redis commands, or configurations:
+- Leaves canvas 100% full-screen for architecture diagrams without permanent split-screen clutter.
+- A floating macOS-style code card (`FloatingCodeSnippet.jsx`) springs into view for that specific scene only.
+- Features window controls (🔴 🟡 🟢), language pill badge (`SQL`, `TYPESCRIPT`, `BASH`, `DOCKER`), line numbers, neon glowing borders, and syntax highlighting.
+- Gracefully slides away when the scene ends!
+
 ---
 
 ## 8. Branding & Bumper Screens
@@ -266,6 +273,7 @@ video_gen_pipeline/
 │       ├── CodeEditor.jsx        # Syntax-highlighted code editor with line marker
 │       ├── DynamicIcon.jsx       # Lucide icon resolver with keyword fallbacks
 │       ├── ExplainerVideo.jsx    # Main composition container with logo watermark
+│       ├── FloatingCodeSnippet.jsx # Sleek floating terminal overlay card with syntax tokenizer
 │       ├── fonts.js              # Google Fonts (Plus Jakarta Sans, Outfit, JetBrains Mono)
 │       ├── index.jsx             # Remotion root entrypoint
 │       ├── Root.jsx              # Remotion Root composition declaration

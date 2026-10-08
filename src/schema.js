@@ -60,9 +60,16 @@ export const dataStructureSchema = z.object({
   edges: z.array(graphEdgeSchema)
 });
 
+export const codeSnippetSchema = z.object({
+  title: z.string().default("snippet.ts"),
+  language: z.string().default("TYPESCRIPT"),
+  code: z.string()
+});
+
 export const sceneVisualSchema = z.object({
   activeLine: z.number(),
   activeCodeSnippet: z.string(),
+  codeSnippet: codeSnippetSchema.nullable().default(null),
   structures: z.array(dataStructureSchema)
 });
 

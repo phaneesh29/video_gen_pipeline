@@ -1,13 +1,14 @@
 import React from "react";
-import { useCurrentFrame } from "remotion";
+import { useCurrentFrame, interpolate } from "remotion";
 import { RoughBoxNode, RoughArrow, RoughContainer } from "./RoughShapes.jsx";
+import { DynamicIcon } from "./DynamicIcon.jsx";
 import { primaryFont, displayFont, monoFont } from "./fonts.js";
 
 /**
  * Universal, generic layout engine that computes spacious, collision-free
  * coordinates and proportional card sizes for ANY graph or system architecture.
  */
-function computeGenericLayout(nodes, edges, isVertical, width, height) {
+function computeGenericLayout(nodes, edges, isVertical, width, height, hasTopGallery = false) {
   const positions = new Map();
   const nodeSizes = new Map();
   const total = nodes.length;
@@ -15,7 +16,7 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
   if (total === 0) return { positions, nodeSizes };
 
   const cx = width / 2;
-  const cy = isVertical ? 900 : height / 2;
+  const cy = isVertical ? (hasTopGallery ? 1220 : 900) : height / 2;
 
   const isHubNode = (n) => {
     const s = (n.id + " " + n.label).toLowerCase();
@@ -149,20 +150,35 @@ function computeGenericLayout(nodes, edges, isVertical, width, height) {
 
     // Determine Y coordinates for each tier with massive breathing room
     let tierYs = [];
-    if (tiers.length === 1) {
-      tierYs = [cy];
-    } else if (tiers.length === 2) {
-      // 2 tiers (e.g. Client & Server): Massive 980px vertical breathing space!
-      tierYs = [420, 1420];
-    } else if (tiers.length === 3) {
-      // 3 tiers: 570px vertical space between tiers
-      tierYs = [330, 900, 1470];
+    if (hasTopGallery) {
+      if (tiers.length === 1) {
+        tierYs = [1220];
+      } else if (tiers.length === 2) {
+        tierYs = [980, 1440];
+      } else if (tiers.length === 3) {
+        tierYs = [920, 1220, 1500];
+      } else {
+        const startY = 880;
+        const endY = 1540;
+        const step = (endY - startY) / (tiers.length - 1);
+        tierYs = tiers.map((_, i) => startY + i * step);
+      }
     } else {
-      // 4+ tiers
-      const startY = 280;
-      const endY = 1520;
-      const step = (endY - startY) / (tiers.length - 1);
-      tierYs = tiers.map((_, i) => startY + i * step);
+      if (tiers.length === 1) {
+        tierYs = [cy];
+      } else if (tiers.length === 2) {
+        // 2 tiers (e.g. Client & Server): Massive 980px vertical breathing space!
+        tierYs = [420, 1420];
+      } else if (tiers.length === 3) {
+        // 3 tiers: 570px vertical space between tiers
+        tierYs = [330, 900, 1470];
+      } else {
+        // 4+ tiers
+        const startY = 280;
+        const endY = 1520;
+        const step = (endY - startY) / (tiers.length - 1);
+        tierYs = tiers.map((_, i) => startY + i * step);
+      }
     }
 
     tiers.forEach((tierNodes, tierIdx) => {
@@ -339,7 +355,162 @@ function getBoundaryOffset(w, h, dx, dy, shape = "rectangle") {
   return offset;
 }
 
-export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidth = false }) {
+function ImageGalleryOverlay({ items = [], isVertical = false, isCompact = false }) {
+  const frame = useCurrentFrame();
+  if (!items || items.length === 0) return null;
+
+  const count = items.length;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: isVertical && !isCompact ? (count <= 2 ? "column" : "row") : "row",
+        flexWrap: "wrap",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: isVertical ? (isCompact ? "18px" : "28px") : "28px",
+        width: "100%",
+        maxWidth: isVertical ? (isCompact ? "1020px" : "960px") : "1600px",
+        margin: "0 auto",
+        padding: "10px",
+        boxSizing: "border-box"
+      }}
+    >
+      {items.map((item, idx) => {
+        const startFrame = idx * 22;
+        const enterProgress = interpolate(frame, [startFrame, startFrame + 14], [0, 1], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp"
+        });
+
+        const isActive = frame >= startFrame && frame < startFrame + 60;
+        const bounce = Math.sin(frame * 0.15 + idx) * 3;
+
+        let cardWidth = isVertical
+          ? isCompact
+            ? (count === 1 ? "680px" : count === 2 ? "480px" : "320px")
+            : (count === 1 ? "820px" : count === 2 ? "780px" : "440px")
+          : (count === 1 ? "700px" : count === 2 ? "520px" : "380px");
+
+        let imgHeight = isVertical
+          ? isCompact
+            ? (count <= 2 ? "190px" : "150px")
+            : (count <= 2 ? "260px" : "200px")
+          : (count <= 2 ? "220px" : "180px");
+
+        return (
+          <div
+            key={idx}
+            style={{
+              width: cardWidth,
+              padding: isCompact ? "16px 18px" : "24px 28px",
+              background: isActive ? "rgba(28, 20, 18, 0.95)" : "rgba(18, 18, 28, 0.92)",
+              border: isActive ? "3px solid #ff7700" : "2px solid rgba(255, 119, 0, 0.4)",
+              borderRadius: "24px",
+              boxShadow: isActive
+                ? "0 16px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 119, 0, 0.45)"
+                : "0 10px 30px rgba(0, 0, 0, 0.8), 0 0 16px rgba(255, 119, 0, 0.15)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              transform: `scale(${0.88 + 0.12 * enterProgress}) translateY(${(1 - enterProgress) * 25 + bounce}px)`,
+              opacity: enterProgress,
+              boxSizing: "border-box"
+            }}
+          >
+            {/* Tag Badge */}
+            <div
+              style={{
+                alignSelf: "flex-start",
+                fontSize: isCompact ? "12px" : "14px",
+                fontFamily: monoFont.fontFamily,
+                fontWeight: 800,
+                color: isActive ? "#ffedd5" : "#38bdf8",
+                letterSpacing: "1.2px",
+                textTransform: "uppercase",
+                marginBottom: "8px"
+              }}
+            >
+              ★ {item.isTech ? "TECH COMPONENT" : "HARDWARE UNIT"} #{idx + 1}
+            </div>
+
+            {/* Big Web Image */}
+            <div
+              style={{
+                width: "100%",
+                height: imgHeight,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(8, 8, 14, 0.75)",
+                borderRadius: "18px",
+                padding: "10px",
+                boxSizing: "border-box",
+                overflow: "hidden"
+              }}
+            >
+              {item.imageSrc ? (
+                <img
+                  src={item.imageSrc}
+                  alt={item.title}
+                  style={{
+                    maxWidth: "92%",
+                    maxHeight: "92%",
+                    objectFit: "contain",
+                    filter: "drop-shadow(0 10px 20px rgba(0, 0, 0, 0.9))"
+                  }}
+                />
+              ) : (
+                <DynamicIcon
+                  name={item.title}
+                  label={item.title}
+                  size={isCompact ? 54 : 76}
+                  color="#fbbf24"
+                />
+              )}
+            </div>
+
+            {/* Title */}
+            <div
+              style={{
+                fontSize: isCompact ? "24px" : "32px",
+                fontWeight: 900,
+                fontFamily: displayFont.fontFamily,
+                color: "#ffffff",
+                marginTop: "12px",
+                textAlign: "center",
+                textShadow: "0 2px 12px rgba(0,0,0,0.9)",
+                lineHeight: 1.2
+              }}
+            >
+              {item.title}
+            </div>
+
+            {/* Subtitle / Specs */}
+            {item.subtitle && (
+              <div
+                style={{
+                  fontSize: isCompact ? "16px" : "20px",
+                  fontWeight: 700,
+                  fontFamily: primaryFont.fontFamily,
+                  color: "#fbbf24",
+                  marginTop: "5px",
+                  textAlign: "center"
+                }}
+              >
+                {item.subtitle}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function WhiteboardCanvas({ structures = [], gallery = [], isVertical = false, fullWidth = false }) {
   const frame = useCurrentFrame();
 
   const width = isVertical ? 1080 : fullWidth ? 1920 : 1100;
@@ -351,7 +522,32 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
   const elements = structure.elements || [];
   const entries = structure.entries || [];
 
-  const { positions, nodeSizes } = computeGenericLayout(nodes, edges, isVertical, width, height);
+  // Extract gallery items
+  const galleryItems = Array.isArray(gallery) && gallery.length > 0 ? [...gallery] : [];
+  if (structure.type === "image_gallery" && galleryItems.length === 0 && nodes.length > 0) {
+    nodes.forEach((n) => {
+      galleryItems.push({
+        title: n.label,
+        subtitle: n.subLabel,
+        imagePrompt: n.imagePrompt || n.label,
+        isTech: Boolean(n.isTech),
+        imageSrc: n.imageSrc
+      });
+    });
+  }
+
+  const hasGallery = galleryItems.length > 0;
+  const hasNodesOrEdges = (nodes.length > 0 || edges.length > 0) && structure.type !== "image_gallery";
+  const isCombinedMode = hasGallery && hasNodesOrEdges;
+
+  const { positions, nodeSizes } = computeGenericLayout(
+    nodes,
+    edges,
+    isVertical,
+    width,
+    height,
+    isCombinedMode
+  );
 
   const findPos = (id) => {
     if (!id) return null;
@@ -373,7 +569,6 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
     return { width: 340, height: 130, isHub: false };
   };
 
-  const hasNodesOrEdges = nodes.length > 0 || edges.length > 0;
   const hasElements = elements.length > 0;
   const hasEntries = entries.length > 0;
   const isDataMode = hasElements || hasEntries;
@@ -421,6 +616,26 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
           {structure.name || "Whiteboard Architecture"}
         </div>
       </div>
+
+      {/* 0. Image Gallery View (Array of Big Images) */}
+      {hasGallery && (
+        <div
+          style={{
+            position: "absolute",
+            top: isCombinedMode ? (isVertical ? "160px" : "60px") : "50%",
+            left: "50%",
+            transform: isCombinedMode ? "translateX(-50%)" : "translate(-50%, -50%)",
+            width: "100%",
+            zIndex: 14
+          }}
+        >
+          <ImageGalleryOverlay
+            items={galleryItems}
+            isVertical={isVertical}
+            isCompact={isCombinedMode}
+          />
+        </div>
+      )}
 
       {/* 1. Full-Screen Architecture SVG Board */}
       {!isDataMode && hasNodesOrEdges && (

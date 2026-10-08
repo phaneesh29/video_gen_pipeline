@@ -96,8 +96,11 @@ Examples:
       console.log(`\n      Resolving brand logos & web imagery for nodes...`);
       await enrichStoryboardWithImages(enrichedStoryboard);
       let logoCount = 0;
-      enrichedStoryboard.scenes.forEach(s => s.visual?.structures?.forEach(st => st.nodes?.forEach(n => { if (n.imageSrc) logoCount++; })));
-      console.log(`      ✓ Embedded ${logoCount} brand logos and visuals into diagram nodes`);
+      enrichedStoryboard.scenes.forEach(s => {
+        s.visual?.gallery?.forEach(g => { if (g.imageSrc) logoCount++; });
+        s.visual?.structures?.forEach(st => st.nodes?.forEach(n => { if (n.imageSrc) logoCount++; }));
+      });
+      console.log(`      ✓ Embedded ${logoCount} brand logos and web visuals`);
 
       // Stage 3: Video rendering
       console.log(`\n[3/4] Rendering ${targetAspectRatio} Whiteboard Canvas with Remotion...`);

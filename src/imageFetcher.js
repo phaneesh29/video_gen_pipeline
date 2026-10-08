@@ -188,6 +188,22 @@ export async function enrichStoryboardWithImages(storyboard) {
   const tasks = new Map(); // key -> { isTech, prompt }
 
   for (const scene of storyboard.scenes) {
+    if (Array.isArray(scene.visual?.gallery)) {
+      for (const item of scene.visual.gallery) {
+        if (item.isTech && (item.imagePrompt || item.title)) {
+          const key = `tech:${item.imagePrompt || item.title}`;
+          if (!tasks.has(key)) {
+            tasks.set(key, { isTech: true, prompt: item.imagePrompt || item.title });
+          }
+        } else if (item.imagePrompt && item.imagePrompt.trim()) {
+          const key = `web:${item.imagePrompt}`;
+          if (!tasks.has(key)) {
+            tasks.set(key, { isTech: false, prompt: item.imagePrompt });
+          }
+        }
+      }
+    }
+
     const structures = scene.visual?.structures || [];
     for (const struct of structures) {
       const nodes = struct.nodes || [];
@@ -229,8 +245,24 @@ export async function enrichStoryboardWithImages(storyboard) {
     })
   );
 
-  // 3. Inject imageSrc into matching nodes across all scenes
+  // 3. Inject imageSrc into matching gallery items and nodes across all scenes
   for (const scene of storyboard.scenes) {
+    if (Array.isArray(scene.visual?.gallery)) {
+      for (const item of scene.visual.gallery) {
+        if (item.isTech && (item.imagePrompt || item.title)) {
+          const key = `tech:${item.imagePrompt || item.title}`;
+          if (resolvedImages.has(key)) {
+            item.imageSrc = resolvedImages.get(key);
+          }
+        } else if (item.imagePrompt && item.imagePrompt.trim()) {
+          const key = `web:${item.imagePrompt}`;
+          if (resolvedImages.has(key)) {
+            item.imageSrc = resolvedImages.get(key);
+          }
+        }
+      }
+    }
+
     const structures = scene.visual?.structures || [];
     for (const struct of structures) {
       const nodes = struct.nodes || [];

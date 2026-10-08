@@ -290,11 +290,11 @@ export function RoughBoxNode({
 
   const isBigWebImage = !isTech && Boolean(imageSrc);
   const badgeSize = isBigWebImage
-    ? (width < 320 ? 76 : width < 380 ? 90 : 106)
-    : (width < 300 ? 32 : 38);
+    ? (width < 320 ? 90 : width < 380 ? 112 : 132)
+    : (width < 300 ? 52 : width < 380 ? 62 : 72);
   const imgSize = isBigWebImage
-    ? (width < 320 ? 66 : width < 380 ? 80 : 94)
-    : (width < 300 ? 20 : 24);
+    ? (width < 320 ? 80 : width < 380 ? 100 : 120)
+    : (width < 300 ? 38 : width < 380 ? 46 : 56);
 
   const wiggleOffset = Math.sin(frame * 0.2) * 2;
 
@@ -476,7 +476,7 @@ export function RoughBoxNode({
                     <DynamicIcon
                       name={icon}
                       label={label}
-                      size={width < 300 ? 18 : 22}
+                      size={width < 300 ? 32 : width < 380 ? 38 : 46}
                       color={status === "active" ? "#ffedd5" : strokeColor}
                     />
                   )}

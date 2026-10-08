@@ -38,10 +38,20 @@ export const graphEdgeSchema = z.object({
   status: z.enum(["normal", "active", "traversed"])
 });
 
+export const galleryItemSchema = z.object({
+  title: z.string(),
+  subtitle: z.string().nullable().default(null),
+  imagePrompt: z.string(),
+  isTech: z.boolean().default(false),
+  imageSrc: z.string().nullable().default(null)
+});
+
 export const dataStructureSchema = z.object({
   name: z.string(),
   containerLabel: z.string().nullable().default(null),
   type: z.enum([
+    "image_gallery",
+    "hero",
     "array",
     "string",
     "hashmap",
@@ -73,6 +83,7 @@ export const sceneVisualSchema = z.object({
   activeLine: z.number(),
   activeCodeSnippet: z.string(),
   codeSnippet: codeSnippetSchema.nullable().default(null),
+  gallery: z.array(galleryItemSchema).default([]),
   structures: z.array(dataStructureSchema)
 });
 

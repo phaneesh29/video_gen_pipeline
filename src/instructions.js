@@ -148,7 +148,17 @@ Instructions:
      * Scene 6 (State / Storage / Reliability): Cylinder database, persistent storage, or checkpoint mechanism.
      * Scene 7 (End-to-End Synthesis): Complete unified architecture with container enclosures.
    - Ensure all arrows (edges) have concise, descriptive labels (1-2 words).
-6. When a scene explains an API, SQL query, cache operation, command, or code, provide an on-demand codeSnippet in visual.codeSnippet (title, language, code) so a sleek floating code card appears on that scene. Otherwise set codeSnippet: null.
-7. For every node, assign semantic shape ('cylinder', 'cloud', 'diamond', 'hexagon', 'funnel', 'rectangle'). For known technologies (Nvidia, Redis, Kafka, Postgres, Docker, AWS, etc.), set isTech: true and imagePrompt: 'slug'. For real-world hardware or devices, set isTech: false and imagePrompt: 'descriptive name transparent png'.
-8. Narration Acronym Spacing: Remember to spell out technical abbreviations with spaces in every scene narration (e.g. "G P U", "N V L i n k", "N C C L", "P C I e", "A P I").`;
+6. ARRAY OF BIG IMAGES & COMBINED ARCHITECTURE (Never make scenes static!):
+   - In scenes introducing physical devices, hardware components, or real-world objects, provide an array of 2 to 3 images in visual.gallery:
+     "gallery": [
+       { "title": "NVIDIA A100 GPU", "subtitle": "80GB HBM2e Accelerator", "imagePrompt": "nvidia a100 gpu transparent png", "isTech": false },
+       { "title": "NVLink 4 Switch", "subtitle": "3.2 Tbps Interconnect", "imagePrompt": "network switch transparent png", "isTech": false }
+     ]
+   - You can provide visual.gallery ALONGSIDE architecture structures in structures:
+     * When BOTH gallery and structures are present: The scene renders the Array of Big Images at the top and the Architecture Diagram connecting them below!
+     * When ONLY gallery is present (e.g. Scene 1 hardware intro): The scene renders a dynamic full-screen Hardware Showcase with big images that animate into view.
+   - When no gallery is needed for an abstract flow, set gallery: [].
+7. When a scene explains an API, SQL query, cache operation, command, or code, provide an on-demand codeSnippet in visual.codeSnippet (title, language, code) so a sleek floating code card appears on that scene. Otherwise set codeSnippet: null.
+8. For every node, assign semantic shape ('cylinder', 'cloud', 'diamond', 'hexagon', 'funnel', 'rectangle'). For known technologies (Nvidia, Redis, Kafka, Postgres, Docker, AWS, etc.), set isTech: true and imagePrompt: 'slug'. For real-world hardware or devices, set isTech: false and imagePrompt: 'descriptive name transparent png'.
+9. Narration Acronym Spacing: Remember to spell out technical abbreviations with spaces in every scene narration (e.g. "G P U", "N V L i n k", "N C C L", "P C I e", "A P I").`;
 }

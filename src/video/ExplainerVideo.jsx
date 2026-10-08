@@ -37,6 +37,7 @@ function SceneWrapper({ scene, isVertical, hasCode, codeLines, codeTitle, codeLa
     >
       <WhiteboardCanvas
         structures={scene.visual.structures}
+        gallery={scene.visual.gallery || []}
         fullWidth={!hasCode}
         isVertical={isVertical}
       />

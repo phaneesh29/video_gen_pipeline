@@ -498,6 +498,7 @@ export function WhiteboardCanvas({ structures = [], isVertical = false, fullWidt
                 subLabel={node.subLabel}
                 icon={node.icon}
                 imageSrc={node.imageSrc}
+                isTech={Boolean(node.isTech)}
                 x={pos.x}
                 y={pos.y}
                 width={size.width}

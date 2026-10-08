@@ -78,6 +78,7 @@ export function RoughBoxNode({
   subLabel,
   icon,
   imageSrc = null,
+  isTech = false,
   x,
   y,
   width = 210,
@@ -367,40 +368,49 @@ export function RoughBoxNode({
               marginBottom: subLabel ? "4px" : "0px"
             }}
           >
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: width < 300 ? "32px" : "38px",
-                height: width < 300 ? "32px" : "38px",
-                borderRadius: "10px",
-                background: status === "active" ? "rgba(255, 119, 0, 0.25)" : "rgba(255, 255, 255, 0.07)",
-                border: status === "active" ? "1.5px solid #ff7700" : "1px solid rgba(255, 255, 255, 0.12)",
-                flexShrink: 0,
-                boxShadow: status === "active" ? "0 0 14px rgba(255, 119, 0, 0.5)" : "none",
-                overflow: "hidden"
-              }}
-            >
-              {imageSrc ? (
-                <img
-                  src={imageSrc}
-                  alt={label}
+            {(() => {
+              const isBigWebImage = !isTech && Boolean(imageSrc);
+              const badgeSize = isBigWebImage ? (width < 320 ? 56 : 68) : (width < 300 ? 32 : 38);
+              const imgSize = isBigWebImage ? (width < 320 ? 48 : 58) : (width < 300 ? 20 : 24);
+
+              return (
+                <div
                   style={{
-                    width: width < 300 ? "20px" : "24px",
-                    height: width < 300 ? "20px" : "24px",
-                    objectFit: "contain"
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: `${badgeSize}px`,
+                    height: `${badgeSize}px`,
+                    borderRadius: isBigWebImage ? "14px" : "10px",
+                    background: isBigWebImage ? "rgba(10, 10, 18, 0.9)" : status === "active" ? "rgba(255, 119, 0, 0.25)" : "rgba(255, 255, 255, 0.07)",
+                    border: isBigWebImage ? "2px solid rgba(255, 119, 0, 0.5)" : status === "active" ? "1.5px solid #ff7700" : "1px solid rgba(255, 255, 255, 0.12)",
+                    flexShrink: 0,
+                    boxShadow: isBigWebImage ? "0 8px 24px rgba(0, 0, 0, 0.8), 0 0 16px rgba(255, 119, 0, 0.25)" : status === "active" ? "0 0 14px rgba(255, 119, 0, 0.5)" : "none",
+                    overflow: "hidden"
                   }}
-                />
-              ) : (
-                <DynamicIcon
-                  name={icon}
-                  label={label}
-                  size={width < 300 ? 18 : 22}
-                  color={status === "active" ? "#ffedd5" : strokeColor}
-                />
-              )}
-            </div>
+                >
+                  {imageSrc ? (
+                    <img
+                      src={imageSrc}
+                      alt={label}
+                      style={{
+                        width: `${imgSize}px`,
+                        height: `${imgSize}px`,
+                        objectFit: "contain",
+                        borderRadius: isBigWebImage ? "10px" : "4px"
+                      }}
+                    />
+                  ) : (
+                    <DynamicIcon
+                      name={icon}
+                      label={label}
+                      size={width < 300 ? 18 : 22}
+                      color={status === "active" ? "#ffedd5" : strokeColor}
+                    />
+                  )}
+                </div>
+              );
+            })()}
             <div
               style={{
                 fontSize: titleSize,

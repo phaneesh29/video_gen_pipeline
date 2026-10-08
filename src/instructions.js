@@ -91,30 +91,17 @@ Every node in \`nodes\` MUST specify a semantic \`shape\`:
 - "rectangle": Standard Clients, Endpoints, API Gateways
 Optional: Set \`containerLabel\` (e.g. "Google Cloud Ingest Fleet" or "Edge CDN Cluster") on the data structure to draw a surrounding group enclosure boundary around the nodes!
 
-## 4. TECH LOGOS & WEB IMAGERY (Real Brand SVGs & Visuals)
-Every node in nodes can display an official tech vector logo or real-world web image:
-- Tech Stacks & Brands (Set isTech: true, imagePrompt: "slug"):
-  When a node represents a real technology, database, framework, or cloud provider, set isTech: true and imagePrompt to the official Simple Icons slug (lowercase alphanumeric, e.g. "apachekafka", "redis", "postgresql", "docker", "kubernetes", "amazonaws", "snowflake", "clickhouse", "supabase", "mongodb", "nginx", "apachecassandra"):
-  * Redis: isTech: true, imagePrompt: "redis"
-  * Apache Kafka: isTech: true, imagePrompt: "apachekafka"
-  * PostgreSQL: isTech: true, imagePrompt: "postgresql"
-  * Docker: isTech: true, imagePrompt: "docker"
-  * Kubernetes: isTech: true, imagePrompt: "kubernetes"
-  * AWS / S3: isTech: true, imagePrompt: "amazonaws"
-  * Netflix: isTech: true, imagePrompt: "netflix"
-  * Cloudflare: isTech: true, imagePrompt: "cloudflare"
-  * Apache Cassandra: isTech: true, imagePrompt: "apachecassandra"
-  * Nginx: isTech: true, imagePrompt: "nginx"
-- Physical Concepts, Hardware & Devices (Set isTech: false, imagePrompt: "search prompt"):
-  When a node represents a physical object, device, hardware chip, switch, or concept, provide a concise transparent PNG search prompt:
-  * Nvidia GPU: isTech: false, imagePrompt: "nvidia gpu transparent png"
-  * Network Switch: isTech: false, imagePrompt: "network switch transparent png"
-  * Server Rack / Supercomputer: isTech: false, imagePrompt: "server rack transparent png"
-  * Smart TV: isTech: false, imagePrompt: "smart tv icon transparent png"
-  * Fiber Optic: isTech: false, imagePrompt: "undersea fiber optic cable transparent png"
-  * Satellite: isTech: false, imagePrompt: "satellite ground dish transparent png"
-- Generic Components:
-  When a node is a generic concept, set isTech: false, imagePrompt: null (and supply a clean Lucide icon name like "Server", "Layers", "Database", "Cpu").
+## 4. IMAGES, ICONS & PLAIN TEXT (Strict 3-Tier Hierarchy)
+Every visual component and node strictly follows this 3-tier hierarchy:
+1. Physical Hardware & Tech Brands (Set imagePrompt):
+   - Real-world hardware, chips, servers, switches, cables: set isTech: false, imagePrompt: "descriptive hardware query transparent png" (e.g. "nvidia a100 gpu transparent png", "network switch transparent png", "server rack transparent png").
+   - Official brand technologies: set isTech: true, imagePrompt: "slug" (e.g. "redis", "apachekafka", "docker", "kubernetes", "postgresql").
+2. Conceptual, Mathematical & Algorithmic Entities (Set imagePrompt: null, provide Lucide icon):
+   - Mathematical matrices, tensors, grids, data structures, queues, loops, conditions, or logic (e.g. "Matrix A", "Matrix B", "Result Matrix", "Priority Queue", "Task Queue", "Worker"):
+     NEVER set imagePrompt! Set imagePrompt: null!
+     Instead, provide an exact standard Lucide icon name in icon (e.g. "Grid", "Table", "Cpu", "Layers", "Database", "Binary", "Calculator", "Network", "Activity", "Server", "Boxes").
+3. Plain Text Fallback:
+   - Generic or explanatory nodes: set imagePrompt: null, icon: null. The node will render clean, readable handwritten typography inside the hand-drawn rough shape with no forced icons.
 
 ## 5. TTS-Native Narration Rules
 - Pronunciation & Terminology: Use clean, standard terminology and acronyms (e.g. "GPU", "NVLink", "PCIe", "API", "RAM", "HTTP", "TCP", "CDN"). Do NOT insert spaces between letters of words or acronyms (never write "G P U" or "N V L i n k"). The neural voice engine pronounces standard acronyms automatically.
@@ -148,17 +135,15 @@ Instructions:
      * Scene 6 (State / Storage / Reliability): Cylinder database, persistent storage, or checkpoint mechanism.
      * Scene 7 (End-to-End Synthesis): Complete unified architecture with container enclosures.
    - Ensure all arrows (edges) have concise, descriptive labels (1-2 words).
-6. ARRAY OF BIG IMAGES & COMBINED ARCHITECTURE (Images First, Never Static!):
-   - Every scene should showcase relevant imagery! For physical devices, hardware chips, switches, servers, protocols, or concepts, provide an array of 2 to 3 big images in visual.gallery:
+6. ARRAY OF BIG IMAGES & HARDWARE SHOWCASE (visual.gallery):
+   - Provide visual.gallery ONLY when showcasing 2 to 3 real-world physical hardware units, devices, or brand components (e.g. GPU accelerators, network switches, server racks, client devices):
      "gallery": [
        { "title": "NVIDIA A100 GPU", "subtitle": "80GB HBM2e Accelerator", "imagePrompt": "nvidia a100 gpu transparent png", "isTech": false },
        { "title": "NVLink 4 Switch", "subtitle": "3.2 Tbps Interconnect", "imagePrompt": "network switch transparent png", "isTech": false }
      ]
-   - Combine Images and Architecture: Provide visual.gallery alongside architecture structures in structures:
-     * When both gallery and structures are present: The scene animates the Array of Big Images FIRST at the top, then connects them to the system architecture diagram below!
-     * When only gallery is present: The scene renders a dynamic full-screen Showcase with big images that animate into view.
+   - NEVER create a gallery for mathematical operations, abstract data structures, matrices, or code (e.g. NEVER put "Matrix A" or "Matrix B" in gallery). For math or algorithmic scenes, set gallery: [] so the architecture and data structures take full focus!
 7. When a scene explains an API, SQL query, cache operation, command, or code, provide an on-demand codeSnippet in visual.codeSnippet (title, language, code) so a sleek floating code card appears on that scene. Otherwise set codeSnippet: null.
-8. For every node, assign semantic shape ('cylinder', 'cloud', 'diamond', 'hexagon', 'funnel', 'rectangle'). For known technologies (Nvidia, Redis, Kafka, Postgres, Docker, AWS, etc.), set isTech: true and imagePrompt: 'slug'. For real-world hardware or devices, set isTech: false and imagePrompt: 'descriptive name transparent png'.
+8. For every node, assign semantic shape ('cylinder', 'cloud', 'diamond', 'hexagon', 'funnel', 'rectangle'). For known technologies, set isTech: true and imagePrompt: 'slug'. For real hardware, set isTech: false and imagePrompt: 'descriptive name transparent png'. For math, conceptual entities, or data structures, set imagePrompt: null and assign a Lucide icon (e.g. 'Grid', 'Table', 'Cpu', 'Layers', 'Database', 'Binary').
 9. Natural Words: Use natural English and standard technical terms without artificial spaces (e.g. "GPU", "NVLink", "PCIe", "API"). Never put spaces between letters.`;
 }
 

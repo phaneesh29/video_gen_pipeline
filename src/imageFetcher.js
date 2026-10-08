@@ -107,13 +107,20 @@ export async function fetchTechLogo(slug) {
 }
 
 /**
- * Fetch web image / illustration via DuckDuckGo Image Search
+ * Fetch web image / illustration via DuckDuckGo Image Search, anchored to the video context
  */
-export async function fetchWebImage(query) {
+export async function fetchWebImage(query, context = "") {
   if (!query || !query.trim()) return null;
   const cleanQuery = query.trim();
 
-  const cacheKey = getCacheKey("web", cleanQuery);
+  // Combine query with video domain context and exclude entertainment pop culture
+  let searchString = cleanQuery;
+  if (context && !searchString.toLowerCase().includes(context.toLowerCase())) {
+    searchString = `${searchString} ${context}`;
+  }
+  searchString = `${searchString} -movie -film -actor -poster -wallpaper -cinema -trailer -hollywood -celebrity`;
+
+  const cacheKey = getCacheKey("web", `${cleanQuery}:${context}`);
   const cached = readFromCache(cacheKey);
   if (cached) return cached;
 
@@ -122,7 +129,7 @@ export async function fetchWebImage(query) {
     const timeout = setTimeout(() => controller.abort(), 6000);
 
     // 1. Get VQD token from search page
-    const searchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(cleanQuery)}`;
+    const searchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(searchString)}`;
     const pageRes = await fetch(searchUrl, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -138,8 +145,8 @@ export async function fetchWebImage(query) {
     }
 
     const vqd = vqdMatch[1];
-    // 2. Query DDG image endpoint (prioritizing transparent icons)
-    const imgApiUrl = `https://duckduckgo.com/i.js?l=us-en&o=json&q=${encodeURIComponent(cleanQuery)}&vqd=${vqd}&f=,,,type:transparent,,&p=1`;
+    // 2. Query DDG image endpoint (prioritizing transparent icons/cutouts)
+    const imgApiUrl = `https://duckduckgo.com/i.js?l=us-en&o=json&q=${encodeURIComponent(searchString)}&vqd=${vqd}&f=,,,type:transparent,,&p=1`;
     const imgRes = await fetch(imgApiUrl, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -154,14 +161,20 @@ export async function fetchWebImage(query) {
     }
 
     const imgData = await imgRes.json();
-    const firstResult = imgData.results?.[0];
-    if (!firstResult) {
+
+    // 3. Reject any result that matches entertainment/movies to strictly stay within technical video context
+    const isEntertainmentOrJunk = (item) => {
+      const text = `${item.title || ""} ${item.url || ""}`.toLowerCase();
+      return /movie|film|actor|cinema|hollywood|keanu|reeves|imdb|fandom|trailer|wallpaper|celebrity|poster|dvd|box office/i.test(text);
+    };
+
+    const validResult = imgData.results?.find((r) => !isEntertainmentOrJunk(r));
+    if (!validResult) {
       clearTimeout(timeout);
       return null;
     }
 
-    // Prefer high-speed Bing CDN thumbnail for reliable embedding
-    const targetUrl = firstResult.thumbnail || firstResult.image;
+    const targetUrl = validResult.thumbnail || validResult.image;
     const downloadRes = await fetch(targetUrl, { signal: controller.signal });
     clearTimeout(timeout);
 
@@ -186,56 +199,28 @@ export async function enrichStoryboardWithImages(storyboard) {
     return storyboard;
   }
 
-  // 0. Auto-enrich scenes missing a gallery from their key architecture nodes
-  for (const scene of storyboard.scenes) {
-    if (!scene.visual) scene.visual = {};
-    if (!Array.isArray(scene.visual.gallery) || scene.visual.gallery.length === 0) {
-      const nodes = (scene.visual.structures || []).flatMap((s) => s.nodes || []);
-      const candidateNodes = nodes.filter(
-        (n) => n.imagePrompt || n.isTech || (n.label && n.label.trim().length > 1)
-      );
-      if (candidateNodes.length > 0) {
-        const seen = new Set();
-        const gallery = [];
-        for (const node of candidateNodes) {
-          const key = (node.label || node.id || "").toLowerCase();
-          if (seen.has(key)) continue;
-          seen.add(key);
-          gallery.push({
-            title: node.label,
-            subtitle: node.subLabel || (node.isTech ? "Tech Component" : "Hardware Unit"),
-            imagePrompt:
-              node.imagePrompt ||
-              (node.isTech ? normalizeSlug(node.label) : `${node.label} transparent png`),
-            isTech: Boolean(node.isTech)
-          });
-          if (gallery.length >= 3) break;
-        }
-        if (gallery.length > 0) {
-          scene.visual.gallery = gallery;
-        }
-      }
-    }
-  }
+  // Extract core domain context keywords from the video topic
+  const topicContext = (storyboard.topic || "")
+    .replace(/how|what|inside|an|the|without|explained|system|design/gi, "")
+    .replace(/[^\w\s]/g, "")
+    .trim();
 
-  // 1. Collect all unique image tasks
+  // 1. Collect all explicit image tasks (Never invent image searches for generic/abstract nodes!)
   const tasks = new Map(); // key -> { isTech, prompt }
 
   for (const scene of storyboard.scenes) {
     if (Array.isArray(scene.visual?.gallery)) {
       for (const item of scene.visual.gallery) {
-        const query = item.imagePrompt || item.title;
+        if (!item.imagePrompt && !item.isTech) continue;
+        const query = item.imagePrompt;
         if (!query || !query.trim()) continue;
+
         if (item.isTech) {
           const key = `tech:${query.trim()}`;
-          if (!tasks.has(key)) {
-            tasks.set(key, { isTech: true, prompt: query.trim() });
-          }
+          if (!tasks.has(key)) tasks.set(key, { isTech: true, prompt: query.trim() });
         } else {
           const key = `web:${query.trim()}`;
-          if (!tasks.has(key)) {
-            tasks.set(key, { isTech: false, prompt: query.trim() });
-          }
+          if (!tasks.has(key)) tasks.set(key, { isTech: false, prompt: query.trim() });
         }
       }
     }
@@ -244,18 +229,17 @@ export async function enrichStoryboardWithImages(storyboard) {
     for (const struct of structures) {
       const nodes = struct.nodes || [];
       for (const node of nodes) {
-        const query = node.imagePrompt || node.label;
+        // ONLY fetch image if isTech is true OR imagePrompt was explicitly requested by LLM
+        if (!node.imagePrompt && !node.isTech) continue;
+        const query = node.imagePrompt;
         if (!query || !query.trim()) continue;
+
         if (node.isTech) {
           const key = `tech:${query.trim()}`;
-          if (!tasks.has(key)) {
-            tasks.set(key, { isTech: true, prompt: query.trim() });
-          }
+          if (!tasks.has(key)) tasks.set(key, { isTech: true, prompt: query.trim() });
         } else {
           const key = `web:${query.trim()}`;
-          if (!tasks.has(key)) {
-            tasks.set(key, { isTech: false, prompt: query.trim() });
-          }
+          if (!tasks.has(key)) tasks.set(key, { isTech: false, prompt: query.trim() });
         }
       }
     }
@@ -265,7 +249,7 @@ export async function enrichStoryboardWithImages(storyboard) {
     return storyboard;
   }
 
-  // 2. Fetch all unique images concurrently in parallel
+  // 2. Fetch all unique images concurrently in parallel with topic context
   const resolvedImages = new Map(); // key -> dataUri
   const taskEntries = Array.from(tasks.entries());
 
@@ -275,7 +259,7 @@ export async function enrichStoryboardWithImages(storyboard) {
       if (item.isTech) {
         dataUri = await fetchTechLogo(item.prompt);
       } else {
-        dataUri = await fetchWebImage(item.prompt);
+        dataUri = await fetchWebImage(item.prompt, topicContext);
       }
       if (dataUri) {
         resolvedImages.set(key, dataUri);
@@ -283,13 +267,13 @@ export async function enrichStoryboardWithImages(storyboard) {
     })
   );
 
-  // 3. Inject imageSrc into matching gallery items and nodes across all scenes
+  // 3. Inject imageSrc only into items that explicitly requested images
   for (const scene of storyboard.scenes) {
     if (Array.isArray(scene.visual?.gallery)) {
       for (const item of scene.visual.gallery) {
-        const query = item.imagePrompt || item.title;
-        if (!query || !query.trim()) continue;
-        const key = item.isTech ? `tech:${query.trim()}` : `web:${query.trim()}`;
+        if (!item.imagePrompt && !item.isTech) continue;
+        const query = item.imagePrompt.trim();
+        const key = item.isTech ? `tech:${query}` : `web:${query}`;
         if (resolvedImages.has(key)) {
           item.imageSrc = resolvedImages.get(key);
         }
@@ -300,9 +284,9 @@ export async function enrichStoryboardWithImages(storyboard) {
     for (const struct of structures) {
       const nodes = struct.nodes || [];
       for (const node of nodes) {
-        const query = node.imagePrompt || node.label;
-        if (!query || !query.trim()) continue;
-        const key = node.isTech ? `tech:${query.trim()}` : `web:${query.trim()}`;
+        if (!node.imagePrompt && !node.isTech) continue;
+        const query = node.imagePrompt.trim();
+        const key = node.isTech ? `tech:${query}` : `web:${query}`;
         if (resolvedImages.has(key)) {
           node.imageSrc = resolvedImages.get(key);
         }

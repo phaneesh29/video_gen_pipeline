@@ -2,7 +2,7 @@ import React from "react";
 import rough from "roughjs";
 import { useCurrentFrame, interpolate, Easing } from "remotion";
 import { primaryFont, displayFont, monoFont } from "./fonts.js";
-import { DynamicIcon } from "./DynamicIcon.jsx";
+import { DynamicIcon, resolveIconComponent } from "./DynamicIcon.jsx";
 
 const generator = rough.generator();
 
@@ -453,41 +453,29 @@ export function RoughBoxNode({
                   marginBottom: subLabel ? "4px" : "0px"
                 }}
               >
-                <div
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: `${badgeSize}px`,
-                    height: `${badgeSize}px`,
-                    borderRadius: "10px",
-                    background: status === "active" ? "rgba(255, 119, 0, 0.25)" : "rgba(255, 255, 255, 0.07)",
-                    border: status === "active" ? "1.5px solid #ff7700" : "1px solid rgba(255, 255, 255, 0.12)",
-                    flexShrink: 0,
-                    boxShadow: status === "active" ? "0 0 14px rgba(255, 119, 0, 0.5)" : "none",
-                    overflow: "hidden"
-                  }}
-                >
-                  {imageSrc ? (
-                    <img
-                      src={imageSrc}
-                      alt={label}
-                      style={{
-                        width: `${imgSize}px`,
-                        height: `${imgSize}px`,
-                        objectFit: "contain",
-                        borderRadius: "4px"
-                      }}
-                    />
-                  ) : (
+                {Boolean(resolveIconComponent(icon) || (icon && /\p{Extended_Pictographic}/u.test(icon))) && (
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: `${badgeSize}px`,
+                      height: `${badgeSize}px`,
+                      borderRadius: "10px",
+                      background: status === "active" ? "rgba(255, 119, 0, 0.25)" : "rgba(255, 255, 255, 0.07)",
+                      border: status === "active" ? "1.5px solid #ff7700" : "1px solid rgba(255, 255, 255, 0.12)",
+                      flexShrink: 0,
+                      boxShadow: status === "active" ? "0 0 14px rgba(255, 119, 0, 0.5)" : "none",
+                      overflow: "hidden"
+                    }}
+                  >
                     <DynamicIcon
                       name={icon}
-                      label={label}
                       size={width < 300 ? 32 : width < 380 ? 38 : 46}
                       color={status === "active" ? "#ffedd5" : strokeColor}
                     />
-                  )}
-                </div>
+                  </div>
+                )}
                 <div
                   style={{
                     fontSize: titleSize,

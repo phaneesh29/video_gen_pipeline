@@ -10,72 +10,12 @@ function ensureCacheDir() {
   }
 }
 
-// Tech slug alias dictionary mapping common variants to official Simple Icons slugs
-const TECH_SLUG_MAP = {
-  kafka: "apachekafka",
-  apachekafka: "apachekafka",
-  cassandra: "apachecassandra",
-  apachecassandra: "apachecassandra",
-  postgres: "postgresql",
-  postgresql: "postgresql",
-  redis: "redis",
-  docker: "docker",
-  k8s: "kubernetes",
-  kubernetes: "kubernetes",
-  aws: "amazonaws",
-  amazon: "amazonwebservices",
-  s3: "amazons3",
-  amazons3: "amazons3",
-  lambda: "awslambda",
-  awslambda: "awslambda",
-  gcp: "googlecloud",
-  googlecloud: "googlecloud",
-  azure: "microsoftazure",
-  cloudflare: "cloudflare",
-  nginx: "nginx",
-  rabbitmq: "rabbitmq",
-  graphql: "graphql",
-  grpc: "grpc",
-  mysql: "mysql",
-  mongodb: "mongodb",
-  mongo: "mongodb",
-  elasticsearch: "elasticsearch",
-  elastic: "elasticsearch",
-  kibana: "kibana",
-  logstash: "logstash",
-  prometheus: "prometheus",
-  grafana: "grafana",
-  terraform: "terraform",
-  git: "git",
-  github: "github",
-  gitlab: "gitlab",
-  nodejs: "nodedotjs",
-  node: "nodedotjs",
-  react: "react",
-  nextjs: "nextdotjs",
-  vue: "vuedotjs",
-  python: "python",
-  golang: "go",
-  go: "go",
-  rust: "rust",
-  java: "openjdk",
-  csharp: "csharp",
-  cpp: "cplusplus",
-  netflix: "netflix",
-  youtube: "youtube",
-  spotify: "spotify",
-  uber: "uber",
-  stripe: "stripe",
-  linux: "linux",
-  ubuntu: "ubuntu",
-  apple: "apple",
-  android: "android"
-};
-
+/**
+ * Standardize slug to lowercase alphanumeric (e.g. "Apache Kafka" -> "apachekafka")
+ */
 function normalizeSlug(raw) {
   if (!raw) return "";
-  const cleaned = raw.toLowerCase().trim().replace(/[^a-z0-9]/g, "");
-  return TECH_SLUG_MAP[cleaned] || cleaned;
+  return raw.toLowerCase().trim().replace(/[^a-z0-9]/g, "");
 }
 
 function getCacheKey(type, query) {
@@ -104,8 +44,29 @@ function writeToCache(cacheKey, dataUri) {
   } catch {}
 }
 
+async function tryFetchSimpleIcon(slug) {
+  const url = `https://cdn.simpleicons.org/${slug}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 4000);
+
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeout);
+    if (res.ok) {
+      const svg = await res.text();
+      if (svg && svg.includes("<svg")) {
+        const base64 = Buffer.from(svg).toString("base64");
+        return `data:image/svg+xml;base64,${base64}`;
+      }
+    }
+  } catch {
+    clearTimeout(timeout);
+  }
+  return null;
+}
+
 /**
- * Fetch official tech vector logo from Simple Icons CDN
+ * Fetch official tech vector logo directly from Simple Icons CDN using LLM-generated slug
  */
 export async function fetchTechLogo(slug) {
   const norm = normalizeSlug(slug);
@@ -115,24 +76,32 @@ export async function fetchTechLogo(slug) {
   const cached = readFromCache(cacheKey);
   if (cached) return cached;
 
-  try {
-    const url = `https://cdn.simpleicons.org/${norm}`;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 4500);
+  // 1. Try exact normalized slug from LLM (e.g. "apachekafka", "redis", "postgresql")
+  let dataUri = await tryFetchSimpleIcon(norm);
 
-    const res = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeout);
+  // 2. Automated alias fallback (e.g. "kafka" -> "apachekafka", "aws" -> "amazonaws")
+  if (!dataUri) {
+    const candidates = [];
+    if (!norm.startsWith("apache")) candidates.push(`apache${norm}`);
+    if (norm === "aws") candidates.push("amazonaws");
+    if (norm === "k8s") candidates.push("kubernetes");
 
-    if (res.ok) {
-      const svg = await res.text();
-      if (svg && svg.includes("<svg")) {
-        const base64 = Buffer.from(svg).toString("base64");
-        const dataUri = `data:image/svg+xml;base64,${base64}`;
-        writeToCache(cacheKey, dataUri);
-        return dataUri;
-      }
+    for (const alt of candidates) {
+      dataUri = await tryFetchSimpleIcon(alt);
+      if (dataUri) break;
     }
-  } catch {}
+  }
+
+  // 3. Fallback: Search DuckDuckGo for transparent logo if not on Simple Icons
+  if (!dataUri) {
+    dataUri = await fetchWebImage(`${slug} logo transparent icon`);
+  }
+
+  if (dataUri) {
+    writeToCache(cacheKey, dataUri);
+    return dataUri;
+  }
+
   return null;
 }
 
@@ -251,10 +220,6 @@ export async function enrichStoryboardWithImages(storyboard) {
       let dataUri = null;
       if (item.isTech) {
         dataUri = await fetchTechLogo(item.prompt);
-        // Fallback to label if prompt failed
-        if (!dataUri && item.prompt) {
-          dataUri = await fetchTechLogo(normalizeSlug(item.prompt));
-        }
       } else {
         dataUri = await fetchWebImage(item.prompt);
       }
@@ -265,7 +230,6 @@ export async function enrichStoryboardWithImages(storyboard) {
   );
 
   // 3. Inject imageSrc into matching nodes across all scenes
-  let injectedCount = 0;
   for (const scene of storyboard.scenes) {
     const structures = scene.visual?.structures || [];
     for (const struct of structures) {
@@ -275,13 +239,11 @@ export async function enrichStoryboardWithImages(storyboard) {
           const key = `tech:${node.imagePrompt || node.label}`;
           if (resolvedImages.has(key)) {
             node.imageSrc = resolvedImages.get(key);
-            injectedCount++;
           }
         } else if (node.imagePrompt && node.imagePrompt.trim()) {
           const key = `web:${node.imagePrompt}`;
           if (resolvedImages.has(key)) {
             node.imageSrc = resolvedImages.get(key);
-            injectedCount++;
           }
         }
       }

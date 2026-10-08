@@ -97,7 +97,7 @@ Optional: Set \`containerLabel\` (e.g. "Google Cloud Ingest Fleet" or "Edge CDN 
 ## 4. TECH LOGOS & WEB IMAGERY (Real Brand SVGs & Visuals)
 Every node in nodes can display an official tech vector logo or real-world web image:
 - Tech Stacks & Brands (Set isTech: true, imagePrompt: "slug"):
-  When a node represents a real technology, database, framework, or cloud provider, set isTech: true and imagePrompt to the lowercase brand slug:
+  When a node represents a real technology, database, framework, or cloud provider, set isTech: true and imagePrompt to the official Simple Icons slug (lowercase alphanumeric, e.g. "apachekafka", "redis", "postgresql", "docker", "kubernetes", "amazonaws", "snowflake", "clickhouse", "supabase", "mongodb", "nginx", "apachecassandra"):
   * Redis: isTech: true, imagePrompt: "redis"
   * Apache Kafka: isTech: true, imagePrompt: "apachekafka"
   * PostgreSQL: isTech: true, imagePrompt: "postgresql"

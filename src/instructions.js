@@ -105,13 +105,29 @@ Every visual component and node strictly follows this 3-tier hierarchy:
 
 ## 5. TTS-Native Narration Rules
 - Pronunciation & Terminology: Use clean, standard terminology and acronyms (e.g. "GPU", "NVLink", "PCIe", "API", "RAM", "HTTP", "TCP", "CDN"). Do NOT insert spaces between letters of words or acronyms (never write "G P U" or "N V L i n k"). The neural voice engine pronounces standard acronyms automatically.
-- Pacing: 7 to 8 scenes. Each scene has 1 punchy sentence of 14 to 18 spoken words (total video duration ~60 to 70 seconds).
+- Format-Specific Pacing & Depth:
+  * Vertical Shorts (9:16): Keep duration between 60 and 70 seconds. Typically 7 to 8 scenes. Each scene has 2 crisp, punchy sentences (28 to 36 spoken words per scene) to fit YouTube Shorts / Instagram Reels format perfectly.
+  * Full Explainer (16:9): UNCONSTRAINED & IN-DEPTH! There is NO artificial time cap. Generate as many detailed scenes as necessary to explain the entire problem, brute force bottlenecks, mathematical intuition, code line-by-line, and state transitions with deep clarity. Each scene should have rich, multi-sentence educational explanations (40 to 60+ spoken words per scene).
+  * CRITICAL: NEVER write a hasty 10-word sentence for a scene! A 10-word sentence finishes in only 2 seconds, which makes animations flash by too fast.
 - Punctuation: Clean spoken English only. Never use markdown, asterisks, brackets, parentheses, or code snippets in narration.
 - Voice expression palette: "confident" (mechanisms), "excited" (breakthroughs & solutions), "cheerful" or "happy" (conclusions), "frustrated" (bottlenecks).`;
 
 export function getStoryPrompt(problemInput, isVertical = false) {
-  const sceneCount = "7 to 8 scenes";
-  const lengthRule = "Target Duration: ~60 to 70 seconds. Produce 7 to 8 scenes. Each scene narration should be 14 to 18 spoken words (1 crisp, engaging sentence). Total spoken word count across all scenes ~110-130 words.";
+  const lengthRule = isVertical
+    ? `Format: 9:16 Vertical Short.
+TARGET DURATION: Strictly between 60 seconds and 70 seconds.
+Produce 7 to 9 scenes.
+CRITICAL NARRATION RULE: Each scene's 'narration' MUST be 25 to 35 spoken words (2 full, punchy sentences). Total words across all scenes must be between 200 and 240 words so that the final video duration lands squarely between 60 and 70 seconds. NEVER write single 10-word sentences!`
+    : `Format: 16:9 Full Landscape Explainer.
+TARGET DURATION: Completely unconstrained! Let the video be as long and thorough as needed for deep educational clarity (no artificial limit).
+Produce as many scenes as needed (8 to 14+ scenes) to provide an exhaustive, masterclass breakdown:
+- Full problem breakdown with constraints and edge cases.
+- Brute force nested loops failure and O(N^2) quadratic explosion.
+- The optimal complement formula and hash map intuition.
+- Step-by-step code walkthrough in the split-screen code editor.
+- Visual state changes: array pointer movements and hash map entries for every iteration.
+- Time and space complexity trade-offs.
+CRITICAL NARRATION RULE: Each scene's 'narration' MUST be detailed and thorough (35 to 55 spoken words, 3 to 4 complete sentences). Explain like an elite university lecturer with zero rushed summaries.`;
 
   return `Direct a studio-grade animated explainer video for this topic (Technical, Scientific, or Conceptual):
 

@@ -15,14 +15,15 @@ export async function processStoryboardAudio(storyboard, outputDir = path.resolv
 
   for (let i = 0; i < storyboard.scenes.length; i++) {
     const scene = storyboard.scenes[i];
-    const fileName = `scene_${i + 1}_${scene.id}.mp3`;
+    const fileName = `scene_${i + 1}_${scene.id}.wav`;
     const audioPath = path.resolve(outputDir, fileName);
 
     await generateSpeech(scene.narration, audioPath);
-    console.log(`      🎙️ Scene ${i + 1} [${config.SARVAM_SPEAKER}]: "${scene.narration.slice(0, 42)}..."`);
 
     const meta = await parseFile(audioPath, { duration: true });
     const durationInSeconds = meta.format.duration || 2;
+    console.log(`      🎙️ Scene ${i + 1} [${config.SARVAM_SPEAKER} | ${durationInSeconds.toFixed(1)}s]: "${scene.narration.slice(0, 42)}..."`);
+
     const holdBufferFrames = 12;
     const durationInFrames = Math.ceil(durationInSeconds * config.VIDEO_FPS) + holdBufferFrames;
 

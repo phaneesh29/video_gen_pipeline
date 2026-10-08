@@ -1,14 +1,27 @@
-Title: Hosting AI at Home: Student Expectation vs Reality
-Format: 9:16 Vertical Shorts.
+Title: Two Sum: Optimal Hash Map Strategy
+Topic: Data Structures & Algorithms / Array & Hash Table
 
-Topic & Vibe:
-A relatable, humorous take on every student's dream of hosting AI locally at home. Students think: just buy a gaming GPU, host your own LLM, no more subscriptions, and life is pure zingalala! But then the brutal reality of VRAM limits, jet-engine fan noise, and electric bills hits. Keep it funny, fast-paced, and punchy.
+Problem Statement:
+Given an array of integers nums = [2, 7, 11, 15] and target = 9, return the indices of the two numbers that add up to target.
 
-Core Story Progression:
-1. The Zingalala Dream: Every student thinks: just buy a graphics card, host your own AI, and life is zingalala.
-2. The RTX Unboxing: You unbox a shiny RTX graphics card, feeling like Tony Stark setting up your personal Jarvis.
-3. The CUDA Crash: You download a massive open source model, hit run, and instantly get slammed with CUDA Out of Memory.
-4. The Brutal VRAM Math: Turns out that model needs forty-eight gigabytes of memory, but your student budget only afforded eight.
-5. The Bedroom Space Heater: When it finally runs, the cooling fans scream like a jet engine, turning your room into a sauna.
-6. The Ollama Rescue: You discover Ollama and four-bit quantization, finally getting fast, intelligent replies completely offline.
-7. The Electric Bill Finale: Your local AI dream is finally alive, right until your parents see the massive electricity bill.
+Core Visual & Algorithmic Story:
+1. Problem Introduction:
+   We are given the array [2, 7, 11, 15] and a target sum of 9. We need to find the two indices whose values sum up to 9.
+
+2. The Brute Force Bottleneck:
+   The naive approach compares every pair using nested loops. For an array of size N, this takes O(N²) quadratic time, which times out on large test cases.
+
+3. The Optimal Insight (The Complement):
+   Instead of searching every future number, turn the question around. For any current number, we need complement equals target minus current number.
+
+4. Step 1 (Index 0, value 2):
+   We visit index 0 with value 2. Target 9 minus 2 means we need 7. We check our hash map. 7 is not found, so we store 2 at index 0.
+
+5. Step 2 (Index 1, value 7):
+   We move to index 1 with value 7. Target 9 minus 7 means we need 2. We check our hash map, and 2 is found at index 0!
+
+6. The Match and Return:
+   Match found! We pair index 0 and index 1 because 2 plus 7 equals 9. We immediately return indices [0, 1].
+
+7. Complexity Analysis:
+   By storing visited numbers in a hash map, we solve the problem in a single pass: O(N) linear time and O(N) space.

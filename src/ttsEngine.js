@@ -3,7 +3,7 @@ import path from "path";
 import { SarvamAIClient } from "sarvamai";
 import { config } from "./config.js";
 
-const sarvamClient = new SarvamAIClient({
+const client = new SarvamAIClient({
   apiSubscriptionKey: config.SARVAM_API_KEY
 });
 
@@ -19,22 +19,15 @@ export async function generateSpeech(text, outputPath) {
   const trimmed = text.trim();
   const cleanInput = /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
 
-  const response = await sarvamClient.textToSpeech.convertStream({
+  const response = await client.textToSpeech.convert({
     text: cleanInput,
-    target_language_code: config.SARVAM_LANGUAGE_CODE,
-    speaker: config.SARVAM_SPEAKER,
     model: config.SARVAM_MODEL,
-    pace: 1,
-    speech_sample_rate: 24000
+    speaker: config.SARVAM_SPEAKER,
+    language_code: config.SARVAM_LANGUAGE_CODE
   });
 
-  await new Promise((resolve, reject) => {
-    const fileStream = fs.createWriteStream(outputPath);
-    response.pipe(fileStream);
-    fileStream.on("finish", () => resolve(outputPath));
-    fileStream.on("error", reject);
-    response.on("error", reject);
-  });
+  const audio = Buffer.from(response.audios.join(""), "base64");
+  fs.writeFileSync(outputPath, audio);
 
   return outputPath;
 }

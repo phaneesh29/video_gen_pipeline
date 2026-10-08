@@ -94,7 +94,29 @@ Every node in \`nodes\` MUST specify a semantic \`shape\`:
 - "rectangle": Standard Clients, Endpoints, API Gateways
 Optional: Set \`containerLabel\` (e.g. "Google Cloud Ingest Fleet" or "Edge CDN Cluster") on the data structure to draw a surrounding group enclosure boundary around the nodes!
 
-## 4. TTS-Native Narration Rules
+## 4. TECH LOGOS & WEB IMAGERY (Real Brand SVGs & Visuals)
+Every node in nodes can display an official tech vector logo or real-world web image:
+- Tech Stacks & Brands (Set isTech: true, imagePrompt: "slug"):
+  When a node represents a real technology, database, framework, or cloud provider, set isTech: true and imagePrompt to the lowercase brand slug:
+  * Redis: isTech: true, imagePrompt: "redis"
+  * Apache Kafka: isTech: true, imagePrompt: "apachekafka"
+  * PostgreSQL: isTech: true, imagePrompt: "postgresql"
+  * Docker: isTech: true, imagePrompt: "docker"
+  * Kubernetes: isTech: true, imagePrompt: "kubernetes"
+  * AWS / S3: isTech: true, imagePrompt: "amazonaws"
+  * Netflix: isTech: true, imagePrompt: "netflix"
+  * Cloudflare: isTech: true, imagePrompt: "cloudflare"
+  * Apache Cassandra: isTech: true, imagePrompt: "apachecassandra"
+  * Nginx: isTech: true, imagePrompt: "nginx"
+- Physical Concepts & Devices (Set isTech: false, imagePrompt: "search prompt"):
+  When a node represents a physical object or concept, provide a concise transparent image search prompt:
+  * Smart TV: isTech: false, imagePrompt: "smart tv icon transparent png"
+  * Fiber Optic: isTech: false, imagePrompt: "undersea fiber optic cable transparent png"
+  * Satellite: isTech: false, imagePrompt: "satellite ground dish transparent png"
+- Generic Components:
+  When a node is a generic concept, set isTech: false, imagePrompt: null (and supply a clean Lucide icon name like "Server", "Layers", "Database").
+
+## 5. TTS-Native Narration Rules
 - Acronyms: Write spoken letter spacing for TTS clarity (e.g. "S F U", "H T T P", "T C P", "C D N", "D B M S", "A V 1", "V P 9", "H 2 6 4", "A B R", "H L S", "D A S H", "V C U").
 - Pacing: 7 to 9 concise scenes. Each scene has 1 to 2 spoken sentences (12 to 24 words).
 - Punctuation: Clean spoken English only. Never use markdown, asterisks, brackets, parentheses, or code snippets in narration.
@@ -120,5 +142,6 @@ Instructions:
      * At least one 'table'/'hashmap' with 'entries' (for codec comparison, metrics, or trade-offs)
      * Multi-tier pipeline flows (3 to 4 nodes with descriptive arrows) for data transit
    - Ensure all arrows (edges) have concise, descriptive labels.
-5. When a scene explains an API, SQL query, cache operation, command, or code, provide an on-demand codeSnippet in visual.codeSnippet (title, language, code) so a sleek floating code card appears on that scene. Otherwise set codeSnippet: null.`;
+5. When a scene explains an API, SQL query, cache operation, command, or code, provide an on-demand codeSnippet in visual.codeSnippet (title, language, code) so a sleek floating code card appears on that scene. Otherwise set codeSnippet: null.
+6. For every node, assign semantic shape ('cylinder', 'cloud', 'diamond', 'hexagon', 'funnel', 'rectangle'). For known technologies (Redis, Kafka, Postgres, Docker, AWS, etc.), set isTech: true and imagePrompt: 'slug'. For real-world hardware or devices, set isTech: false and imagePrompt: 'search prompt'.`;
 }

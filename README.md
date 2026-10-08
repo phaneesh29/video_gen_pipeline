@@ -148,6 +148,13 @@ node src/cli.js
 - Voice expression mapping (`confident`, `excited`, `cheerful`, `happy`, `neutral`, `frustrated`).
 - Parses audio duration using `music-metadata`, adds a 12-frame hold buffer, and converts seconds to exact video frames at 30 FPS (`durationInFrames`).
 
+### Stage 2.5: Image & Tech Logo Resolution (`src/imageFetcher.js`)
+- Scans all diagram nodes across all scenes in parallel.
+- **Official Tech Brands (`isTech: true`)**: Direct vector SVGs from **Simple Icons CDN** (`https://cdn.simpleicons.org/{slug}`) in official brand colors (Redis, Apache Kafka, PostgreSQL, Docker, AWS, Netflix, etc.).
+- **Physical Devices & Objects (`isTech: false`)**: Web images and transparent clipart from **DuckDuckGo Image Search** using `imagePrompt` via high-speed Bing CDN.
+- Caches assets in `./temp/image_cache/` (<3ms retrieval) and converts to Base64 data URIs for instantaneous, zero-latency Remotion rendering.
+- Seamless fallback to Lucide icons (`DynamicIcon.jsx`) if remote image is unavailable.
+
 ### Stage 3: Canvas Rendering (`src/videoRenderer.js`, `src/video/`)
 - Bundles `src/video/index.jsx` into a temporary Webpack build.
 - Embeds the base64 `assets/logo.png` directly into props.
@@ -263,6 +270,7 @@ video_gen_pipeline/
 │   ├── client.js                 # Mistral client initialization
 │   ├── config.js                 # Zod environment variable parser
 │   ├── ffmpegHelper.js           # FFmpeg master audio, loudness norm & bumper stitcher
+│   ├── imageFetcher.js           # Parallel logo (Simple Icons) & web image (DDG) resolver
 │   ├── instructions.js           # Codestral system prompt & visual archetype directives
 │   ├── llmEngine.js              # Codestral chat completion & storyboard parser
 │   ├── schema.js                 # Zod schemas for storyboards, shapes, nodes, & edges

@@ -77,6 +77,7 @@ export function RoughBoxNode({
   label,
   subLabel,
   icon,
+  imageSrc = null,
   x,
   y,
   width = 210,
@@ -377,15 +378,28 @@ export function RoughBoxNode({
                 background: status === "active" ? "rgba(255, 119, 0, 0.25)" : "rgba(255, 255, 255, 0.07)",
                 border: status === "active" ? "1.5px solid #ff7700" : "1px solid rgba(255, 255, 255, 0.12)",
                 flexShrink: 0,
-                boxShadow: status === "active" ? "0 0 14px rgba(255, 119, 0, 0.5)" : "none"
+                boxShadow: status === "active" ? "0 0 14px rgba(255, 119, 0, 0.5)" : "none",
+                overflow: "hidden"
               }}
             >
-              <DynamicIcon
-                name={icon}
-                label={label}
-                size={width < 300 ? 18 : 22}
-                color={status === "active" ? "#ffedd5" : strokeColor}
-              />
+              {imageSrc ? (
+                <img
+                  src={imageSrc}
+                  alt={label}
+                  style={{
+                    width: width < 300 ? "20px" : "24px",
+                    height: width < 300 ? "20px" : "24px",
+                    objectFit: "contain"
+                  }}
+                />
+              ) : (
+                <DynamicIcon
+                  name={icon}
+                  label={label}
+                  size={width < 300 ? 18 : 22}
+                  color={status === "active" ? "#ffedd5" : strokeColor}
+                />
+              )}
             </div>
             <div
               style={{

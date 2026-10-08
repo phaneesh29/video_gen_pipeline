@@ -25,6 +25,9 @@ export const graphNodeSchema = z.object({
     "hexagon",
     "funnel"
   ]).default("rectangle"),
+  isTech: z.boolean().default(false),
+  imagePrompt: z.string().nullable().default(null),
+  imageSrc: z.string().nullable().default(null),
   status: z.enum(["normal", "active", "visited", "highlighted"])
 });
 

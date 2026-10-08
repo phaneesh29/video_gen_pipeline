@@ -4,6 +4,7 @@ import { Command } from "commander";
 import { generateStoryboard } from "./llmEngine.js";
 import { processStoryboardAudio } from "./audioPipeline.js";
 import { renderExplainerVideo } from "./videoRenderer.js";
+import { enrichStoryboardWithImages } from "./imageFetcher.js";
 import { buildMasterAudio, stitchBumperCardsAndMux } from "./ffmpegHelper.js";
 import { config } from "./config.js";
 
@@ -89,6 +90,13 @@ Examples:
       const enrichedStoryboard = await processStoryboardAudio(storyboard, tempDir);
       console.log(`      ✓ Speech synthesized for all ${enrichedStoryboard.scenes.length} scenes`);
       console.log(`      ✓ Duration: ${enrichedStoryboard.totalDurationInSeconds.toFixed(1)}s (${enrichedStoryboard.totalDurationInFrames} frames at 30fps)`);
+
+      // Image resolution for diagram nodes
+      console.log(`\n      Resolving brand logos & web imagery for nodes...`);
+      await enrichStoryboardWithImages(enrichedStoryboard);
+      let logoCount = 0;
+      enrichedStoryboard.scenes.forEach(s => s.visual?.structures?.forEach(st => st.nodes?.forEach(n => { if (n.imageSrc) logoCount++; })));
+      console.log(`      ✓ Embedded ${logoCount} brand logos and visuals into diagram nodes`);
 
       // Stage 3: Video rendering
       console.log(`\n[3/4] Rendering ${targetAspectRatio} Whiteboard Canvas with Remotion...`);

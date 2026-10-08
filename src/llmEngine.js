@@ -3,14 +3,14 @@ import { config } from "./config.js";
 import { storyboardSchema } from "./schema.js";
 import { DSA_SYSTEM_PROMPT, getStoryPrompt } from "./instructions.js";
 
-export async function generateStoryboard(topic) {
+export async function generateStoryboard(topic, isVertical = false) {
   const response = await client.chat.parse({
     model: config.MISTRAL_MODEL,
     responseFormat: storyboardSchema,
     temperature: 0.25,
     messages: [
       { role: "system", content: DSA_SYSTEM_PROMPT },
-      { role: "user", content: getStoryPrompt(topic) }
+      { role: "user", content: getStoryPrompt(topic, isVertical) }
     ]
   });
 

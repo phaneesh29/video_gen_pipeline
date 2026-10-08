@@ -117,12 +117,15 @@ Every node in nodes can display an official tech vector logo or real-world web i
   When a node is a generic concept, set isTech: false, imagePrompt: null (and supply a clean Lucide icon name like "Server", "Layers", "Database").
 
 ## 5. TTS-Native Narration Rules
-- Acronyms: Write spoken letter spacing for TTS clarity (e.g. "S F U", "H T T P", "T C P", "C D N", "D B M S", "A V 1", "V P 9", "H 2 6 4", "A B R", "H L S", "D A S H", "V C U").
-- Pacing: 7 to 9 concise scenes. Each scene has 1 to 2 spoken sentences (12 to 24 words).
+- Acronyms: Write spoken letter spacing for TTS clarity (e.g. "G P U", "N V L i n k", "N C C L", "P C I e", "T P U", "D R A M", "H B M", "S F U", "H T T P", "T C P", "C D N", "D B M S", "A V 1", "V P 9", "H 2 6 4", "A B R", "H L S", "D A S H", "V C U").
+- Pacing: 7 to 8 scenes. Each scene has 1 punchy sentence of 14 to 18 spoken words (total video duration ~60 to 70 seconds).
 - Punctuation: Clean spoken English only. Never use markdown, asterisks, brackets, parentheses, or code snippets in narration.
 - Voice expression palette: "confident" (mechanisms), "excited" (breakthroughs & solutions), "cheerful" or "happy" (conclusions), "frustrated" (bottlenecks).`;
 
-export function getStoryPrompt(problemInput) {
+export function getStoryPrompt(problemInput, isVertical = false) {
+  const sceneCount = "7 to 8 scenes";
+  const lengthRule = "Target Duration: ~60 to 70 seconds. Produce 7 to 8 scenes. Each scene narration should be 14 to 18 spoken words (1 crisp, engaging sentence). Total spoken word count across all scenes ~110-130 words.";
+
   return `Direct a studio-grade animated explainer video for this Computer Science topic:
 
 """
@@ -131,10 +134,11 @@ ${problemInput}
 
 Instructions:
 1. Extract a crisp, compelling title, category, and topic.
-2. Determine format: if the input specifies 9:16, vertical, or shorts, set aspectRatio: "9:16", else "16:9".
-3. If this is a coding algorithm (DSA), include 6 to 12 clean lines in codeLines. If purely architectural, set codeLines: [].
-4. For each of the 7 to 9 scenes:
-   - Write clear, punchy TTS-native narration.
+2. Determine format: set aspectRatio: "${isVertical ? "9:16" : "16:9"}".
+3. ${lengthRule}
+4. If this is a coding algorithm (DSA), include 6 to 12 clean lines in codeLines. If purely architectural, set codeLines: [].
+5. For each of the ${sceneCount}:
+   - Write clear, punchy TTS-native narration following the strict word limit.
    - Autonomously vary the visual formats across scenes! DO NOT use simple 2-node flows in every scene.
    - Incorporate:
      * At least one 'array' with 'elements' (for chunking, slicing, or packets)
@@ -142,6 +146,6 @@ Instructions:
      * At least one 'table'/'hashmap' with 'entries' (for codec comparison, metrics, or trade-offs)
      * Multi-tier pipeline flows (3 to 4 nodes with descriptive arrows) for data transit
    - Ensure all arrows (edges) have concise, descriptive labels.
-5. When a scene explains an API, SQL query, cache operation, command, or code, provide an on-demand codeSnippet in visual.codeSnippet (title, language, code) so a sleek floating code card appears on that scene. Otherwise set codeSnippet: null.
-6. For every node, assign semantic shape ('cylinder', 'cloud', 'diamond', 'hexagon', 'funnel', 'rectangle'). For known technologies (Redis, Kafka, Postgres, Docker, AWS, etc.), set isTech: true and imagePrompt: 'slug'. For real-world hardware or devices, set isTech: false and imagePrompt: 'search prompt'.`;
+6. When a scene explains an API, SQL query, cache operation, command, or code, provide an on-demand codeSnippet in visual.codeSnippet (title, language, code) so a sleek floating code card appears on that scene. Otherwise set codeSnippet: null.
+7. For every node, assign semantic shape ('cylinder', 'cloud', 'diamond', 'hexagon', 'funnel', 'rectangle'). For known technologies (Nvidia, Redis, Kafka, Postgres, Docker, AWS, etc.), set isTech: true and imagePrompt: 'slug'. For real-world hardware or devices, set isTech: false and imagePrompt: 'descriptive name transparent png'.`;
 }

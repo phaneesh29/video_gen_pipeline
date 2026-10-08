@@ -62,7 +62,8 @@ Examples:
     try {
       // Stage 1: Storyboard generation
       console.log(`[1/4] Generating Storyboard with Codestral...`);
-      const storyboard = await generateStoryboard(problemInput);
+      const isVertical = targetAspectRatio === "9:16";
+      const storyboard = await generateStoryboard(problemInput, isVertical);
 
       storyboard.aspectRatio = targetAspectRatio;
 
